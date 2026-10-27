@@ -1,0 +1,356 @@
+@font-face {
+  font-family: "Italiana";
+  src: url("/font/Italiana/Italiana-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Goodnight London Sans";
+  src: url("/font/goodnight-london/Goodnight-London-Sans.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Goodnight London Script";
+  src: url("/font/goodnight-london/Goodnight-London-Script.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: auto; }
+body {
+  margin: 0;
+  background: #171715;
+  color: #f1efe9;
+  font-family: Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+
+.story-scroll { position: relative; min-height: 100svh; background: #171715; }
+.story-stage {
+  position: relative;
+  width: 100%;
+  height: 100svh;
+  min-height: 580px;
+  overflow: hidden;
+  background: #34211b;
+}
+.story-canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+.hero-shade {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(13, 14, 12, .25), rgba(13, 14, 12, .04) 45%, rgba(13, 14, 12, .25));
+}
+.hero-overlay { position: absolute; z-index: 2; inset: 0; }
+.site-header {
+  position: absolute;
+  z-index: 3;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 90px;
+  padding: 0 clamp(20px, 5.2vw, 80px);
+  display: flex;
+  align-items: center;
+  color: #F5EFE8;
+  background-color: transparent;
+  background: linear-gradient(180deg, rgba(43, 21, 18, .2), rgba(43, 21, 18, 0));
+  transition: background-color 300ms ease, backdrop-filter 300ms ease, -webkit-backdrop-filter 300ms ease;
+}
+.brand-logo {
+  position: absolute;
+  left: clamp(20px, 5.2vw, 80px);
+  top: 50%;
+  width: 92px;
+  display: block;
+  transform: translateY(-50%);
+}
+.brand-logo img { display: block; width: 100%; height: auto; filter: brightness(0) invert(1); }
+.site-header nav {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(28px, 3vw, 45px);
+  transform: translate(-50%, -50%);
+}
+.site-header nav a { font-size: 13px; line-height: 1.2; letter-spacing: .16em; white-space: nowrap; transition: opacity 250ms ease; }
+.site-header nav a:hover { opacity: .68; }
+.menu-toggle { display: none; }
+.site-header.is-scrolled {
+  background-color: #2B1512;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+@media (min-width: 701px) and (max-width: 980px) {
+  .site-header { padding-inline: 28px; }
+  .site-header { height: 78px; }
+  .brand-logo { left: 28px; }
+  .brand-logo { width: 82px; }
+  .site-header nav { gap: 18px; }
+  .site-header nav a { font-size: 11px; letter-spacing: .1em; }
+}
+
+.hero-copy {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  text-align: center;
+}
+.eyebrow { margin: 0 0 34px; font-size: 12px; letter-spacing: .24em; }
+.hero-copy h1 {
+  margin: 0;
+  font: 400 clamp(96px, 18.1vw, 310px)/.85 Italiana, Georgia, serif;
+  letter-spacing: .035em;
+  color: #FFFDF8;
+}
+.hero-subtitle { margin: 44px 0 0; font: 400 clamp(19px, 2vw, 29px) Italiana, Georgia, serif; }
+
+.story-captions { position: absolute; z-index: 4; inset: 0; pointer-events: none; }
+.story-caption {
+  position: absolute;
+  left: auto;
+  right: 8vw;
+  bottom: 8vh;
+  width: min(780px, 46vw);
+  color: #f5f0e8;
+  text-align: right;
+  opacity: 0;
+  visibility: hidden;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, .72), 0 0 42px rgba(0, 0, 0, .55);
+}
+.story-caption h2 {
+  max-width: 100%;
+  margin: 0;
+  font: 400 clamp(38px, 5.1vw, 76px)/1.06 "Goodnight London Sans", sans-serif;
+}
+.story-caption p {
+  margin: 13px 0 0;
+  font: 400 clamp(27px, 3.5vw, 49px)/1.15 "Goodnight London Script", cursive;
+}
+.story-caption--intro { left: 8vw; right: auto; bottom: 16vh; text-align: left; }
+.story-caption--detail { width: min(900px, 54vw); }
+.story-caption--detail h2 { font-size: clamp(34px, 4.5vw, 67px); }
+.story-caption--full-look {
+  left: auto;
+  right: 8vw;
+  bottom: 8vh;
+  width: min(600px, 40vw);
+}
+.story-caption--final { left: 8vw; right: auto; width: min(820px, 52vw); text-align: left; }
+.closing-section {
+  position: relative;
+  display: grid;
+  min-height: clamp(600px, 78svh, 780px);
+  place-items: center;
+  overflow: hidden;
+  padding: 96px 24px;
+  color: #43302E;
+  background:
+    radial-gradient(ellipse at 50% 45%, rgba(67, 48, 46, .035), transparent 56%),
+    #FFFDF8;
+  text-align: center;
+}
+.closing-content {
+  display: flex;
+  width: min(100%, 900px);
+  flex-direction: column;
+  align-items: center;
+}
+.closing-logo,
+.closing-statement,
+.closing-support,
+.closing-button,
+.closing-back-to-top {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 800ms ease, transform 800ms cubic-bezier(.2, .7, .2, 1);
+}
+.closing-logo {
+  display: block;
+  width: min(230px, 58vw);
+  height: auto;
+  margin-bottom: 30px;
+}
+.closing-statement {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  color: #43302E;
+  font: 400 clamp(25px, 3vw, 42px)/1.22 "Goodnight London Sans", Italiana, Georgia, serif;
+  letter-spacing: .075em;
+}
+.closing-support {
+  margin: 18px 0 0;
+  color: #6d5955;
+  font: 400 clamp(28px, 3vw, 40px)/1.2 "Goodnight London Script", cursive;
+}
+.closing-button {
+  display: inline-flex;
+  min-height: 56px;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  margin-top: 42px;
+  padding: 0 27px;
+  border: 1px solid rgba(67, 48, 46, .55);
+  color: #43302E;
+  font-size: 11px;
+  letter-spacing: .15em;
+  transition: color 250ms ease, background-color 250ms ease, border-color 250ms ease, opacity 800ms ease, transform 800ms cubic-bezier(.2, .7, .2, 1);
+}
+.closing-button svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.25;
+  transition: transform 250ms ease;
+}
+.closing-button:hover,
+.closing-button:focus-visible {
+  border-color: #43302E;
+  color: #FFFDF8;
+  background: #43302E;
+}
+.closing-button:hover svg,
+.closing-button:focus-visible svg { transform: translateX(4px); }
+.closing-button:focus-visible { outline: 2px solid #43302E; outline-offset: 5px; }
+.closing-back-to-top {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  gap: 7px;
+  margin-top: 10px;
+  color: rgba(67, 48, 46, .72);
+  font-size: 9px;
+  letter-spacing: .16em;
+  transition: color 200ms ease, opacity 800ms ease, transform 800ms cubic-bezier(.2, .7, .2, 1);
+}
+.closing-back-to-top:hover,
+.closing-back-to-top:focus-visible { color: #43302E; }
+.closing-back-to-top:focus-visible { outline: 2px solid #43302E; outline-offset: 3px; }
+.closing-back-to-top span { font-size: 14px; line-height: 1; }
+.closing-section.is-visible .closing-logo,
+.closing-section.is-visible .closing-statement,
+.closing-section.is-visible .closing-support,
+.closing-section.is-visible .closing-button,
+.closing-section.is-visible .closing-back-to-top {
+  opacity: 1;
+  transform: translateY(0);
+}
+.closing-section.is-visible .closing-statement { transition-delay: 120ms; }
+.closing-section.is-visible .closing-support { transition-delay: 200ms; }
+.closing-section.is-visible .closing-button { transition-delay: 300ms; }
+.closing-section.is-visible .closing-back-to-top { transition-delay: 360ms; }
+.site-footer {
+  padding: 38px clamp(22px, 5vw, 76px) 22px;
+  color: #EEE8E8;
+  background: #171715;
+  border-top: 1px solid rgba(238, 232, 232, .12);
+}
+.footer-inner { width: min(100%, 1400px); margin: 0 auto; }
+.footer-top,
+.footer-bottom { display: flex; align-items: center; justify-content: space-between; }
+.footer-brand { color: #EEE8E8; font: 400 23px/1 Italiana, Georgia, serif; letter-spacing: .17em; }
+.footer-contact { display: flex; align-items: center; gap: clamp(24px, 4vw, 52px); }
+.footer-contact-link { display: inline-flex; min-height: 44px; align-items: center; gap: 10px; color: #EEE8E8; font-size: 10px; letter-spacing: .11em; transition: opacity 200ms ease; }
+.footer-contact-link:hover { opacity: .68; }
+.footer-contact-link svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.35; }
+.footer-contact-link .icon-dot { fill: currentColor; stroke: none; }
+.footer-bottom { justify-content: flex-start; margin-top: 23px; color: rgba(238, 232, 232, .62); font-size: 9px; letter-spacing: .06em; }
+
+@media (max-width: 700px) {
+  .story-stage { min-height: 520px; }
+  .site-header {
+    height: 64px;
+    padding: 0 6vw;
+  }
+  .brand-logo { width: 72px; }
+  .menu-toggle {
+    display: flex;
+    position: absolute;
+    right: 4vw;
+    z-index: 5;
+    width: 40px;
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    flex-direction: column;
+    color: inherit;
+    background: none;
+    border: 0;
+  }
+  .menu-toggle span { width: 22px; height: 1px; background: currentColor; }
+  .site-header nav {
+    display: none;
+    position: absolute;
+    z-index: 4;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100svh;
+    padding: 24vh 12vw;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-direction: column;
+    gap: 34px;
+    background: #271b17;
+    transform: none;
+  }
+  .brand-logo { left: 50%; transform: translate(-50%, -50%); }
+  .site-header nav.nav-open { display: flex; }
+  .site-header nav a { font: 400 32px Italiana, Georgia, serif; letter-spacing: .08em; }
+  .hero-copy h1 { font-size: clamp(70px, 18vw, 132px); }
+  .eyebrow { margin-bottom: 25px; font-size: 9px; }
+  .hero-subtitle { margin-top: 27px; font-size: 20px; }
+  .story-caption,
+  .story-caption--detail,
+  .story-caption--full-look,
+  .story-caption--final {
+    left: 7vw;
+    right: 7vw;
+    bottom: 10vh;
+    width: auto;
+  }
+  .story-caption h2 { font-size: clamp(34px, 10vw, 52px); }
+  .story-caption--intro { left: 7vw; right: auto; bottom: 16vh; text-align: left; }
+  .story-caption--final { left: 7vw; right: auto; text-align: left; }
+  .story-caption--detail h2 { font-size: clamp(31px, 8.5vw, 46px); }
+  .story-caption p { max-width: 92%; font-size: clamp(28px, 7.5vw, 38px); }
+  .closing-section { min-height: 620px; padding: 88px 22px; }
+  .closing-logo { width: min(190px, 58vw); margin-bottom: 26px; }
+  .closing-statement { gap: 7px; font-size: clamp(22px, 6vw, 31px); letter-spacing: .045em; }
+  .closing-support { margin-top: 16px; }
+  .closing-button { min-height: 54px; gap: 16px; margin-top: 34px; padding-inline: 20px; font-size: 10px; }
+  .site-footer { padding: 30px 7vw 22px; }
+  .footer-top { align-items: flex-start; flex-direction: column; gap: 22px; }
+  .footer-brand { font-size: 21px; }
+  .footer-contact { width: 100%; flex-wrap: wrap; justify-content: space-between; gap: 8px 20px; }
+  .footer-contact-link { min-height: 44px; gap: 8px; font-size: 9px; letter-spacing: .07em; }
+  .footer-bottom { margin-top: 18px; font-size: 8px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *:after { scroll-behavior: auto !important; }
+  .closing-logo,
+  .closing-statement,
+  .closing-support,
+  .closing-button,
+  .closing-back-to-top { opacity: 1; transform: none; transition: none; }
+}
