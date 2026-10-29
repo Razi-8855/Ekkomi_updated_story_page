@@ -5,7 +5,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 const scenes = [
-  { directory: "/video-sequences/scene-1", count: 98, caption: ".story-caption--intro" },
+  { directory: "/video-sequences/scene1", count: 192, caption: ".story-caption--intro" },
   { directory: "/video-sequences/scene2", count: 192, caption: ".story-caption--detail" },
   { directory: "/video-sequences/scene3", count: 192, caption: ".story-caption--full-look" },
 ];
@@ -289,7 +289,7 @@ function ClosingSection() {
           <span>DEFINED BY CHARACTER.</span>
         </h2>
         <p className="closing-support">Discover the collection.</p>
-        <a className="closing-button" href="#collection">
+        <a className="closing-button" href="/collection">
           <span>EXPLORE THE COLLECTION</span>
           <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             <path d="M4 12h15m-6-6 6 6-6 6" />
