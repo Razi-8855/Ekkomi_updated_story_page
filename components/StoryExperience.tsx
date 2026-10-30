@@ -116,7 +116,8 @@ export default function StoryExperience() {
       },
     });
 
-    timeline.to(".hero-overlay", { y: () => -window.innerHeight * 1.1, duration: introDuration, ease: "none" }, 0);
+    timeline.to(".hero-overlay", { y: () => -window.innerHeight * 1.1, opacity: 0, duration: introDuration, ease: "none" }, 0);
+    timeline.to(".hero-shade", { opacity: 0, duration: introDuration, ease: "none" }, 0);
     let timelinePosition = introDuration;
 
     scenes.forEach((scene, index) => {

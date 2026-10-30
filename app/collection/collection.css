@@ -6,6 +6,10 @@
 /* -------------------------------------------------------------------
    LOCAL FONTS
    ------------------------------------------------------------------- */
+
+
+
+
 /* -------------------------------------------------------------------
    DESIGN TOKENS
    ------------------------------------------------------------------- */
@@ -58,11 +62,11 @@
    BASE RESET
    ------------------------------------------------------------------- */
 
-#collection-experience *, #collection-experience *::before, #collection-experience *::after { box-sizing: border-box; }
+*, *::before, *::after { box-sizing: border-box; }
 
-#collection-experience { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; }
 
-#collection-experience {
+body {
   margin: 0;
   background: var(--color-background);
   color: var(--color-text);
@@ -73,16 +77,16 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-#collection-experience button, #collection-experience a {
+button, a {
   color: inherit;
   font: inherit;
 }
 
-#collection-experience button { cursor: pointer; }
+button { cursor: pointer; }
 
-#collection-experience img { display: block; }
+img { display: block; }
 
-#collection-experience h1, #collection-experience h2, #collection-experience h3, #collection-experience h4, #collection-experience h5, #collection-experience h6 {
+h1, h2, h3, h4, h5, h6 {
   margin-top: 0;
   font-family: var(--font-heading);
   font-weight: normal;
@@ -90,13 +94,13 @@
   letter-spacing: 0.18em;
 }
 
-#collection-experience p {
+p {
   margin-top: 0;
   font-family: var(--font-body);
 }
 
 /* Skip link */
-#collection-experience .skip-link {
+.skip-link {
   position: absolute;
   left: 1rem;
   top: -4rem;
@@ -110,10 +114,10 @@
   letter-spacing: 0.08em;
   font-size: 11px;
 }
-#collection-experience .skip-link:focus { top: 1rem; }
+.skip-link:focus { top: 1rem; }
 
 /* Screen-reader only accessible utility */
-#collection-experience .sr-only {
+.sr-only {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -130,7 +134,10 @@
    FOCUS STYLES — visible ring on keyboard navigation
    ------------------------------------------------------------------- */
 
-#collection-experience .impulse-button:focus-visible, #collection-experience .round-button:focus-visible, #collection-experience .jacket-card:focus-visible, #collection-experience .text-link:focus-visible {
+.impulse-button:focus-visible,
+.round-button:focus-visible,
+.jacket-card:focus-visible,
+.text-link:focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 4px;
   border-radius: 2px;
@@ -141,7 +148,7 @@
    SITE HEADER — sticky so scroll-offset calculation is reliable
    ------------------------------------------------------------------- */
 
-#collection-experience .site-header {
+.site-header {
   position: sticky;
   top: 0;
   z-index: 100;
@@ -159,7 +166,7 @@
 }
 
 /* Logo image in the middle */
-#collection-experience .wordmark {
+.wordmark {
   grid-column: 2;
   justify-self: center;
   text-decoration: none;
@@ -170,13 +177,13 @@
   justify-content: center;
 }
 
-#collection-experience .wordmark-logo {
+.wordmark-logo {
   height: 52px;
   width: auto;
   display: block;
 }
 
-#collection-experience .wordmark-text {
+.wordmark-text {
   /* Hidden — replaced by logo image, kept for accessibility fallback */
   position: absolute;
   width: 1px;
@@ -189,7 +196,7 @@
   border: 0;
 }
 
-#collection-experience .header-detail {
+.header-detail {
   grid-column: 1;
   justify-self: start;
   text-align: left;
@@ -199,7 +206,7 @@
   letter-spacing: 0.14em;
 }
 
-#collection-experience .menu-button {
+.menu-button {
   grid-column: 3;
   justify-self: end;
   border: 0;
@@ -211,10 +218,10 @@
   font-size: 11px;
   transition: color var(--motion-fast);
 }
-#collection-experience .menu-button:hover {
+.menu-button:hover {
   color: var(--color-accent);
 }
-#collection-experience .menu-button span { margin-left: .45rem; font-size: 16px; }
+.menu-button span { margin-left: .45rem; font-size: 16px; }
 
 
 /* -------------------------------------------------------------------
@@ -222,7 +229,11 @@
    Contrast raised vs original: --color-muted now #6B5650 (WCAG AA ✓)
    ------------------------------------------------------------------- */
 
-#collection-experience .eyebrow, #collection-experience .collection-count, #collection-experience .product-meta p, #collection-experience .visual-caption, #collection-experience .carousel-hint {
+.eyebrow,
+.collection-count,
+.product-meta p,
+.visual-caption,
+.carousel-hint {
   margin: 0;
   font-family: var(--font-sans);
   font-size: 10px;
@@ -236,19 +247,19 @@
    COLLECTION INTRO
    ------------------------------------------------------------------- */
 
-#collection-experience .section {
+.section {
   max-width: var(--container);
   margin: auto;
   padding-left:  clamp(1.25rem, 6vw, 7rem);
   padding-right: clamp(1.25rem, 6vw, 7rem);
 }
 
-#collection-experience .intro {
+.intro {
   padding-top:    clamp(4.5rem, 10vw, 9rem);
   padding-bottom: 0;
 }
 
-#collection-experience h1 {
+h1 {
   margin: .8rem 0 clamp(2rem, 4.5vw, 4rem);
   font-family: var(--font-heading);
   font-weight: normal;
@@ -258,7 +269,7 @@
   text-transform: uppercase;
 }
 
-#collection-experience .intro-statement {
+.intro-statement {
   margin: 0 0 clamp(3.5rem, 7vw, 6rem);
   max-width: 680px;
   font-family: var(--font-script);
@@ -274,7 +285,7 @@
    IMPULSE NAVIGATION — tab list
    ------------------------------------------------------------------- */
 
-#collection-experience .impulse-nav {
+.impulse-nav {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   border-top: 1px solid var(--color-border);
@@ -282,9 +293,9 @@
   overflow-x: auto;
   scrollbar-width: none;
 }
-#collection-experience .impulse-nav::-webkit-scrollbar { display: none; }
+.impulse-nav::-webkit-scrollbar { display: none; }
 
-#collection-experience .impulse-button {
+.impulse-button {
   min-height: 84px;
   padding: 1.5rem 0.5rem 1.5rem 0;
   border: 0;
@@ -299,23 +310,25 @@
   transition: opacity var(--motion), color var(--motion);
 }
 
-#collection-experience .impulse-button:not(.is-active) {
+.impulse-button:not(.is-active) {
   color: var(--color-muted);
   opacity: .65;
 }
-#collection-experience .impulse-button:hover:not(.is-active) {
+.impulse-button:hover:not(.is-active) {
   opacity: 1;
   color: var(--color-text);
 }
 
-#collection-experience .impulse-button.is-active, #collection-experience .impulse-button[aria-selected="true"] {
+.impulse-button.is-active,
+.impulse-button[aria-selected="true"] {
   color: var(--color-accent);
   font-weight: normal;
   opacity: 1;
 }
 
 /* Active underline */
-#collection-experience .impulse-button.is-active::after, #collection-experience .impulse-button[aria-selected="true"]::after {
+.impulse-button.is-active::after,
+.impulse-button[aria-selected="true"]::after {
   content: '';
   position: absolute;
   bottom: -1px;
@@ -330,7 +343,7 @@
    HERO SECTION — Perspective Drift Wall + Overlaid Brand Copy
    ------------------------------------------------------------------- */
 
-#collection-experience .hero-section {
+.hero-section {
   position: relative;
   width: 100%;
   height: 90vh;
@@ -344,13 +357,13 @@
 }
 
 /* ── Drift Wall Perspective Stage ─────────────────────────────── */
-#collection-experience .hero__wall {
+.hero__wall {
   position: absolute;
   inset: 0;
   z-index: 1;
 }
 
-#collection-experience .drift-wall {
+.drift-wall {
   position: relative;
   width: 100%;
   height: 100%;
@@ -362,24 +375,20 @@
   --dw-gap: 16px;
   --dw-radius: 8px;
   --dw-lift: 72px;
-  --dw-dim: 0.48;
+  --dw-dim: 0.85;
   --dw-gray: 0;
   --dw-overlay: #080706;
-  --dw-edge: 38%;
-  -webkit-mask-image:
-    radial-gradient(ellipse 78% 82% at 50% 50%, #000 var(--dw-edge), transparent 100%),
-    linear-gradient(to top, #000 var(--dw-edge), transparent 100%);
-  -webkit-mask-composite: source-in;
-  mask-image:
-    radial-gradient(ellipse 78% 82% at 50% 50%, #000 var(--dw-edge), transparent 100%),
-    linear-gradient(to top, #000 var(--dw-edge), transparent 100%);
-  mask-composite: intersect;
+  --dw-edge: 55%;
+  -webkit-mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, #000 62%, transparent 100%);
+  mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, #000 62%, transparent 100%);
 }
 
-#collection-experience .drift-wall__plane {
+.drift-wall__plane {
   position: absolute;
   top: 50%;
   left: 50%;
+  margin-left: -590px;
+  margin-top: -500px;
   display: flex;
   flex-direction: row;
   transform-style: preserve-3d;
@@ -388,20 +397,20 @@
   will-change: transform;
 }
 
-#collection-experience .drift-wall__col {
+.drift-wall__col {
   position: relative;
   width: calc(var(--dw-tile-w) + var(--dw-gap));
   transform-style: preserve-3d;
 }
 
-#collection-experience .drift-wall__track {
+.drift-wall__track {
   display: flex;
   flex-direction: column;
   will-change: transform;
   transform-style: preserve-3d;
 }
 
-#collection-experience .drift-wall__tile {
+.drift-wall__tile {
   position: relative;
   display: block;
   width: 100%;
@@ -412,7 +421,7 @@
   cursor: default;
 }
 
-#collection-experience .drift-wall__inner {
+.drift-wall__inner {
   position: absolute;
   inset: calc(var(--dw-gap) / 2);
   display: block;
@@ -428,7 +437,7 @@
     box-shadow 0.42s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-#collection-experience .drift-wall__tile img {
+.drift-wall__tile img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -439,16 +448,17 @@
   -webkit-user-drag: none;
 }
 
-#collection-experience .drift-wall__overlay {
+.drift-wall__overlay {
   position: absolute;
   inset: 0;
   background: var(--dw-overlay);
-  opacity: 0.46;
+  opacity: 0.12;
   pointer-events: none;
   transition: opacity 0.42s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-#collection-experience .drift-wall__tile.is-active .drift-wall__inner, #collection-experience .drift-wall__tile:focus-visible .drift-wall__inner {
+.drift-wall__tile.is-active .drift-wall__inner,
+.drift-wall__tile:focus-visible .drift-wall__inner {
   opacity: 1;
   transform: translateZ(var(--dw-lift));
   box-shadow:
@@ -456,16 +466,18 @@
     0 0 0 1px rgba(255, 255, 255, 0.15);
 }
 
-#collection-experience .drift-wall__tile.is-active img, #collection-experience .drift-wall__tile:focus-visible img {
+.drift-wall__tile.is-active img,
+.drift-wall__tile:focus-visible img {
   filter: grayscale(0) saturate(1.08);
 }
 
-#collection-experience .drift-wall__tile.is-active .drift-wall__overlay, #collection-experience .drift-wall__tile:focus-visible .drift-wall__overlay {
+.drift-wall__tile.is-active .drift-wall__overlay,
+.drift-wall__tile:focus-visible .drift-wall__overlay {
   opacity: 0;
 }
 
 /* ── Hero Overlaid Content ────────────────────────────────────── */
-#collection-experience .hero__content {
+.hero__content {
   position: absolute;
   inset: 0;
   z-index: 10;
@@ -478,7 +490,7 @@
   pointer-events: none;
 }
 
-#collection-experience .hero-eyebrow {
+.hero-eyebrow {
   margin: 0 0 1.25rem;
   color: var(--ekkomi-gold-muted, #B89B72);
   letter-spacing: 0.35em;
@@ -487,7 +499,7 @@
   opacity: 0.95;
 }
 
-#collection-experience .hero-title {
+.hero-title {
   margin: 0;
   font-family: var(--font-heading);
   font-size: clamp(3.8rem, 11vw, 9.5rem);
@@ -500,7 +512,7 @@
     0 0 90px rgba(8, 7, 6, 0.75);
 }
 
-#collection-experience .hero-statement {
+.hero-statement {
   margin: 1.5rem 0 2.25rem;
   max-width: 620px;
   font-family: var(--font-script);
@@ -510,7 +522,7 @@
   text-shadow: 0 2px 20px rgba(0, 0, 0, 0.9);
 }
 
-#collection-experience .hero-explore-btn {
+.hero-explore-btn {
   pointer-events: auto;
   display: inline-flex;
   align-items: center;
@@ -530,7 +542,7 @@
   transition: all 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
-#collection-experience .hero-explore-btn:hover {
+.hero-explore-btn:hover {
   background: #FAF6F1;
   color: #120e0c;
   border-color: #FAF6F1;
@@ -538,17 +550,17 @@
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
 }
 
-#collection-experience .hero-arrow {
+.hero-arrow {
   display: inline-block;
   transition: transform 0.3s ease;
 }
 
-#collection-experience .hero-explore-btn:hover .hero-arrow {
+.hero-explore-btn:hover .hero-arrow {
   transform: translateY(3px);
 }
 
 /* ── Collection Navigation Bar ────────────────────────────────── */
-#collection-experience .collection-nav-bar {
+.collection-nav-bar {
   background: var(--color-background);
   border-bottom: 1px solid var(--color-border);
   position: relative;
@@ -556,23 +568,28 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  #collection-experience .drift-wall__plane, #collection-experience .drift-wall__track {
+  .drift-wall__plane,
+  .drift-wall__track {
     will-change: auto;
   }
 }
 
 @media (max-width: 768px) {
-  #collection-experience .hero-section {
+  .hero-section {
     height: 80vh;
     min-height: 520px;
   }
-  #collection-experience .drift-wall {
+  .drift-wall {
     --dw-tile-w: 160px;
     --dw-tile-h: 220px;
     --dw-gap: 12px;
     --dw-lift: 40px;
   }
-  #collection-experience .hero-title {
+  .drift-wall__plane {
+    margin-left: -430px;
+    margin-top: -350px;
+  }
+  .hero-title {
     font-size: clamp(3rem, 14vw, 5.5rem);
   }
 }
@@ -584,17 +601,17 @@
    NOCTURNE COLLECTION: ACCORDION GALLERY & STORY
    ------------------------------------------------------------------- */
 
-#collection-experience .collection-showcase-section {
+.collection-showcase-section {
   padding-bottom: clamp(4rem, 8vw, 8rem);
   background: var(--color-background);
 }
 
-#collection-experience .accordion-gallery-container {
+.accordion-gallery-container {
   padding-top: clamp(2rem, 4vw, 3.5rem);
   padding-bottom: clamp(2.5rem, 5vw, 4rem);
 }
 
-#collection-experience .accordion-gallery {
+.accordion-gallery {
   --ag-accent: var(--ekkomi-gold-muted, #B89B72);
   --ag-overlay: #0d0a09;
   --ag-text: #FAF6F1;
@@ -612,7 +629,7 @@
   height: clamp(480px, 56vw, 620px);
 }
 
-#collection-experience .ag-panel {
+.ag-panel {
   touch-action: pan-y;
   position: relative;
   flex: 1 1 0;
@@ -632,20 +649,20 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-#collection-experience .ag-panel:focus-visible {
+.ag-panel:focus-visible {
   box-shadow:
     0 0 0 2px var(--ag-accent),
     0 16px 40px -18px rgba(0, 0, 0, 0.75);
 }
 
-#collection-experience .ag-panel__frame {
+.ag-panel__frame {
   position: absolute;
   inset: 0;
   overflow: hidden;
   border-radius: inherit;
 }
 
-#collection-experience .ag-panel__media {
+.ag-panel__media {
   --ag-gray: 1;
   --ag-dim: 0.35;
   position: absolute;
@@ -657,7 +674,7 @@
   will-change: transform, filter;
 }
 
-#collection-experience .ag-panel__media img {
+.ag-panel__media img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -667,7 +684,7 @@
   -webkit-user-drag: none;
 }
 
-#collection-experience .ag-panel__overlay {
+.ag-panel__overlay {
   position: absolute;
   inset: 0;
   pointer-events: none;
@@ -676,7 +693,7 @@
     rgba(13, 10, 9, calc(var(--ag-dim, 0.35)));
 }
 
-#collection-experience .ag-panel__label {
+.ag-panel__label {
   position: absolute;
   left: clamp(14px, 2.5vw, 24px);
   bottom: clamp(16px, 2.8vw, 26px);
@@ -688,7 +705,7 @@
   z-index: 2;
 }
 
-#collection-experience .ag-panel__bar {
+.ag-panel__bar {
   flex: 0 0 auto;
   width: 3.5px;
   height: 32px;
@@ -698,7 +715,7 @@
   box-shadow: 0 0 14px rgba(184, 155, 114, 0.65);
 }
 
-#collection-experience .ag-panel__text {
+.ag-panel__text {
   color: var(--ag-text);
   font-family: var(--font-sans);
   font-weight: 500;
@@ -714,24 +731,22 @@
   text-shadow: 0 2px 14px rgba(0, 0, 0, 0.7);
 }
 
-#collection-experience .ag-label-title {
+.ag-label-title {
   font-size: clamp(0.95rem, 1.3vw, 1.25rem);
   font-weight: normal;
   color: #FAF6F1;
 }
 
-#collection-experience .ag-label-sub {
-  font-size: 10px;
-  letter-spacing: 0.14em;
-  color: var(--ekkomi-gold-muted, #B89B72);
+.ag-label-sub {
+  display: none !important;
 }
 
 /* ── Showcase Details Grid (Story & Craftsmanship) ─────────────── */
-#collection-experience .showcase-details-container {
+.showcase-details-container {
   padding-bottom: clamp(2rem, 4vw, 4rem);
 }
 
-#collection-experience .showcase-details-grid {
+.showcase-details-grid {
   display: grid;
   grid-template-columns: clamp(160px, 22vw, 260px) 1fr;
   gap: clamp(2rem, 5vw, 5.5rem);
@@ -739,7 +754,7 @@
   border-top: 1px solid var(--color-border);
 }
 
-#collection-experience .product-meta {
+.product-meta {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -748,7 +763,7 @@
   border-bottom: none;
   transition: opacity var(--motion-fast), transform var(--motion-fast);
 }
-#collection-experience .product-meta p:last-child {
+.product-meta p:last-child {
   color: var(--color-muted);
   font-family: var(--font-sans);
   font-size: 11px;
@@ -757,7 +772,7 @@
   margin: 0;
 }
 
-#collection-experience .showcase-content {
+.showcase-content {
   display: flex;
   flex-direction: column;
   padding: 0;
@@ -765,54 +780,55 @@
 }
 
 @media (max-width: 640px) {
-  #collection-experience .accordion-gallery {
+  .accordion-gallery {
     flex-direction: column;
     perspective: 1200px;
     height: clamp(520px, 75vh, 620px) !important;
     gap: 8px;
   }
-  #collection-experience .ag-panel {
+  .ag-panel {
   touch-action: pan-y;
     min-height: 52px;
     touch-action: manipulation;
     will-change: flex-grow, transform;
   }
-  #collection-experience .ag-panel--active {
+  .ag-panel--active {
     min-height: 260px;
   }
-  #collection-experience .accordion-gallery .ag-panel__media {
+  .accordion-gallery .ag-panel__media {
     width: 100%;
     height: var(--ag-media-size);
   }
-  #collection-experience .ag-panel__label {
+  .ag-panel__label {
     left: 16px;
     bottom: 14px;
     right: 16px;
     gap: 10px;
   }
-  #collection-experience .ag-panel__bar {
+  .ag-panel__bar {
     width: 3px;
     height: 22px;
   }
-  #collection-experience .ag-label-title {
+  .ag-label-title {
     font-size: 0.95rem;
     letter-spacing: 0.1em;
   }
-  #collection-experience .ag-label-sub {
+  .ag-label-sub {
     font-size: 9px;
   }
-  #collection-experience .showcase-details-grid {
+  .showcase-details-grid {
     grid-template-columns: 1fr;
     gap: 1.5rem;
   }
 }
 
-#collection-experience .product-meta.is-changing, #collection-experience .showcase-content.is-changing {
+.product-meta.is-changing,
+.showcase-content.is-changing {
   opacity: 0;
   transform: translateY(6px);
 }
 
-#collection-experience .showcase-content h2 {
+.showcase-content h2 {
   max-width: 640px;
   margin: clamp(2.4rem, 4vw, 4.5rem) 0 1.8rem;
   font-family: var(--font-script);
@@ -824,7 +840,7 @@
   color: var(--color-text);
 }
 
-#collection-experience .product-narrative {
+.product-narrative {
   max-width: 620px;
   color: #3b2c28;
   font-family: var(--font-body);
@@ -834,19 +850,19 @@
   margin-bottom: clamp(2.2rem, 4vw, 3.8rem);
 }
 
-#collection-experience .details-list {
+.details-list {
   margin: 0;
   max-width: 620px;
   border-top: 1px solid var(--color-border);
 }
-#collection-experience .details-list div {
+.details-list div {
   display: grid;
   grid-template-columns: 140px 1fr;
   gap: 1.5rem;
   padding: 1.25rem 0;
   border-bottom: 1px solid var(--color-border);
 }
-#collection-experience .details-list dt {
+.details-list dt {
   text-transform: uppercase;
   letter-spacing: .14em;
   font-family: var(--font-sans);
@@ -854,7 +870,7 @@
   font-weight: normal;
   color: var(--color-text);
 }
-#collection-experience .details-list dd {
+.details-list dd {
   margin: 0;
   font-size: 15.5px;
   line-height: 1.7;
@@ -862,7 +878,7 @@
 }
 
 /* VIEW PRODUCT link — animated arrow on hover (FAULT 8) */
-#collection-experience .text-link {
+.text-link {
   margin-top: clamp(2.5rem, 5vw, 5rem);
   display: inline-flex;
   align-items: center;
@@ -878,16 +894,16 @@
   color: var(--color-accent);
   transition: opacity var(--motion), gap var(--motion), color var(--motion);
 }
-#collection-experience .text-link .arrow {
+.text-link .arrow {
   display: inline-block;
   transition: transform var(--motion);
 }
-#collection-experience .text-link:hover {
+.text-link:hover {
   gap: 1rem;
   color: var(--color-accent-deep);
   border-bottom-color: var(--color-accent-deep);
 }
-#collection-experience .text-link:hover .arrow {
+.text-link:hover .arrow {
   transform: translateX(4px);
 }
 
@@ -900,14 +916,14 @@
    SITE FOOTER (EXACT EDITORIAL REPLICA — EKKOMI BRAND PALETTE)
    =================================================================== */
 
-#collection-experience .site-footer {
+.site-footer {
   background: #14100e;
   border-top: 1px solid rgba(250, 246, 241, 0.08);
   padding: clamp(2.5rem, 5vw, 4rem) 0;
   color: #FAF6F1;
 }
 
-#collection-experience .footer-inner {
+.footer-inner {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -915,13 +931,13 @@
   flex-wrap: wrap;
 }
 
-#collection-experience .footer-col-brand {
+.footer-col-brand {
   display: flex;
   flex-direction: column;
   gap: 0.65rem;
 }
 
-#collection-experience .footer-wordmark {
+.footer-wordmark {
   font-family: var(--font-sans);
   font-size: clamp(1.4rem, 2.6vw, 1.75rem);
   letter-spacing: 0.22em;
@@ -931,7 +947,7 @@
   line-height: 1;
 }
 
-#collection-experience .footer-copyright {
+.footer-copyright {
   font-family: var(--font-sans);
   font-size: 10px;
   letter-spacing: 0.08em;
@@ -939,14 +955,14 @@
   margin: 0;
 }
 
-#collection-experience .footer-col-links {
+.footer-col-links {
   display: flex;
   align-items: center;
   gap: clamp(1.6rem, 3.5vw, 3rem);
   flex-wrap: wrap;
 }
 
-#collection-experience .footer-link {
+.footer-link {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -955,36 +971,36 @@
   transition: color var(--motion), opacity var(--motion);
 }
 
-#collection-experience .footer-link-ig {
+.footer-link-ig {
   font-family: var(--font-sans);
   font-size: 11px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
 
-#collection-experience .footer-link-email {
+.footer-link-email {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   font-size: 11.5px;
   letter-spacing: 0.04em;
   text-transform: none;
 }
 
-#collection-experience .footer-link:hover {
+.footer-link:hover {
   color: #B89B72;
 }
 
-#collection-experience .footer-icon {
+.footer-icon {
   flex-shrink: 0;
   stroke: currentColor;
 }
 
 @media (max-width: 600px) {
-  #collection-experience .footer-inner {
+  .footer-inner {
     flex-direction: column;
     align-items: flex-start;
     gap: 1.8rem;
   }
-  #collection-experience .footer-col-links {
+  .footer-col-links {
     flex-direction: column;
     align-items: flex-start;
     gap: 1.1rem;
@@ -1001,34 +1017,34 @@
     --header-h: 64px;
   }
 
-  #collection-experience .site-header {
+  .site-header {
     height: var(--header-h);
     display: flex;
     justify-content: flex-end;
     align-items: center;
     position: relative;
   }
-  #collection-experience .header-detail { display: none; }
+  .header-detail { display: none; }
 
-  #collection-experience .wordmark {
+  .wordmark {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
   }
 
-  #collection-experience .wordmark-logo {
+  .wordmark-logo {
     height: 40px;
     margin: 0;
   }
 
-  #collection-experience .intro {
+  .intro {
     padding-top: 3.5rem;
     padding-bottom: 2.5rem;
     text-align: center;
   }
 
   /* NOCTURNE — fits comfortably at 375px with letter-spacing */
-  #collection-experience h1 {
+  h1 {
     font-size: clamp(2.6rem, 13vw, 5rem);
     margin-bottom: 1.8rem;
     letter-spacing: 0.12em;
@@ -1039,12 +1055,12 @@
     padding-right: 0.25rem;
   }
 
-  #collection-experience .eyebrow {
+  .eyebrow {
     text-align: center;
     font-size: 11px;
   }
 
-  #collection-experience .intro-statement {
+  .intro-statement {
     font-size: 1.25rem;
     margin-bottom: 2.5rem;
     margin-left: auto;
@@ -1054,34 +1070,34 @@
   }
 
   /* Bump up mobile product text sizes for readability */
-  #collection-experience .product-narrative {
+  .product-narrative {
     font-size: 18.5px;
     line-height: 1.8;
   }
 
-  #collection-experience .details-list dd {
+  .details-list dd {
     font-size: 15px;
     line-height: 1.65;
   }
 
-  #collection-experience .details-list dt {
+  .details-list dt {
     font-size: 11px;
   }
 
-  #collection-experience .text-link {
+  .text-link {
     font-size: 12px;
   }
 
-  #collection-experience .product-meta p {
+  .product-meta p {
     font-size: 11px;
   }
 
   /* Tab list: allow scroll on small screens */
-  #collection-experience .impulse-nav {
+  .impulse-nav {
     grid-template-columns: repeat(5, minmax(5.5rem, 1fr));
     scroll-snap-type: x mandatory;
   }
-  #collection-experience .impulse-button {
+  .impulse-button {
     min-height: 58px;
     padding: 1rem .5rem;
     border-bottom: 1px solid var(--color-border);
@@ -1089,7 +1105,7 @@
   }
 
   /* Stack showcase: meta → visual → content */
-  #collection-experience .showcase {
+  .showcase {
     grid-template-columns: 1fr;
     grid-template-rows: auto auto auto;
     grid-template-areas:
@@ -1098,12 +1114,12 @@
       "content";
   }
 
-  #collection-experience .product-meta {
+  .product-meta {
     padding: 2rem clamp(1.25rem, 5vw, 2.5rem) 1.25rem;
     border-bottom: 1px solid var(--color-border);
   }
 
-  #collection-experience .showcase-visual {
+  .showcase-visual {
     border-right: 0;
     border-bottom: 1px solid var(--color-border);
     min-height: auto;
@@ -1113,14 +1129,14 @@
     overflow: hidden;
   }
 
-  #collection-experience .jacket-stage {
+  .jacket-stage {
     padding: 0;
     width: 100%;
     height: clamp(440px, 120vw, 580px);
     min-height: auto;
   }
 
-  #collection-experience .visual-caption {
+  .visual-caption {
     display: block;
     top: 1rem;
     left: 1rem;
@@ -1128,7 +1144,7 @@
     font-size: 9px;
   }
 
-  #collection-experience #jacketImage {
+  #jacketImage {
     width: 100%;
     height: 100%;
     max-width: 100%;
@@ -1137,7 +1153,7 @@
     object-position: center 20%;
   }
 
-  #collection-experience .gallery-pills {
+  .gallery-pills {
     position: absolute;
     bottom: 1rem;
     right: 0.75rem;
@@ -1153,38 +1169,38 @@
     padding: 0.35rem 0.55rem;
     z-index: 2;
   }
-  #collection-experience .gallery-pills::-webkit-scrollbar {
+  .gallery-pills::-webkit-scrollbar {
     display: none;
   }
 
-  #collection-experience .gallery-indicator-bar {
+  .gallery-indicator-bar {
     padding: 4px 2px;
   }
 
-  #collection-experience .gallery-indicator-bar .indicator-line {
+  .gallery-indicator-bar .indicator-line {
     width: 13px;
     height: 2px;
   }
 
-  #collection-experience .gallery-indicator-bar.is-active .indicator-line {
+  .gallery-indicator-bar.is-active .indicator-line {
     width: 22px;
   }
 
-  #collection-experience .gallery-nav-btn {
+  .gallery-nav-btn {
     opacity: 0.85;
     width: 38px;
     height: 38px;
   }
 
-  #collection-experience .gallery-prev-btn {
+  .gallery-prev-btn {
     left: 0.75rem;
   }
 
-  #collection-experience .gallery-next-btn {
+  .gallery-next-btn {
     right: 0.75rem;
   }
 
-  #collection-experience .showcase-arrows {
+  .showcase-arrows {
     position: absolute;
     bottom: 1rem;
     left: 1rem;
@@ -1192,21 +1208,21 @@
     z-index: 2;
   }
 
-  #collection-experience .round-button {
+  .round-button {
     height: 36px;
     width: 36px;
   }
 
-  #collection-experience .showcase-content {
+  .showcase-content {
     padding: 2.2rem clamp(1.25rem, 5vw, 2.5rem) 4rem;
   }
 
-  #collection-experience .showcase-content h2 {
+  .showcase-content h2 {
     margin: 0 0 1.5rem;
     font-size: clamp(2rem, 7.5vw, 2.75rem);
   }
 
-  #collection-experience .details-list div {
+  .details-list div {
     grid-template-columns: 1fr;
     gap: .35rem;
     padding: 1rem 0;
@@ -1222,28 +1238,29 @@
    ------------------------------------------------------------------- */
 
 @media (max-width: 400px) {
-  #collection-experience h1, #collection-experience .hero-title {
+  h1, .hero-title {
     font-size: clamp(2rem, 10.5vw, 2.8rem) !important;
     letter-spacing: 0.08em;
   }
 
-  #collection-experience .intro-statement {
+  .intro-statement {
     font-size: 1.1rem;
   }
 
-  #collection-experience .showcase-content h2 {
+  .showcase-content h2 {
     font-size: clamp(1.6rem, 6.5vw, 2.2rem);
   }
 
-  #collection-experience .impulse-button {
+  .impulse-button {
     font-size: 0.7rem;
   }
 
-  #collection-experience .header-detail {
+  .header-detail {
     display: none;
   }
 
-  #collection-experience .ic-label-left, #collection-experience .ic-label-right {
+  .ic-label-left,
+  .ic-label-right {
     font-size: 8.5px;
   }
 }
@@ -1258,20 +1275,22 @@
    ------------------------------------------------------------------- */
 
 @media (prefers-reduced-motion: reduce) {
-  #collection-experience *, #collection-experience *::before, #collection-experience *::after {
+  *, *::before, *::after {
     scroll-behavior: auto !important;
     transition-duration: .01ms !important;
     animation-duration:  .01ms !important;
   }
 
   /* Keep is-changing at full opacity — no visual jump */
-  #collection-experience .jacket-stage.is-changing #jacketImage, #collection-experience .product-meta.is-changing, #collection-experience .showcase-content.is-changing {
+  .jacket-stage.is-changing #jacketImage,
+  .product-meta.is-changing,
+  .showcase-content.is-changing {
     opacity:   1 !important;
     transform: none !important;
   }
 
   /* Skeleton should not pulse */
-  #collection-experience .jacket-stage.is-loading::after {
+  .jacket-stage.is-loading::after {
     animation: none !important;
   }
 }
@@ -1281,13 +1300,13 @@
    DEDICATED PRODUCT DETAILS & GALLERIES FOR ALL 5 JACKETS
    =================================================================== */
 
-#collection-experience .jackets-collection-details {
+.jackets-collection-details {
   display: flex;
   flex-direction: column;
   width: 100%;
 }
 
-#collection-experience .jacket-detail-section {
+.jacket-detail-section {
   scroll-margin-top: calc(var(--header-h, 82px) + 24px);
   padding: clamp(4rem, 7vw, 7rem) 0;
   border-top: 1px solid var(--color-border);
@@ -1295,17 +1314,17 @@
   transition: background-color var(--motion);
 }
 
-#collection-experience .jacket-detail-section:first-child {
+.jacket-detail-section:first-child {
   border-top: none;
 }
 
-#collection-experience .jacket-detail-inner {
+.jacket-detail-inner {
   display: flex;
   flex-direction: column;
 }
 
 /* ── Editorial Header ───────────────────────────────────────────── */
-#collection-experience .jacket-editorial-header {
+.jacket-editorial-header {
   display: grid;
   grid-template-columns: clamp(220px, 26vw, 340px) 1fr;
   gap: clamp(2.5rem, 5vw, 5.5rem);
@@ -1313,7 +1332,7 @@
   align-items: start;
 }
 
-#collection-experience .jacket-meta-column {
+.jacket-meta-column {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -1322,7 +1341,7 @@
   top: calc(var(--header-h, 82px) + 24px);
 }
 
-#collection-experience .jacket-collection-eyebrow {
+.jacket-collection-eyebrow {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -1333,16 +1352,16 @@
   color: var(--color-muted);
 }
 
-#collection-experience .eyebrow-sep {
+.eyebrow-sep {
   color: var(--color-border);
 }
 
-#collection-experience .eyebrow-num {
+.eyebrow-num {
   color: var(--color-accent);
   font-weight: 500;
 }
 
-#collection-experience .jacket-name {
+.jacket-name {
   font-family: var(--font-sans);
   font-size: clamp(2.4rem, 4.2vw, 3.6rem);
   font-weight: normal;
@@ -1353,22 +1372,11 @@
   margin: 0.4rem 0 0.8rem;
 }
 
-#collection-experience .jacket-colour-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--font-sans);
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--color-text-secondary);
-  background: rgba(64, 48, 44, 0.05);
-  padding: 6px 14px;
-  border-radius: 20px;
-  border: 1px solid var(--color-border);
+.jacket-colour-tag {
+  display: none !important;
 }
 
-#collection-experience .colour-swatch {
+.colour-swatch {
   display: inline-block;
   width: 10px;
   height: 10px;
@@ -1377,12 +1385,12 @@
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15);
 }
 
-#collection-experience .jacket-story-column {
+.jacket-story-column {
   display: flex;
   flex-direction: column;
 }
 
-#collection-experience .jacket-headline {
+.jacket-headline {
   font-family: var(--font-script);
   font-weight: normal;
   font-size: clamp(2.2rem, 3.8vw, 3.4rem);
@@ -1392,7 +1400,7 @@
   max-width: 720px;
 }
 
-#collection-experience .jacket-narrative {
+.jacket-narrative {
   font-family: var(--font-body);
   font-size: clamp(18px, 1.25vw, 20.5px);
   line-height: 1.82;
@@ -1401,13 +1409,13 @@
   max-width: 680px;
 }
 
-#collection-experience .jacket-craft-list {
+.jacket-craft-list {
   margin: 0;
   max-width: 680px;
   border-top: 1px solid var(--color-border);
 }
 
-#collection-experience .craft-item {
+.craft-item {
   display: grid;
   grid-template-columns: 140px 1fr;
   gap: 1.5rem;
@@ -1415,7 +1423,7 @@
   border-bottom: 1px solid var(--color-border);
 }
 
-#collection-experience .craft-item dt {
+.craft-item dt {
   text-transform: uppercase;
   letter-spacing: 0.14em;
   font-family: var(--font-sans);
@@ -1424,7 +1432,7 @@
   color: var(--color-text);
 }
 
-#collection-experience .craft-item dd {
+.craft-item dd {
   margin: 0;
   font-family: var(--font-body);
   font-size: 15.5px;
@@ -1433,13 +1441,13 @@
 }
 
 /* ── Product Gallery ────────────────────────────────────────────── */
-#collection-experience .jacket-gallery-container {
+.jacket-gallery-container {
   display: flex;
   flex-direction: column;
   margin-top: 1rem;
 }
 
-#collection-experience .gallery-section-bar {
+.gallery-section-bar {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
@@ -1448,7 +1456,7 @@
   margin-bottom: clamp(1.8rem, 3vw, 2.5rem);
 }
 
-#collection-experience .gallery-heading {
+.gallery-heading {
   font-family: var(--font-sans);
   font-size: 11.5px;
   letter-spacing: 0.16em;
@@ -1458,7 +1466,7 @@
   margin: 0;
 }
 
-#collection-experience .gallery-counter-tag {
+.gallery-counter-tag {
   font-family: var(--font-sans);
   font-size: 10.5px;
   letter-spacing: 0.12em;
@@ -1466,7 +1474,7 @@
   color: var(--color-muted);
 }
 
-#collection-experience .jacket-gallery-editorial {
+.jacket-gallery-editorial {
   display: grid;
   grid-template-columns: minmax(320px, 460px) 1fr;
   gap: clamp(2rem, 4vw, 3.5rem);
@@ -1474,7 +1482,7 @@
 }
 
 /* Main Prominent Stage */
-#collection-experience .gallery-stage {
+.gallery-stage {
   position: sticky;
   top: calc(var(--header-h, 82px) + 24px);
   border-radius: 6px;
@@ -1484,14 +1492,14 @@
   border: 1px solid rgba(64, 48, 44, 0.18);
 }
 
-#collection-experience .gallery-stage__frame {
+.gallery-stage__frame {
   position: relative;
   aspect-ratio: 2 / 3;
   width: 100%;
   overflow: hidden;
 }
 
-#collection-experience .gallery-stage__img {
+.gallery-stage__img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -1502,12 +1510,12 @@
   transition: opacity 220ms cubic-bezier(.2, .7, .2, 1), transform 300ms cubic-bezier(.2, .7, .2, 1);
 }
 
-#collection-experience .gallery-stage.is-switching .gallery-stage__img {
+.gallery-stage.is-switching .gallery-stage__img {
   opacity: 0.2;
   transform: scale(0.985);
 }
 
-#collection-experience .gallery-stage__badge {
+.gallery-stage__badge {
   position: absolute;
   bottom: 16px;
   left: 16px;
@@ -1529,7 +1537,7 @@
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
 }
 
-#collection-experience .badge-indicator {
+.badge-indicator {
   width: 6px;
   height: 6px;
   border-radius: 50%;
@@ -1538,13 +1546,13 @@
 }
 
 /* Thumbs Grid */
-#collection-experience .gallery-views-grid {
+.gallery-views-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: clamp(14px, 2vw, 20px);
 }
 
-#collection-experience .gallery-view-card {
+.gallery-view-card {
   border: none;
   background: transparent;
   padding: 0;
@@ -1558,11 +1566,11 @@
   transition: transform var(--motion);
 }
 
-#collection-experience .gallery-view-card:focus-visible .view-card__frame {
+.gallery-view-card:focus-visible .view-card__frame {
   box-shadow: 0 0 0 2px var(--color-accent);
 }
 
-#collection-experience .view-card__frame {
+.view-card__frame {
   position: relative;
   aspect-ratio: 2 / 3;
   border-radius: 4px;
@@ -1572,7 +1580,7 @@
   transition: border-color var(--motion), box-shadow var(--motion), transform var(--motion);
 }
 
-#collection-experience .view-card__img {
+.view-card__img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -1583,31 +1591,31 @@
   transition: transform 450ms cubic-bezier(.2, .7, .2, 1);
 }
 
-#collection-experience .gallery-view-card:hover .view-card__img {
+.gallery-view-card:hover .view-card__img {
   transform: scale(1.05);
 }
 
-#collection-experience .view-card__overlay {
+.view-card__overlay {
   position: absolute;
   inset: 0;
   background: rgba(13, 10, 9, 0.12);
   transition: opacity var(--motion);
 }
 
-#collection-experience .gallery-view-card:hover .view-card__overlay {
+.gallery-view-card:hover .view-card__overlay {
   opacity: 0;
 }
 
-#collection-experience .gallery-view-card.is-active .view-card__frame {
+.gallery-view-card.is-active .view-card__frame {
   border-color: var(--color-accent);
   box-shadow: 0 0 0 2px var(--color-accent), 0 8px 24px -6px rgba(119, 58, 60, 0.35);
 }
 
-#collection-experience .gallery-view-card.is-active .view-card__overlay {
+.gallery-view-card.is-active .view-card__overlay {
   opacity: 0;
 }
 
-#collection-experience .view-card__info {
+.view-card__info {
   display: flex;
   align-items: baseline;
   gap: 6px;
@@ -1618,24 +1626,24 @@
   color: var(--color-text-secondary);
 }
 
-#collection-experience .view-card__index {
+.view-card__index {
   color: var(--color-muted);
   font-size: 9.5px;
 }
 
-#collection-experience .gallery-view-card.is-active .view-card__info {
+.gallery-view-card.is-active .view-card__info {
   color: var(--color-accent);
   font-weight: 500;
 }
 
 /* Section Return Navigation */
-#collection-experience .jacket-section-nav {
+.jacket-section-nav {
   margin-top: clamp(2.5rem, 4vw, 4rem);
   display: flex;
   justify-content: flex-end;
 }
 
-#collection-experience .nav-back-link {
+.nav-back-link {
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
@@ -1650,56 +1658,56 @@
   transition: color var(--motion), gap var(--motion), border-color var(--motion);
 }
 
-#collection-experience .nav-back-link .arrow-up {
+.nav-back-link .arrow-up {
   display: inline-block;
   transition: transform var(--motion);
 }
 
-#collection-experience .nav-back-link:hover {
+.nav-back-link:hover {
   color: var(--color-accent);
   gap: 0.85rem;
   border-bottom-color: var(--color-accent);
 }
 
-#collection-experience .nav-back-link:hover .arrow-up {
+.nav-back-link:hover .arrow-up {
   transform: translateY(-3px);
 }
 
 /* Responsive adjustments */
 @media (max-width: 900px) {
-  #collection-experience .jacket-editorial-header {
+  .jacket-editorial-header {
     grid-template-columns: 1fr;
     gap: 1.8rem;
   }
-  #collection-experience .jacket-meta-column {
+  .jacket-meta-column {
     position: static;
   }
-  #collection-experience .jacket-gallery-editorial {
+  .jacket-gallery-editorial {
     grid-template-columns: 1fr;
     gap: 2rem;
   }
-  #collection-experience .gallery-stage {
+  .gallery-stage {
     position: static;
     max-width: 480px;
     margin: 0 auto;
     width: 100%;
   }
-  #collection-experience .gallery-views-grid {
+  .gallery-views-grid {
     grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
     gap: 12px;
   }
 }
 
 @media (max-width: 480px) {
-  #collection-experience .gallery-views-grid {
+  .gallery-views-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
   }
-  #collection-experience .craft-item {
+  .craft-item {
     grid-template-columns: 1fr;
     gap: 0.4rem;
   }
-  #collection-experience .gallery-stage__badge {
+  .gallery-stage__badge {
     bottom: 12px;
     left: 12px;
     padding: 5px 12px;
@@ -1712,7 +1720,7 @@
    DUAL COLLECTION STYLES: MEN'S & WOMEN'S
    =================================================================== */
 
-#collection-experience .collection-gender-switch {
+.collection-gender-switch {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1720,7 +1728,7 @@
   padding: 0.85rem 0;
 }
 
-#collection-experience .gender-switch-btn {
+.gender-switch-btn {
   min-height: 44px;
   touch-action: manipulation;
   background: transparent;
@@ -1742,23 +1750,23 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-#collection-experience .gender-switch-btn:hover {
+.gender-switch-btn:hover {
   color: var(--color-text);
   background: rgba(64, 48, 44, 0.05);
 }
 
-#collection-experience .gender-switch-btn.is-active {
+.gender-switch-btn.is-active {
   color: var(--ekkomi-cream);
   background: var(--color-accent);
   border-color: var(--color-accent);
   box-shadow: 0 4px 14px rgba(119, 58, 60, 0.28);
 }
 
-#collection-experience .gender-label {
+.gender-label {
   font-weight: 500;
 }
 
-#collection-experience .gender-badge {
+.gender-badge {
   font-size: 9.5px;
   letter-spacing: 0.1em;
   opacity: 0.85;
@@ -1767,25 +1775,25 @@
   background: rgba(255, 255, 255, 0.15);
 }
 
-#collection-experience .gender-switch-btn:not(.is-active) .gender-badge {
+.gender-switch-btn:not(.is-active) .gender-badge {
   background: rgba(64, 48, 44, 0.08);
 }
 
-#collection-experience .gender-switch-divider {
+.gender-switch-divider {
   color: var(--color-border);
   font-size: 13px;
   user-select: none;
 }
 
 /* Department Headers */
-#collection-experience .collection-department-header {
+.collection-department-header {
   padding-top: clamp(3rem, 5vw, 5rem);
   padding-bottom: clamp(1rem, 2vw, 1.8rem);
   text-align: center;
   scroll-margin-top: calc(var(--header-h, 82px) + 50px);
 }
 
-#collection-experience .department-header-inner {
+.department-header-inner {
   max-width: 680px;
   margin: 0 auto;
   display: flex;
@@ -1793,7 +1801,7 @@
   align-items: center;
 }
 
-#collection-experience .department-eyebrow {
+.department-eyebrow {
   font-family: var(--font-sans);
   font-size: 10.5px;
   letter-spacing: 0.2em;
@@ -1802,7 +1810,7 @@
   margin-bottom: 0.4rem;
 }
 
-#collection-experience .department-title {
+.department-title {
   font-family: var(--font-sans);
   font-size: clamp(1.4rem, 4vw, 3.2rem);
   font-weight: normal;
@@ -1814,7 +1822,7 @@
   text-align: center;
 }
 
-#collection-experience .department-subtitle {
+.department-subtitle {
   font-family: var(--font-script);
   font-size: clamp(1.6rem, 2.6vw, 2.2rem);
   line-height: 1.25;
@@ -1823,7 +1831,7 @@
 }
 
 /* Subtle separator between Men's and Women's departments */
-#collection-experience .department-separator {
+.department-separator {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1833,19 +1841,19 @@
   padding: 0 2rem;
 }
 
-#collection-experience .separator-line {
+.separator-line {
   flex: 1;
   height: 1px;
   background: var(--color-border);
 }
 
-#collection-experience .separator-emblem {
+.separator-emblem {
   color: var(--ekkomi-gold-muted, #B89B72);
   font-size: 14px;
 }
 
 /* Gallery production note for pending shots */
-#collection-experience .gallery-production-note {
+.gallery-production-note {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -1862,7 +1870,7 @@
   align-self: flex-start;
 }
 
-#collection-experience .gallery-production-note .note-dot {
+.gallery-production-note .note-dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
@@ -1871,24 +1879,24 @@
 
 /* Responsive adjustments */
 @media (max-width: 600px) {
-  #collection-experience .collection-gender-switch {
+  .collection-gender-switch {
     gap: 0.8rem;
     padding: 0.6rem 0;
   }
-  #collection-experience .gender-switch-btn {
+  .gender-switch-btn {
   min-height: 44px;
   touch-action: manipulation;
     padding: 6px 12px;
     font-size: 9.5px;
   }
-  #collection-experience .gender-badge {
+  .gender-badge {
     display: none;
   }
-  #collection-experience .department-title {
+  .department-title {
     font-size: clamp(1.2rem, 5.2vw, 1.6rem);
     letter-spacing: 0.08em;
   }
-  #collection-experience .department-subtitle {
+  .department-subtitle {
     font-size: clamp(1.15rem, 4.5vw, 1.5rem);
   }
 }
@@ -1898,7 +1906,7 @@
    PRODUCTION PENDING & EDITORIAL PLACEHOLDER (LUXURY CURATION)
    =================================================================== */
 
-#collection-experience .gallery-stage--placeholder {
+.gallery-stage--placeholder {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1911,7 +1919,7 @@
   box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.5);
 }
 
-#collection-experience .gallery-stage__placeholder {
+.gallery-stage__placeholder {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1919,7 +1927,7 @@
   margin: 0 auto;
 }
 
-#collection-experience .stage-placeholder__icon {
+.stage-placeholder__icon {
   width: clamp(140px, 20vw, 200px);
   height: auto;
   margin-bottom: 24px;
@@ -1928,11 +1936,11 @@
   transition: transform 0.4s var(--ease-out);
 }
 
-#collection-experience .stage-placeholder__icon:hover {
+.stage-placeholder__icon:hover {
   transform: translateY(-4px) scale(1.02);
 }
 
-#collection-experience .stage-placeholder__tag {
+.stage-placeholder__tag {
   display: inline-block;
   font-family: var(--font-sans);
   font-size: 0.6875rem;
@@ -1947,7 +1955,7 @@
   margin-bottom: 16px;
 }
 
-#collection-experience .stage-placeholder__title {
+.stage-placeholder__title {
   font-family: var(--font-display);
   font-size: clamp(1.5rem, 2.8vw, 2.2rem);
   font-weight: 300;
@@ -1957,7 +1965,7 @@
   line-height: 1.2;
 }
 
-#collection-experience .stage-placeholder__desc {
+.stage-placeholder__desc {
   font-family: var(--font-serif);
   font-size: clamp(0.9375rem, 1.2vw, 1.0625rem);
   line-height: 1.6;
@@ -1965,7 +1973,7 @@
   margin: 0 0 24px;
 }
 
-#collection-experience .stage-placeholder__requirements {
+.stage-placeholder__requirements {
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -1977,7 +1985,7 @@
   text-align: left;
 }
 
-#collection-experience .stage-placeholder__requirements strong {
+.stage-placeholder__requirements strong {
   font-family: var(--font-sans);
   font-size: 0.6875rem;
   letter-spacing: 0.18em;
@@ -1986,7 +1994,7 @@
   margin-bottom: 4px;
 }
 
-#collection-experience .stage-placeholder__requirements span {
+.stage-placeholder__requirements span {
   font-family: var(--font-sans);
   font-size: 0.75rem;
   color: rgba(250, 246, 241, 0.65);
@@ -1994,17 +2002,17 @@
 }
 
 /* Placeholder Cards in View Grid */
-#collection-experience .gallery-view-card--placeholder {
+.gallery-view-card--placeholder {
   cursor: default;
   opacity: 0.75;
 }
 
-#collection-experience .gallery-view-card--placeholder:hover {
+.gallery-view-card--placeholder:hover {
   opacity: 0.95;
   transform: none;
 }
 
-#collection-experience .view-card__frame--placeholder {
+.view-card__frame--placeholder {
   position: relative;
   aspect-ratio: 2 / 3;
   width: 100%;
@@ -2020,13 +2028,13 @@
   overflow: hidden;
 }
 
-#collection-experience .view-card__placeholder-icon {
+.view-card__placeholder-icon {
   width: 52px;
   height: auto;
   opacity: 0.85;
 }
 
-#collection-experience .view-card__placeholder-tag {
+.view-card__placeholder-tag {
   font-family: var(--font-sans);
   font-size: 0.625rem;
   letter-spacing: 0.14em;
@@ -2040,22 +2048,22 @@
    OPTION A: DEPARTMENT TABS & DYNAMIC PRODUCT SHOWCASE STYLING
    =================================================================== */
 
-#collection-experience .collection-department-block {
+.collection-department-block {
   transition: opacity 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
-#collection-experience .collection-department-block.is-hidden {
+.collection-department-block.is-hidden {
   display: none !important;
   opacity: 0;
 }
 
-#collection-experience .collection-department-block.is-active {
+.collection-department-block.is-active {
   display: block;
   opacity: 1;
 }
 
 /* Dynamic Showcase Transitions */
-#collection-experience .dynamic-product-showcase {
+.dynamic-product-showcase {
   border-top: 1px solid var(--color-border);
   padding: clamp(2rem, 3.5vw, 3rem) 0;
   margin-top: 1rem;
@@ -2066,12 +2074,12 @@
   width: 100%;
 }
 
-#collection-experience .dynamic-product-showcase.is-updating {
+.dynamic-product-showcase.is-updating {
   opacity: 0;
   transform: translateY(8px);
 }
 
-#collection-experience .showcase-container {
+.showcase-container {
   width: 100%;
   max-width: var(--container-w, 1400px);
   margin: 0 auto;
@@ -2083,7 +2091,7 @@
    UNIFIED DYNAMIC PRODUCT SHOWCASE (SIDE-BY-SIDE EDITORIAL)
    =================================================================== */
 
-#collection-experience .showcase-unified-grid {
+.showcase-unified-grid {
   display: grid;
   grid-template-columns: minmax(320px, 440px) 1fr;
   gap: clamp(2rem, 4.5vw, 4.5rem);
@@ -2091,14 +2099,14 @@
 }
 
 /* Left Column: Sticky Hero Stage Gallery */
-#collection-experience .showcase-stage-col {
+.showcase-stage-col {
   position: sticky;
   top: calc(var(--header-h, 82px) + 54px + 16px);
   z-index: 10;
   width: 100%;
 }
 
-#collection-experience .showcase-stage-col .gallery-stage {
+.showcase-stage-col .gallery-stage {
   width: 100%;
   max-width: 440px;
   border-radius: 6px;
@@ -2109,7 +2117,7 @@
   margin: 0;
 }
 
-#collection-experience .showcase-stage-col .gallery-stage__frame {
+.showcase-stage-col .gallery-stage__frame {
   position: relative;
   aspect-ratio: 2 / 3;
   width: 100%;
@@ -2117,7 +2125,7 @@
   background: #0f0c0a;
 }
 
-#collection-experience .showcase-stage-col .gallery-stage__img {
+.showcase-stage-col .gallery-stage__img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -2128,12 +2136,12 @@
   transition: opacity 220ms cubic-bezier(.2, .7, .2, 1), transform 300ms cubic-bezier(.2, .7, .2, 1);
 }
 
-#collection-experience .showcase-stage-col .gallery-stage.is-switching .gallery-stage__img {
+.showcase-stage-col .gallery-stage.is-switching .gallery-stage__img {
   opacity: 0.25;
   transform: scale(0.985);
 }
 
-#collection-experience .showcase-stage-col .gallery-stage__badge {
+.showcase-stage-col .gallery-stage__badge {
   position: absolute;
   bottom: 16px;
   left: 16px;
@@ -2155,7 +2163,7 @@
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
 }
 
-#collection-experience .badge-indicator {
+.badge-indicator {
   width: 6px;
   height: 6px;
   border-radius: 50%;
@@ -2164,13 +2172,13 @@
 }
 
 /* Right Column: Unified Story, Perspectives & Craftsmanship */
-#collection-experience .showcase-narrative-col {
+.showcase-narrative-col {
   display: flex;
   flex-direction: column;
   min-width: 0;
 }
 
-#collection-experience .showcase-meta-bar {
+.showcase-meta-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -2179,7 +2187,7 @@
   gap: 12px;
 }
 
-#collection-experience .showcase-narrative-col .jacket-collection-eyebrow {
+.showcase-narrative-col .jacket-collection-eyebrow {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -2190,16 +2198,16 @@
   color: var(--color-muted);
 }
 
-#collection-experience .showcase-narrative-col .eyebrow-sep {
+.showcase-narrative-col .eyebrow-sep {
   color: var(--color-border);
 }
 
-#collection-experience .showcase-narrative-col .eyebrow-num {
+.showcase-narrative-col .eyebrow-num {
   color: var(--color-accent);
   font-weight: 500;
 }
 
-#collection-experience .showcase-narrative-col .jacket-quick-nav {
+.showcase-narrative-col .jacket-quick-nav {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -2209,7 +2217,7 @@
   padding: 3px 10px;
 }
 
-#collection-experience .quick-nav-btn {
+.quick-nav-btn {
   background: transparent;
   border: none;
   color: var(--color-text);
@@ -2224,18 +2232,18 @@
   justify-content: center;
 }
 
-#collection-experience .quick-nav-btn:hover {
+.quick-nav-btn:hover {
   color: var(--color-accent);
 }
 
-#collection-experience .quick-nav-counter {
+.quick-nav-counter {
   font-family: var(--font-sans);
   font-size: 10px;
   letter-spacing: 0.12em;
   color: var(--color-muted);
 }
 
-#collection-experience .showcase-narrative-col .jacket-title-row {
+.showcase-narrative-col .jacket-title-row {
   display: flex;
   align-items: center;
   gap: 16px;
@@ -2243,7 +2251,7 @@
   margin: 0.2rem 0 1rem;
 }
 
-#collection-experience .showcase-narrative-col .jacket-name {
+.showcase-narrative-col .jacket-name {
   font-family: var(--font-sans);
   font-size: clamp(2.4rem, 4vw, 3.4rem);
   font-weight: normal;
@@ -2254,7 +2262,7 @@
   margin: 0;
 }
 
-#collection-experience .showcase-narrative-col .jacket-colour-tag {
+.showcase-narrative-col .jacket-colour-tag {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -2269,7 +2277,7 @@
   border: 1px solid var(--color-border);
 }
 
-#collection-experience .colour-swatch {
+.colour-swatch {
   display: inline-block;
   width: 10px;
   height: 10px;
@@ -2278,7 +2286,7 @@
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15);
 }
 
-#collection-experience .showcase-narrative-col .jacket-headline {
+.showcase-narrative-col .jacket-headline {
   font-family: var(--font-script);
   font-weight: normal;
   font-size: clamp(1.75rem, 2.5vw, 2.25rem);
@@ -2288,7 +2296,7 @@
   max-width: 640px;
 }
 
-#collection-experience .showcase-narrative-col .jacket-narrative {
+.showcase-narrative-col .jacket-narrative {
   font-family: var(--font-body);
   font-size: clamp(15.5px, 1.05vw, 17px);
   line-height: 1.72;
@@ -2299,11 +2307,11 @@
 }
 
 /* Perspectives Section */
-#collection-experience .showcase-narrative-col .jacket-perspectives-block {
+.showcase-narrative-col .jacket-perspectives-block {
   margin-bottom: clamp(2rem, 3vw, 2.75rem);
 }
 
-#collection-experience .showcase-narrative-col .gallery-section-bar {
+.showcase-narrative-col .gallery-section-bar {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
@@ -2312,7 +2320,7 @@
   margin-bottom: 1.25rem;
 }
 
-#collection-experience .gallery-heading {
+.gallery-heading {
   font-family: var(--font-sans);
   font-size: 11.5px;
   letter-spacing: 0.16em;
@@ -2322,7 +2330,7 @@
   margin: 0;
 }
 
-#collection-experience .gallery-counter-tag {
+.gallery-counter-tag {
   font-family: var(--font-sans);
   font-size: 10.5px;
   letter-spacing: 0.12em;
@@ -2330,13 +2338,13 @@
   color: var(--color-muted);
 }
 
-#collection-experience .showcase-narrative-col .gallery-views-grid {
+.showcase-narrative-col .gallery-views-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(115px, 1fr));
   gap: 12px;
 }
 
-#collection-experience .gallery-view-card {
+.gallery-view-card {
   border: none;
   background: transparent;
   padding: 0;
@@ -2350,11 +2358,11 @@
   transition: transform var(--motion);
 }
 
-#collection-experience .gallery-view-card:focus-visible .view-card__frame {
+.gallery-view-card:focus-visible .view-card__frame {
   box-shadow: 0 0 0 2px var(--color-accent);
 }
 
-#collection-experience .view-card__frame {
+.view-card__frame {
   position: relative;
   aspect-ratio: 2 / 3;
   border-radius: 4px;
@@ -2364,7 +2372,7 @@
   transition: border-color var(--motion), box-shadow var(--motion), transform var(--motion);
 }
 
-#collection-experience .view-card__img {
+.view-card__img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -2375,36 +2383,36 @@
   transition: transform 450ms cubic-bezier(.2, .7, .2, 1);
 }
 
-#collection-experience .gallery-view-card:hover .view-card__frame {
+.gallery-view-card:hover .view-card__frame {
   border-color: rgba(119, 58, 60, 0.45);
   transform: translateY(-2px);
 }
 
-#collection-experience .gallery-view-card:hover .view-card__img {
+.gallery-view-card:hover .view-card__img {
   transform: scale(1.04);
 }
 
-#collection-experience .view-card__overlay {
+.view-card__overlay {
   position: absolute;
   inset: 0;
   background: rgba(13, 10, 9, 0.12);
   transition: opacity var(--motion);
 }
 
-#collection-experience .gallery-view-card:hover .view-card__overlay {
+.gallery-view-card:hover .view-card__overlay {
   opacity: 0;
 }
 
-#collection-experience .gallery-view-card.is-active .view-card__frame {
+.gallery-view-card.is-active .view-card__frame {
   border-color: var(--color-accent);
   box-shadow: 0 0 0 2px var(--color-accent), 0 8px 24px -6px rgba(119, 58, 60, 0.35);
 }
 
-#collection-experience .gallery-view-card.is-active .view-card__overlay {
+.gallery-view-card.is-active .view-card__overlay {
   opacity: 0;
 }
 
-#collection-experience .view-card__info {
+.view-card__info {
   display: flex;
   align-items: baseline;
   gap: 6px;
@@ -2415,24 +2423,24 @@
   color: var(--color-text-secondary);
 }
 
-#collection-experience .view-card__index {
+.view-card__index {
   color: var(--color-muted);
   font-size: 9.5px;
 }
 
-#collection-experience .gallery-view-card.is-active .view-card__info {
+.gallery-view-card.is-active .view-card__info {
   color: var(--color-accent);
   font-weight: 500;
 }
 
 /* Craftsmanship specifications */
-#collection-experience .showcase-narrative-col .jacket-craft-list {
+.showcase-narrative-col .jacket-craft-list {
   margin: 0 0 clamp(1.5rem, 2.5vw, 2.25rem);
   border-top: 1px solid var(--color-border);
   max-width: 640px;
 }
 
-#collection-experience .showcase-narrative-col .craft-item {
+.showcase-narrative-col .craft-item {
   display: grid;
   grid-template-columns: 125px 1fr;
   gap: 1.1rem;
@@ -2440,7 +2448,7 @@
   border-bottom: 1px solid var(--color-border);
 }
 
-#collection-experience .showcase-narrative-col .craft-item dt {
+.showcase-narrative-col .craft-item dt {
   text-transform: uppercase;
   letter-spacing: 0.16em;
   font-family: var(--font-sans);
@@ -2450,7 +2458,7 @@
   line-height: 1.5;
 }
 
-#collection-experience .showcase-narrative-col .craft-item dd {
+.showcase-narrative-col .craft-item dd {
   margin: 0;
   font-family: var(--font-body);
   font-size: 14px;
@@ -2459,7 +2467,7 @@
 }
 
 /* Understated Showcase Bottom Navigation */
-#collection-experience .showcase-bottom-nav {
+.showcase-bottom-nav {
   margin-top: clamp(2rem, 4vw, 3.5rem);
   padding-top: clamp(1.5rem, 3vw, 2.25rem);
   border-top: 1px solid var(--color-border);
@@ -2471,7 +2479,7 @@
   box-sizing: border-box;
 }
 
-#collection-experience .showcase-nav-btn {
+.showcase-nav-btn {
   background: transparent;
   border: 1px solid var(--color-border);
   border-radius: 30px;
@@ -2490,55 +2498,55 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-#collection-experience .showcase-nav-btn:hover {
+.showcase-nav-btn:hover {
   border-color: var(--color-accent);
   color: var(--color-accent);
   background: rgba(119, 58, 60, 0.04);
 }
 
-#collection-experience .showcase-nav-btn .nav-arrow {
+.showcase-nav-btn .nav-arrow {
   font-size: 14px;
   transition: transform var(--motion);
 }
 
-#collection-experience .prev-jacket-btn:hover .nav-arrow {
+.prev-jacket-btn:hover .nav-arrow {
   transform: translateX(-4px);
 }
 
-#collection-experience .next-jacket-btn:hover .nav-arrow {
+.next-jacket-btn:hover .nav-arrow {
   transform: translateX(4px);
 }
 
-#collection-experience .showcase-nav-btn .nav-label-wrap {
+.showcase-nav-btn .nav-label-wrap {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   text-align: left;
 }
 
-#collection-experience .next-jacket-btn .nav-label-wrap {
+.next-jacket-btn .nav-label-wrap {
   align-items: flex-end;
   text-align: right;
 }
 
-#collection-experience .nav-sub {
+.nav-sub {
   font-size: 9px;
   color: var(--color-muted);
   letter-spacing: 0.16em;
   line-height: 1.2;
 }
 
-#collection-experience .nav-jacket-name {
+.nav-jacket-name {
   font-weight: 500;
   color: var(--color-text);
   line-height: 1.3;
 }
 
-#collection-experience .showcase-nav-btn:hover .nav-jacket-name {
+.showcase-nav-btn:hover .nav-jacket-name {
   color: var(--color-accent);
 }
 
-#collection-experience .nav-back-link {
+.nav-back-link {
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
@@ -2553,68 +2561,68 @@
   transition: color var(--motion), gap var(--motion), border-color var(--motion);
 }
 
-#collection-experience .nav-back-link .arrow-up {
+.nav-back-link .arrow-up {
   display: inline-block;
   transition: transform var(--motion);
 }
 
-#collection-experience .nav-back-link:hover {
+.nav-back-link:hover {
   color: var(--color-accent);
   gap: 0.85rem;
   border-bottom-color: var(--color-accent);
 }
 
-#collection-experience .nav-back-link:hover .arrow-up {
+.nav-back-link:hover .arrow-up {
   transform: translateY(-3px);
 }
 
 /* Responsive adjustments */
 @media (max-width: 900px) {
-  #collection-experience .showcase-unified-grid {
+  .showcase-unified-grid {
     grid-template-columns: 1fr;
     gap: 2rem;
   }
-  #collection-experience .showcase-stage-col {
+  .showcase-stage-col {
     position: static !important;
   }
-  #collection-experience .showcase-stage-col .gallery-stage {
+  .showcase-stage-col .gallery-stage {
     max-width: 420px;
     margin: 0 auto;
   }
-  #collection-experience .showcase-narrative-col .gallery-views-grid {
+  .showcase-narrative-col .gallery-views-grid {
     grid-template-columns: repeat(auto-fill, minmax(105px, 1fr));
     gap: 10px;
   }
 }
 
 @media (max-width: 600px) {
-  #collection-experience .showcase-bottom-nav {
+  .showcase-bottom-nav {
     flex-direction: column;
     gap: 0.85rem;
     padding-top: 1.5rem;
   }
-  #collection-experience .showcase-nav-btn {
+  .showcase-nav-btn {
     width: 100%;
     box-sizing: border-box;
     justify-content: space-between;
     padding: 10px 16px;
     font-size: 10px;
   }
-  #collection-experience .showcase-bottom-nav .nav-back-link {
+  .showcase-bottom-nav .nav-back-link {
     order: -1;
     margin-bottom: 0.4rem;
   }
 }
 
 @media (max-width: 480px) {
-  #collection-experience .showcase-narrative-col .gallery-views-grid {
+  .showcase-narrative-col .gallery-views-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  #collection-experience .showcase-narrative-col .craft-item {
+  .showcase-narrative-col .craft-item {
     grid-template-columns: 1fr;
     gap: 0.35rem;
   }
-  #collection-experience .showcase-stage-col .gallery-stage__badge {
+  .showcase-stage-col .gallery-stage__badge {
     bottom: 12px;
     left: 12px;
     padding: 5px 12px;
@@ -2628,7 +2636,7 @@
    =================================================================== */
 
 /* Entry Buttons */
-#collection-experience .header-actions {
+.header-actions {
   grid-column: 3;
   justify-self: end;
   display: inline-flex;
@@ -2636,15 +2644,15 @@
   gap: clamp(8px, 1.5vw, 16px);
 }
 
-#collection-experience .waitlist-btn-text-short {
+.waitlist-btn-text-short {
   display: none;
 }
 
-#collection-experience .waitlist-btn-text-full {
+.waitlist-btn-text-full {
   display: inline;
 }
 
-#collection-experience .header-waitlist-btn {
+.header-waitlist-btn {
   background: transparent;
   border: 1px solid var(--color-border);
   border-radius: 30px;
@@ -2663,13 +2671,13 @@
   margin-right: 8px;
 }
 
-#collection-experience .header-waitlist-btn:hover {
+.header-waitlist-btn:hover {
   border-color: var(--color-accent);
   color: var(--color-accent);
   background: rgba(119, 58, 60, 0.04);
 }
 
-#collection-experience .showcase-waitlist-btn {
+.showcase-waitlist-btn {
   background: var(--color-text, #14100e);
   color: #FAF6F1;
   border: 1px solid var(--color-text, #14100e);
@@ -2691,14 +2699,14 @@
   box-sizing: border-box;
 }
 
-#collection-experience .showcase-waitlist-btn:hover {
+.showcase-waitlist-btn:hover {
   background: var(--color-accent, #773A3C);
   border-color: var(--color-accent, #773A3C);
   transform: translateY(-2px);
   box-shadow: 0 8px 24px -6px rgba(119, 58, 60, 0.4);
 }
 
-#collection-experience .hero-waitlist-btn {
+.hero-waitlist-btn {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -2718,19 +2726,19 @@
   margin-left: 12px;
 }
 
-#collection-experience .hero-waitlist-btn:hover {
+.hero-waitlist-btn:hover {
   background: var(--color-accent, #773A3C);
   border-color: var(--color-accent, #773A3C);
   transform: translateY(-2px);
 }
 
 /* Body Scroll Lock */
-body:has(#collection-experience.waitlist-open) {
+body.waitlist-open {
   overflow: hidden !important;
 }
 
 /* Modal Backdrop */
-#collection-experience .waitlist-modal-backdrop {
+.waitlist-modal-backdrop {
   position: fixed;
   inset: 0;
   background: rgba(13, 10, 9, 0.76);
@@ -2747,13 +2755,13 @@ body:has(#collection-experience.waitlist-open) {
   box-sizing: border-box;
 }
 
-#collection-experience .waitlist-modal-backdrop.is-active {
+.waitlist-modal-backdrop.is-active {
   opacity: 1;
   pointer-events: auto;
 }
 
 /* Modal Dialog */
-#collection-experience .waitlist-modal-dialog {
+.waitlist-modal-dialog {
   background: #FAF6F1;
   color: var(--color-text, #14100e);
   border: 1px solid rgba(64, 48, 44, 0.16);
@@ -2772,23 +2780,23 @@ body:has(#collection-experience.waitlist-open) {
   box-sizing: border-box;
 }
 
-#collection-experience .waitlist-modal-dialog::-webkit-scrollbar {
+.waitlist-modal-dialog::-webkit-scrollbar {
   width: 5px;
 }
-#collection-experience .waitlist-modal-dialog::-webkit-scrollbar-track {
+.waitlist-modal-dialog::-webkit-scrollbar-track {
   background: transparent;
 }
-#collection-experience .waitlist-modal-dialog::-webkit-scrollbar-thumb {
+.waitlist-modal-dialog::-webkit-scrollbar-thumb {
   background: rgba(64, 48, 44, 0.22);
   border-radius: 4px;
 }
 
-#collection-experience .waitlist-modal-backdrop.is-active .waitlist-modal-dialog {
+.waitlist-modal-backdrop.is-active .waitlist-modal-dialog {
   transform: translateY(0) scale(1);
 }
 
 /* Modal Navigation Header */
-#collection-experience .waitlist-modal-header {
+.waitlist-modal-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -2799,11 +2807,13 @@ body:has(#collection-experience.waitlist-open) {
 }
 
 /* Universal and Modal Hidden Utility */
-#collection-experience .is-hidden, #collection-experience .waitlist-step.is-hidden, #collection-experience .waitlist-back-btn.is-hidden {
+.is-hidden,
+.waitlist-step.is-hidden,
+.waitlist-back-btn.is-hidden {
   display: none !important;
 }
 
-#collection-experience .waitlist-back-btn {
+.waitlist-back-btn {
   background: transparent;
   border: none;
   font-family: var(--font-sans);
@@ -2820,11 +2830,11 @@ body:has(#collection-experience.waitlist-open) {
   z-index: 2;
 }
 
-#collection-experience .waitlist-back-btn:hover {
+.waitlist-back-btn:hover {
   color: var(--color-accent);
 }
 
-#collection-experience .waitlist-progress-dots {
+.waitlist-progress-dots {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -2834,7 +2844,7 @@ body:has(#collection-experience.waitlist-open) {
   z-index: 1;
 }
 
-#collection-experience .progress-dot {
+.progress-dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
@@ -2842,17 +2852,17 @@ body:has(#collection-experience.waitlist-open) {
   transition: all var(--motion);
 }
 
-#collection-experience .progress-dot.is-active {
+.progress-dot.is-active {
   width: 18px;
   border-radius: 10px;
   background: var(--color-accent);
 }
 
-#collection-experience .progress-dot.is-completed {
+.progress-dot.is-completed {
   background: var(--color-text);
 }
 
-#collection-experience .waitlist-close-btn {
+.waitlist-close-btn {
   background: rgba(64, 48, 44, 0.04);
   border: 1px solid var(--color-border);
   border-radius: 50%;
@@ -2869,7 +2879,7 @@ body:has(#collection-experience.waitlist-open) {
   z-index: 2;
 }
 
-#collection-experience .waitlist-close-btn:hover {
+.waitlist-close-btn:hover {
   border-color: var(--color-accent);
   color: var(--color-accent);
   background: rgba(119, 58, 60, 0.08);
@@ -2877,11 +2887,11 @@ body:has(#collection-experience.waitlist-open) {
 }
 
 /* Step Typography */
-#collection-experience .text-center {
+.text-center {
   text-align: center;
 }
 
-#collection-experience .waitlist-eyebrow {
+.waitlist-eyebrow {
   font-family: var(--font-sans);
   font-size: 10px;
   letter-spacing: 0.2em;
@@ -2890,7 +2900,7 @@ body:has(#collection-experience.waitlist-open) {
   margin: 0 0 0.5rem;
 }
 
-#collection-experience .waitlist-title {
+.waitlist-title {
   font-family: var(--font-sans);
   font-size: clamp(1.4rem, 2.5vw, 1.85rem);
   font-weight: normal;
@@ -2901,7 +2911,7 @@ body:has(#collection-experience.waitlist-open) {
   line-height: 1.15;
 }
 
-#collection-experience .waitlist-subtitle {
+.waitlist-subtitle {
   font-family: var(--font-body);
   font-size: 15.5px;
   line-height: 1.6;
@@ -2909,7 +2919,7 @@ body:has(#collection-experience.waitlist-open) {
   margin: 0 0 clamp(1.5rem, 3vw, 2.2rem);
 }
 
-#collection-experience .waitlist-primary-btn {
+.waitlist-primary-btn {
   background: var(--color-text, #14100e);
   color: #FAF6F1;
   border: 1px solid var(--color-text, #14100e);
@@ -2930,26 +2940,26 @@ body:has(#collection-experience.waitlist-open) {
   outline: none;
 }
 
-#collection-experience .waitlist-primary-btn:hover:not(:disabled) {
+.waitlist-primary-btn:hover:not(:disabled) {
   background: var(--color-accent, #773A3C);
   border-color: var(--color-accent, #773A3C);
   transform: translateY(-1px);
 }
 
-#collection-experience .waitlist-primary-btn:disabled {
+.waitlist-primary-btn:disabled {
   opacity: 0.65;
   cursor: not-allowed;
 }
 
 /* Step 2: Collection Grid */
-#collection-experience .waitlist-collection-grid {
+.waitlist-collection-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 14px;
   margin: 1.5rem 0;
 }
 
-#collection-experience .waitlist-card-option {
+.waitlist-card-option {
   background: transparent;
   border: 1px solid var(--color-border);
   border-radius: 8px;
@@ -2963,18 +2973,18 @@ body:has(#collection-experience.waitlist-open) {
   outline: none;
 }
 
-#collection-experience .waitlist-card-option:hover {
+.waitlist-card-option:hover {
   border-color: rgba(119, 58, 60, 0.45);
   background: rgba(119, 58, 60, 0.03);
 }
 
-#collection-experience .waitlist-card-option.is-selected {
+.waitlist-card-option.is-selected {
   border-color: var(--color-accent);
   background: rgba(119, 58, 60, 0.06);
   box-shadow: 0 0 0 1px var(--color-accent);
 }
 
-#collection-experience .option-tag {
+.option-tag {
   font-family: var(--font-sans);
   font-size: 9.5px;
   letter-spacing: 0.14em;
@@ -2982,7 +2992,7 @@ body:has(#collection-experience.waitlist-open) {
   color: var(--color-muted);
 }
 
-#collection-experience .option-name {
+.option-name {
   font-family: var(--font-sans);
   font-size: 1.35rem;
   letter-spacing: 0.08em;
@@ -2990,7 +3000,7 @@ body:has(#collection-experience.waitlist-open) {
   color: var(--color-text);
 }
 
-#collection-experience .option-desc {
+.option-desc {
   font-family: var(--font-body);
   font-size: 13px;
   line-height: 1.45;
@@ -2998,21 +3008,21 @@ body:has(#collection-experience.waitlist-open) {
 }
 
 /* Step 3: Jackets List */
-#collection-experience .waitlist-jackets-list {
+.waitlist-jackets-list {
   display: flex;
   flex-direction: column;
-  gap: 9px;
+  gap: 10px;
   margin: 1.25rem 0;
-  max-height: 340px;
+  max-height: min(56vh, 400px);
   overflow-y: auto;
   padding-right: 4px;
 }
 
-#collection-experience .waitlist-jacket-card {
+.waitlist-jacket-card {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 11px 16px;
+  padding: 8px 16px 8px 10px;
   border: 1px solid var(--color-border);
   border-radius: 6px;
   background: transparent;
@@ -3022,65 +3032,95 @@ body:has(#collection-experience.waitlist-open) {
   box-sizing: border-box;
   text-align: left;
   outline: none;
+  gap: 12px;
 }
 
-#collection-experience .waitlist-jacket-card:hover {
+.waitlist-jacket-card:hover {
   border-color: rgba(119, 58, 60, 0.45);
   background: rgba(119, 58, 60, 0.03);
 }
 
-#collection-experience .waitlist-jacket-card.is-selected {
+.waitlist-jacket-card.is-selected {
   border-color: var(--color-accent);
   background: rgba(119, 58, 60, 0.06);
   box-shadow: 0 0 0 1px var(--color-accent);
 }
 
-#collection-experience .jacket-card-left {
+.jacket-card-left {
   display: flex;
   align-items: center;
   gap: 12px;
+  min-width: 0;
 }
 
-#collection-experience .jacket-swatch {
-  width: 12px;
-  height: 12px;
+/* Luxury Editorial Jacket Thumbnail */
+.jacket-thumb-wrapper {
+  width: 44px;
+  height: 58px;
+  border-radius: 4px;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 1px solid rgba(64, 48, 44, 0.14);
+  background: #e4dfd8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.jacket-thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+  pointer-events: none;
+  transition: transform 0.4s ease;
+}
+
+.waitlist-jacket-card:hover .jacket-thumb-img {
+  transform: scale(1.06);
+}
+
+.jacket-swatch {
+  width: 11px;
+  height: 11px;
   border-radius: 50%;
   border: 1px solid rgba(0, 0, 0, 0.2);
   flex-shrink: 0;
 }
 
-#collection-experience .jacket-meta {
+.jacket-meta {
   display: flex;
   align-items: baseline;
   gap: 8px;
+  min-width: 0;
 }
 
-#collection-experience .jacket-number {
+.jacket-number {
   font-family: var(--font-sans);
   font-size: 10px;
   letter-spacing: 0.12em;
   color: var(--color-muted);
+  flex-shrink: 0;
 }
 
-#collection-experience .jacket-name {
+.jacket-name {
   font-family: var(--font-sans);
   font-size: 13px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--color-text);
   font-weight: 500;
+  white-space: nowrap;
 }
 
-#collection-experience .jacket-colour {
-  font-family: var(--font-sans);
-  font-size: 10.5px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--color-text-secondary);
+.jacket-colour {
+  display: none !important;
 }
 
 /* Step 4: Sizes Grid */
-#collection-experience .waitlist-sizes-grid {
+.waitlist-sizes-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 12px;
@@ -3088,17 +3128,17 @@ body:has(#collection-experience.waitlist-open) {
 }
 
 @media (max-width: 480px) {
-  #collection-experience .waitlist-sizes-grid {
+  .waitlist-sizes-grid {
     grid-template-columns: repeat(3, 1fr);
     gap: 8px;
   }
-  #collection-experience .waitlist-size-btn {
+  .waitlist-size-btn {
     padding: 12px 6px;
     font-size: 12px;
   }
 }
 
-#collection-experience .waitlist-size-btn {
+.waitlist-size-btn {
   border: 1px solid var(--color-border);
   border-radius: 6px;
   background: transparent;
@@ -3112,12 +3152,12 @@ body:has(#collection-experience.waitlist-open) {
   outline: none;
 }
 
-#collection-experience .waitlist-size-btn:hover {
+.waitlist-size-btn:hover {
   border-color: var(--color-accent);
   color: var(--color-accent);
 }
 
-#collection-experience .waitlist-size-btn.is-selected {
+.waitlist-size-btn.is-selected {
   background: var(--color-text, #14100e);
   color: #FAF6F1;
   border-color: var(--color-text, #14100e);
@@ -3125,7 +3165,7 @@ body:has(#collection-experience.waitlist-open) {
 }
 
 /* Step 5: Form & Summary Pill */
-#collection-experience .waitlist-selection-pill {
+.waitlist-selection-pill {
   display: inline-flex;
   align-items: center;
   gap: 10px;
@@ -3141,14 +3181,14 @@ body:has(#collection-experience.waitlist-open) {
   margin-bottom: 1.5rem;
 }
 
-#collection-experience .pill-dot {
+.pill-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
   background: var(--color-accent);
 }
 
-#collection-experience .pill-edit-btn {
+.pill-edit-btn {
   background: transparent;
   border: none;
   color: var(--color-muted);
@@ -3161,17 +3201,17 @@ body:has(#collection-experience.waitlist-open) {
   margin-left: 4px;
 }
 
-#collection-experience .pill-edit-btn:hover {
+.pill-edit-btn:hover {
   color: var(--color-accent);
 }
 
-#collection-experience .waitlist-form {
+.waitlist-form {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
 }
 
-#collection-experience .waitlist-form-group {
+.waitlist-form-group {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -3179,7 +3219,7 @@ body:has(#collection-experience.waitlist-open) {
   width: 100%;
 }
 
-#collection-experience .waitlist-label {
+.waitlist-label {
   font-family: var(--font-sans);
   font-size: 10px;
   letter-spacing: 0.16em;
@@ -3187,7 +3227,7 @@ body:has(#collection-experience.waitlist-open) {
   color: var(--color-text);
 }
 
-#collection-experience .waitlist-input {
+.waitlist-input {
   width: 100%;
   box-sizing: border-box;
   background: transparent;
@@ -3203,7 +3243,7 @@ body:has(#collection-experience.waitlist-open) {
   transition: border-color var(--motion), box-shadow var(--motion);
 }
 
-#collection-experience .waitlist-input::placeholder {
+.waitlist-input::placeholder {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   font-size: 13.5px;
   letter-spacing: normal;
@@ -3211,19 +3251,19 @@ body:has(#collection-experience.waitlist-open) {
   color: rgba(64, 48, 44, 0.45);
 }
 
-#collection-experience .waitlist-input:focus {
+.waitlist-input:focus {
   border-color: var(--color-accent);
   box-shadow: 0 0 0 1px var(--color-accent);
 }
 
-#collection-experience .waitlist-consent-group {
+.waitlist-consent-group {
   margin: 0.25rem 0 0.5rem;
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-#collection-experience .waitlist-consent-label {
+.waitlist-consent-label {
   display: flex;
   align-items: flex-start;
   gap: 10px;
@@ -3235,14 +3275,14 @@ body:has(#collection-experience.waitlist-open) {
   text-align: left;
 }
 
-#collection-experience .waitlist-checkbox {
+.waitlist-checkbox {
   margin-top: 3px;
   accent-color: var(--color-accent);
   cursor: pointer;
   flex-shrink: 0;
 }
 
-#collection-experience .waitlist-error {
+.waitlist-error {
   font-family: var(--font-sans);
   font-size: 10.5px;
   letter-spacing: 0.08em;
@@ -3250,11 +3290,11 @@ body:has(#collection-experience.waitlist-open) {
   display: none;
 }
 
-#collection-experience .waitlist-error.is-visible {
+.waitlist-error.is-visible {
   display: block;
 }
 
-#collection-experience .waitlist-form-error {
+.waitlist-form-error {
   font-family: var(--font-sans);
   font-size: 11px;
   letter-spacing: 0.08em;
@@ -3266,11 +3306,11 @@ body:has(#collection-experience.waitlist-open) {
   display: none;
 }
 
-#collection-experience .waitlist-form-error.is-visible {
+.waitlist-form-error.is-visible {
   display: block;
 }
 
-#collection-experience .btn-spinner {
+.btn-spinner {
   width: 14px;
   height: 14px;
   border: 2px solid rgba(255, 255, 255, 0.3);
@@ -3285,7 +3325,7 @@ body:has(#collection-experience.waitlist-open) {
 }
 
 /* Step 6: Registration Success */
-#collection-experience .waitlist-success-badge {
+.waitlist-success-badge {
   width: 46px;
   height: 46px;
   border-radius: 50%;
@@ -3299,7 +3339,7 @@ body:has(#collection-experience.waitlist-open) {
   border: 1px solid rgba(119, 58, 60, 0.2);
 }
 
-#collection-experience .waitlist-success-msg {
+.waitlist-success-msg {
   font-family: var(--font-sans);
   font-size: 12px;
   letter-spacing: 0.14em;
@@ -3308,7 +3348,7 @@ body:has(#collection-experience.waitlist-open) {
   margin: 0 0 1.25rem;
 }
 
-#collection-experience .waitlist-availability-box {
+.waitlist-availability-box {
   background: rgba(64, 48, 44, 0.04);
   border: 1px solid var(--color-border);
   border-radius: 8px;
@@ -3316,7 +3356,7 @@ body:has(#collection-experience.waitlist-open) {
   margin: 1.25rem 0 1.5rem;
 }
 
-#collection-experience .availability-headline {
+.availability-headline {
   font-family: var(--font-body);
   font-size: 16px;
   line-height: 1.6;
@@ -3325,7 +3365,7 @@ body:has(#collection-experience.waitlist-open) {
   font-weight: 500;
 }
 
-#collection-experience .waitlist-closing-line {
+.waitlist-closing-line {
   font-family: var(--font-sans);
   font-size: 10.5px;
   letter-spacing: 0.16em;
@@ -3336,53 +3376,185 @@ body:has(#collection-experience.waitlist-open) {
 
 @media (max-width: 640px) {
   /* Mobile Header (< 640px) */
-  #collection-experience .site-header {
+  .site-header {
     padding: 0 1rem;
     grid-template-columns: auto 1fr auto;
   }
-  #collection-experience .header-detail {
+  .header-detail {
     display: none;
   }
-  #collection-experience .wordmark {
+  .wordmark {
     grid-column: 1;
     justify-self: start;
   }
-  #collection-experience .wordmark-logo {
+  .wordmark-logo {
     height: 38px;
     width: auto;
   }
-  #collection-experience .header-actions {
+  .header-actions {
     grid-column: 3;
     justify-self: end;
     gap: 8px;
   }
-  #collection-experience .waitlist-btn-text-full {
+  .waitlist-btn-text-full {
     display: none;
   }
-  #collection-experience .waitlist-btn-text-short {
+  .waitlist-btn-text-short {
     display: inline;
   }
-  #collection-experience .header-waitlist-btn {
+  .header-waitlist-btn {
     display: inline-flex !important;
     padding: 6px 12px;
     font-size: 9px;
     letter-spacing: 0.14em;
     margin-right: 0;
   }
-  #collection-experience .menu-button {
+  .menu-button {
     font-size: 10px;
   }
 
   /* Mobile Waiting List Dialog (< 640px) */
-  #collection-experience .waitlist-modal-dialog {
+  .waitlist-modal-dialog {
     padding: 1.4rem 1.15rem;
     max-height: min(92dvh, 92vh, 660px);
   }
-  #collection-experience .waitlist-collection-grid {
+  .waitlist-collection-grid {
     grid-template-columns: 1fr;
     gap: 10px;
   }
-  #collection-experience .waitlist-input {
+  .waitlist-jacket-card {
+    padding: 6px 12px 6px 8px;
+    gap: 10px;
+  }
+  .jacket-thumb-wrapper {
+    width: 38px;
+    height: 50px;
+  }
+  .jacket-card-left {
+    gap: 8px;
+  }
+  .jacket-meta {
+    gap: 5px;
+  }
+  .jacket-name {
+    font-size: 11.5px;
+    letter-spacing: 0.08em;
+  }
+  .jacket-colour {
+    font-size: 9px;
+    letter-spacing: 0.08em;
+  }
+  .waitlist-input {
     font-size: 16px; /* Prevents unwanted iOS Safari auto-zoom on mobile inputs */
   }
+}
+
+/* -------------------------------------------------------------------
+   FLOATING JOIN THE WAITING LIST BUTTON (BOTTOM-LEFT)
+   ------------------------------------------------------------------- */
+.floating-waitlist-btn {
+  position: fixed;
+  bottom: 28px;
+  left: 28px;
+  z-index: 999;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 13px 22px;
+  background: #14100E;
+  color: #FAF6F1;
+  border: 1px solid rgba(250, 246, 241, 0.22);
+  border-radius: 4px;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  transition: all 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
+  will-change: transform, opacity;
+}
+
+.floating-waitlist-btn:hover {
+  background: #201a17;
+  border-color: rgba(184, 155, 114, 0.7);
+  transform: translateY(-2px);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.55);
+}
+
+.floating-waitlist-btn:focus-visible {
+  outline: 2px solid var(--color-accent, #773A3C);
+  outline-offset: 3px;
+}
+
+.floating-btn-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-accent, #773A3C);
+  box-shadow: 0 0 8px rgba(119, 58, 60, 0.85);
+  display: inline-block;
+  flex-shrink: 0;
+  animation: waitlistDotPulse 2.2s infinite ease-in-out;
+}
+
+@keyframes waitlistDotPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.95;
+  }
+  50% {
+    transform: scale(1.35);
+    opacity: 0.45;
+  }
+}
+
+/* Hide when waitlist modal is open */
+body.waitlist-open .floating-waitlist-btn {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+/* Responsive adjustment for mobile */
+@media (max-width: 640px) {
+  .floating-waitlist-btn {
+    bottom: 18px;
+    left: 16px;
+    padding: 10px 16px;
+    font-size: 10px;
+    gap: 10px;
+  }
+  .floating-btn-indicator {
+    width: 6px;
+    height: 6px;
+  }
+}
+
+
+/* ── Jacket Availability Stock Badge in Showcase ──────────────── */
+.jacket-stock-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  border: 1px solid rgba(119, 58, 60, 0.45);
+  background: rgba(119, 58, 60, 0.08);
+  color: #773A3C;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+.showcase-cta-wrap {
+  margin: 2.2rem 0 1.2rem;
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
 }
