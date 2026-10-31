@@ -4,24 +4,38 @@ import { useEffect, useRef, useState, type MouseEvent } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-const scenes = [
-  { directory: "/video-sequences/scene1", count: 192, caption: ".story-caption--intro" },
-  { directory: "/video-sequences/scene2", count: 192, caption: ".story-caption--detail" },
-  { directory: "/video-sequences/scene3", count: 192, caption: ".story-caption--full-look" },
-];
+type Scene = { directory: string; count: number; focalX: number; caption: string };
 
+const sceneDefinitions = [
+  { desktop: "/video-sequences/scene1", mobile: "/video-sequences_mobile-view/scene1-mobile", mobileCount: 190, caption: ".story-caption--intro", focalX: 0.58 },
+  { desktop: "/video-sequences/scene2", mobile: "/video-sequences_mobile-view/scene2-mobile", mobileCount: 192, caption: ".story-caption--detail", focalX: 0.5 },
+  { desktop: "/video-sequences/scene3", mobile: "/video-sequences_mobile-view/scene3-mobile", mobileCount: 192, caption: ".story-caption--full-look", focalX: 0.5 },
+] as const;
+
+const timelineFramesPerScene = 192;
 const baseSceneDuration = 2;
 const introDuration = 1;
 const captionFade = 0.12;
 const captionHold = 1;
 const finalHold = 0.25;
-const sceneStarts = scenes.map((_, index) =>
-  scenes.slice(0, index).reduce((total, scene) => total + scene.count, 0)
-);
-const sceneDurations = scenes.map((scene) => scene.count / scenes[0].count * baseSceneDuration);
+const sceneStarts = sceneDefinitions.map((_, index) => index * timelineFramesPerScene);
+const sceneDurations = sceneDefinitions.map(() => baseSceneDuration);
 const totalScrollUnits = introDuration +
-  scenes.reduce((total, _, index) => total + captionFade * 2 + captionHold + sceneDurations[index], 0) +
-  (scenes.length - 1) * 0.01 + 0.15 + finalHold;
+  sceneDefinitions.reduce((total) => total + captionFade * 2 + captionHold + baseSceneDuration, 0) +
+  (sceneDefinitions.length - 1) * 0.01 + 0.15 + finalHold;
+
+function getSceneSet(isMobile: boolean): Scene[] {
+  return sceneDefinitions.map((scene) => ({
+    directory: isMobile ? scene.mobile : scene.desktop,
+    count: isMobile ? scene.mobileCount : timelineFramesPerScene,
+    focalX: isMobile ? scene.focalX : 0.5,
+    caption: scene.caption,
+  }));
+}
+
+function getSceneIndex(frame: number) {
+  return Math.min(sceneDefinitions.length - 1, Math.max(0, Math.floor(frame / timelineFramesPerScene)));
+}
 
 export default function StoryExperience() {
   const shell = useRef<HTMLElement>(null);
@@ -37,49 +51,69 @@ export default function StoryExperience() {
     if (!host || !screen || !target || !context) return;
 
     gsap.registerPlugin(ScrollTrigger);
-    const loaded: HTMLImageElement[][] = scenes.map(() => []);
-    const loading = new Set<number>();
+    const mobileQuery = window.matchMedia("(max-width: 767px), (max-width: 1023px) and (orientation: portrait), (pointer: coarse)");
+    let isMobile = mobileQuery.matches;
+    let activeScenes = getSceneSet(isMobile);
+    let loaded = activeScenes.map(() => new Map<number, HTMLImageElement>());
     const playhead = { frame: 0 };
     let active = true;
 
-    const loadScene = (sceneIndex: number) => {
-      if (sceneIndex < 0 || sceneIndex >= scenes.length || loading.has(sceneIndex)) return;
-      loading.add(sceneIndex);
-      const scene = scenes[sceneIndex];
-      loaded[sceneIndex] = Array.from({ length: scene.count }, (_, index) => {
-        const image = new Image();
-        image.onload = render;
-        image.src = `${scene.directory}/frame_${String(index + 1).padStart(4, "0")}.webp`;
-        return image;
+    const releaseScene = (sceneIndex: number) => {
+      loaded[sceneIndex]?.forEach((image) => {
+        image.onload = null;
+        image.onerror = null;
+        image.src = "";
       });
+      loaded[sceneIndex]?.clear();
+    };
+
+    const loadFrame = (sceneIndex: number, frameIndex: number) => {
+      const scene = activeScenes[sceneIndex];
+      if (!scene || frameIndex < 0 || frameIndex >= scene.count || loaded[sceneIndex].has(frameIndex)) return;
+      const image = new Image();
+      loaded[sceneIndex].set(frameIndex, image);
+      image.onload = render;
+      image.onerror = () => loaded[sceneIndex].delete(frameIndex);
+      image.decoding = "async";
+      image.src = `${scene.directory}/frame_${String(frameIndex + 1).padStart(4, "0")}.webp`;
+    };
+
+    const preloadAround = (sceneIndex: number, frameIndex: number, radius: number) => {
+      const scene = activeScenes[sceneIndex];
+      if (!scene) return;
+      const start = Math.max(0, frameIndex - Math.min(2, radius));
+      const end = Math.min(scene.count - 1, frameIndex + radius);
+      for (let index = start; index <= end; index++) loadFrame(sceneIndex, index);
     };
 
     const render = () => {
       if (!active) return;
-      let sceneIndex = scenes.length - 1;
-      for (let index = 0; index < scenes.length - 1; index++) {
-        if (playhead.frame < sceneStarts[index + 1]) {
-          sceneIndex = index;
-          break;
-        }
-      }
-      const sceneFrame = Math.min(
-        scenes[sceneIndex].count - 1,
-        Math.max(0, Math.round(playhead.frame - sceneStarts[sceneIndex]))
-      );
-      loadScene(sceneIndex);
-      loadScene(sceneIndex + 1);
+      const sceneIndex = getSceneIndex(playhead.frame);
+      const scene = activeScenes[sceneIndex];
+      const virtualFrame = Math.min(timelineFramesPerScene - 1, Math.max(0, playhead.frame - sceneStarts[sceneIndex]));
+      const sceneFrame = Math.min(scene.count - 1, Math.round(virtualFrame / (timelineFramesPerScene - 1) * (scene.count - 1)));
+      preloadAround(sceneIndex, sceneFrame, isMobile ? 5 : 8);
+      preloadAround(sceneIndex + 1, 0, isMobile ? 2 : 4);
+
+      // Keep only the active scene and its immediate neighbours in memory.
+      loaded.forEach((_, index) => {
+        if (index < sceneIndex - 1 || index > sceneIndex + 1) releaseScene(index);
+      });
 
       const images = loaded[sceneIndex];
-      let image = images[sceneFrame];
+      let image = images.get(sceneFrame);
       if (!image?.complete || !image.naturalWidth) {
-        for (let offset = 1; offset < images.length && (!image?.complete || !image.naturalWidth); offset++) {
-          image = images[sceneFrame - offset] ?? images[sceneFrame + offset];
-        }
+        let closestDistance = Infinity;
+        images.forEach((candidate, index) => {
+          if (candidate.complete && candidate.naturalWidth && Math.abs(index - sceneFrame) < closestDistance) {
+            image = candidate;
+            closestDistance = Math.abs(index - sceneFrame);
+          }
+        });
       }
       if (!image?.complete || !image.naturalWidth) return;
 
-      const ratio = Math.min(window.devicePixelRatio || 1, 1.6);
+      const ratio = Math.min(window.devicePixelRatio || 1, isMobile ? 1.35 : 1.6);
       const width = screen.clientWidth;
       const height = screen.clientHeight;
       if (target.width !== Math.round(width * ratio) || target.height !== Math.round(height * ratio)) {
@@ -89,13 +123,31 @@ export default function StoryExperience() {
       context.setTransform(ratio, 0, 0, ratio, 0, 0);
       context.fillStyle = "#171715";
       context.fillRect(0, 0, width, height);
-      const scale = Math.max(width / image.naturalWidth, height / image.naturalHeight);
+
+      const viewportRatio = width / height;
+      const imageRatio = image.naturalWidth / image.naturalHeight;
+      const contain = isMobile && viewportRatio > imageRatio * 1.08;
+      const scale = contain
+        ? Math.min(width / image.naturalWidth, height / image.naturalHeight)
+        : Math.max(width / image.naturalWidth, height / image.naturalHeight);
       const drawWidth = image.naturalWidth * scale;
       const drawHeight = image.naturalHeight * scale;
-      context.drawImage(image, (width - drawWidth) / 2, (height - drawHeight) / 2, drawWidth, drawHeight);
+      const x = (width - drawWidth) * (contain ? 0.5 : scene.focalX);
+      context.drawImage(image, x, (height - drawHeight) / 2, drawWidth, drawHeight);
     };
 
-    loadScene(0);
+    const resetForViewport = () => {
+      const nextIsMobile = mobileQuery.matches;
+      if (nextIsMobile !== isMobile) {
+        loaded.forEach((_, index) => releaseScene(index));
+        isMobile = nextIsMobile;
+        activeScenes = getSceneSet(isMobile);
+        loaded = activeScenes.map(() => new Map<number, HTMLImageElement>());
+      }
+      render();
+    };
+
+    loadFrame(0, 0);
     const syncHeaderState = (trigger: ScrollTrigger) => {
       host.querySelector(".site-header")?.classList.toggle(
         "is-scrolled",
@@ -129,24 +181,24 @@ export default function StoryExperience() {
     timeline.to(".hero-shade", { opacity: 0, duration: introDuration, ease: "none" }, 0);
     let timelinePosition = introDuration;
 
-    scenes.forEach((scene, index) => {
-      timeline.to(scene.caption, { autoAlpha: 1, duration: captionFade, ease: "none" }, timelinePosition);
+    sceneDefinitions.forEach((definition, index) => {
+      timeline.to(definition.caption, { autoAlpha: 1, duration: captionFade, ease: "none" }, timelinePosition);
       timelinePosition += captionFade + captionHold;
-      timeline.to(scene.caption, { autoAlpha: 0, duration: captionFade, ease: "none" }, timelinePosition);
+      timeline.to(definition.caption, { autoAlpha: 0, duration: captionFade, ease: "none" }, timelinePosition);
       timelinePosition += captionFade;
 
       const firstFrame = sceneStarts[index];
       timeline.to(playhead, {
-        frame: firstFrame + scene.count - 1,
+        frame: firstFrame + timelineFramesPerScene - 1,
         duration: sceneDurations[index],
         ease: "none",
         onUpdate: render,
       }, timelinePosition);
       timelinePosition += sceneDurations[index];
 
-      if (index < scenes.length - 1) {
+      if (index < sceneDefinitions.length - 1) {
         timeline.to(playhead, {
-          frame: firstFrame + scene.count,
+          frame: firstFrame + timelineFramesPerScene,
           duration: 0.01,
           ease: "none",
           onUpdate: render,
@@ -157,24 +209,25 @@ export default function StoryExperience() {
 
     timeline.to(".story-caption--final", { autoAlpha: 1, duration: 0.15, ease: "none" }, timelinePosition);
     timeline.to(playhead, {
-      frame: scenes.reduce((total, scene) => total + scene.count, 0) - 1,
+      frame: sceneDefinitions.length * timelineFramesPerScene - 1,
       duration: finalHold,
       ease: "none",
       onUpdate: render,
     }, timelinePosition);
 
-    const resize = () => render();
-    window.addEventListener("resize", resize);
+    const resizeObserver = new ResizeObserver(resetForViewport);
+    resizeObserver.observe(screen);
+    window.addEventListener("resize", resetForViewport);
+    mobileQuery.addEventListener("change", resetForViewport);
     return () => {
       active = false;
-      window.removeEventListener("resize", resize);
+      resizeObserver.disconnect();
+      window.removeEventListener("resize", resetForViewport);
+      mobileQuery.removeEventListener("change", resetForViewport);
       host.querySelector(".site-header")?.classList.remove("is-scrolled");
       timeline.scrollTrigger?.kill();
       timeline.kill();
-      loaded.forEach((images) => images.forEach((image) => {
-        image.onload = null;
-        image.src = "";
-      }));
+      loaded.forEach((_, index) => releaseScene(index));
     };
   }, []);
 
@@ -269,20 +322,18 @@ export default function StoryExperience() {
                 </svg>
                 <span>info@ekkomi.co.uk</span>
               </a>
-              <button className="footer-contact-link footer-cookie-settings" type="button" data-cookie-settings-trigger>
-                COOKIE SETTINGS
-              </button>
+
             </div>
           </div>
-          <div className="footer-bottom">
+          <div className="footer-bottom story-footer-bottom">
             <span>© 2026 EKKOMI. All rights reserved.</span>
             <span className="footer-bullet" aria-hidden="true">•</span>
             <button
               type="button"
-              className="footer-cookie-link"
+              className="story-cookie-preferences"
               onClick={() => window.dispatchEvent(new CustomEvent("ekkomi:open-cookie-settings"))}
             >
-              Cookie Preferences
+              COOKIE PREFERENCES
             </button>
           </div>
         </div>
@@ -333,3 +384,7 @@ function ClosingSection() {
     </section>
   );
 }
+
+
+
+
