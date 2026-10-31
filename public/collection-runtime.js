@@ -34,6 +34,8 @@ if (typeof window !== 'undefined' && typeof window.gsap === 'undefined') {
   };
 }
 
+'use strict';
+
 // Graceful GSAP fallback shim (guarantees accordion works offline, on weak mobile connections, or if CDN blocked)
 if (typeof window !== 'undefined' && typeof window.gsap === 'undefined') {
   window.gsap = {
@@ -104,8 +106,8 @@ const mensJackets = [
     views: [
       { label: 'Front Silhouette', src: imgPath('curiosity', 'curiosity_lookbook_1.jpg'), alt: "Curiosity Front Silhouette" },
       { label: 'Profile Silhouette', src: imgPath('curiosity', 'curiosity_lookbook_2.jpg'), alt: "Curiosity Profile Silhouette" },
-      { label: 'Interior Silk', src: '/collection-assets/jackets_original/resized_BEN03202.webp', alt: "Curiosity Interior Silk Lining" },
-      { label: 'Back Tailoring', src: '/collection-assets/jackets_original/resized_BEN03137.webp', alt: "Curiosity Back Tailoring" },
+      { label: 'Interior Silk', src: 'jackets_original/resized_BEN03202.webp', alt: "Curiosity Interior Silk Lining" },
+      { label: 'Back Tailoring', src: 'jackets_original/resized_BEN03137.webp', alt: "Curiosity Back Tailoring" },
       { label: 'Embroidery Detail', src: imgPath('curiosity', 'curiosity_detail.jpg'), alt: "Curiosity Embroidery Detail" },
       { label: 'Evening Perspective', src: imgPath('curiosity', 'curiosity.jpg'), alt: "Curiosity Evening Perspective" }
     ]
@@ -118,7 +120,7 @@ const mensJackets = [
     impulse: "Temptation",
     colour: "Forest Green",
     hex: "#27382b",
-    inStock: true,
+    inStock: false,
     image: imgPath('temptation', 'temptation.jpg'),
     label: "02 / TEMPTATION",
     sublabel: "",
@@ -135,7 +137,7 @@ const mensJackets = [
       { label: 'Back Tailoring', src: imgPath('temptation', 'temptation_back.jpg'), alt: "Temptation Back Tailoring" },
       { label: 'Lookbook Perspective', src: imgPath('temptation', 'temptation_lookbook_1.jpg'), alt: "Temptation Lookbook Perspective" },
       { label: 'Editorial Portrait', src: imgPath('temptation', 'temptation_lookbook_2.jpg'), alt: "Temptation Editorial Portrait" },
-      { label: 'Texture & Finish', src: '/collection-assets/jackets_original/resized_BEN03655.webp', alt: "Temptation Texture and Finish" }
+      { label: 'Texture & Finish', src: 'jackets_original/resized_BEN03655.webp', alt: "Temptation Texture and Finish" }
     ]
   },
   {
@@ -159,10 +161,10 @@ const mensJackets = [
     ],
     views: [
       { label: 'Sitting Silhouette', src: imgPath('desire', 'desire.jpg'), alt: "Desire Sitting Silhouette" },
-      { label: 'Standing Portrait', src: '/collection-assets/jackets_original/resized_BEN03515.webp', alt: "Desire Standing Portrait" },
+      { label: 'Standing Portrait', src: 'jackets_original/resized_BEN03515.webp', alt: "Desire Standing Portrait" },
       { label: 'Back Embroidery', src: imgPath('desire', 'desire_back.jpg'), alt: "Desire Back Embroidery" },
-      { label: 'Evening Perspective', src: '/collection-assets/jackets_original/resized_BEN03767.webp', alt: "Desire Evening Perspective" },
-      { label: 'Tonal Needlework', src: '/collection-assets/jackets_original/resized_BEN03619.webp', alt: "Desire Tonal Needlework" },
+      { label: 'Evening Perspective', src: 'jackets_original/resized_BEN03767.webp', alt: "Desire Evening Perspective" },
+      { label: 'Tonal Needlework', src: 'jackets_original/resized_BEN03619.webp', alt: "Desire Tonal Needlework" },
       { label: 'Suede Nap & Detail', src: imgPath('desire', 'desire_detail.jpg'), alt: "Desire Suede Nap Detail" }
     ]
   },
@@ -174,7 +176,7 @@ const mensJackets = [
     impulse: "Audacity",
     colour: "Deep Mustard",
     hex: "#8c6b24",
-    inStock: true,
+    inStock: false,
     image: imgPath('audacity', 'audacity_lookbook_1.jpg'),
     label: "04 / AUDACITY",
     sublabel: "",
@@ -188,7 +190,7 @@ const mensJackets = [
     views: [
       { label: 'Standing Silhouette', src: imgPath('audacity', 'audacity_lookbook_1.jpg'), alt: "Audacity Standing Silhouette" },
       { label: 'Tailoring & Scarf', src: imgPath('audacity', 'audacity_lookbook_2.jpg'), alt: "Audacity Tailoring and Scarf" },
-      { label: 'Lookbook Perspective', src: '/collection-assets/jackets_original/resized_BEN03893.webp', alt: "Audacity Lookbook Perspective" },
+      { label: 'Lookbook Perspective', src: 'jackets_original/resized_BEN03893.webp', alt: "Audacity Lookbook Perspective" },
       { label: 'Embroidery Detail', src: imgPath('audacity', 'audacity_detail.jpg'), alt: "Audacity Embroidery Detail" },
       { label: 'Back Tailoring', src: imgPath('audacity', 'audacity_back.jpg'), alt: "Audacity Back Tailoring" }
     ]
@@ -214,8 +216,8 @@ const mensJackets = [
     ],
     views: [
       { label: 'Front Silhouette', src: imgPath('insolence', 'insolence.jpg'), alt: "Insolence Front Silhouette" },
-      { label: 'Standing Perspective', src: '/collection-assets/jackets_original/resized_BEN03307.webp', alt: "Insolence Standing Perspective" },
-      { label: 'Editorial Portrait', src: '/collection-assets/jackets_original/resized_BEN03324.webp', alt: "Insolence Editorial Portrait" },
+      { label: 'Standing Perspective', src: 'jackets_original/resized_BEN03307.webp', alt: "Insolence Standing Perspective" },
+      { label: 'Editorial Portrait', src: 'jackets_original/resized_BEN03324.webp', alt: "Insolence Editorial Portrait" },
       { label: 'Embroidery Detail', src: imgPath('insolence', 'insolence_detail.jpg'), alt: "Insolence Embroidery Detail" },
       { label: 'Back Tailoring', src: imgPath('insolence', 'insolence_back.jpg'), alt: "Insolence Back Tailoring" }
     ]
@@ -288,7 +290,7 @@ const womensJackets = [
     impulse: "Audacity",
     colour: "Deep Mustard",
     hex: "#8c6b24",
-    inStock: true,
+    inStock: false,
     image: imgPath('audacity', 'audacity.jpg'),
     label: "03 / AUDACITY",
     sublabel: "",
@@ -552,6 +554,12 @@ function renderShowcase(jacket) {
 
             <!-- Waitlist CTA inside Showcase (Positioned after craftsmanship specs) -->
             <div class="showcase-cta-wrap">
+              ${jacket.inStock === false ? `
+                <div class="showcase-stock-callout">
+                  <span class="stock-pulse-dot" aria-hidden="true"></span>
+                  <span>Out of stock &mdash; Available exclusively via priority waitlist</span>
+                </div>
+              ` : ''}
               <button type="button" class="showcase-waitlist-btn btn-join-waitlist" id="showcaseWaitlistBtn" data-open-waitlist>
                 ${jacket.inStock === false ? 'OUT OF STOCK &mdash; JOIN THE WAITING LIST' : 'JOIN THE WAITING LIST'}
               </button>
@@ -685,9 +693,18 @@ function selectJacket(id, { scroll = false, fromAccordion = false, fromDepartmen
     scrollToShowcase(true);
   }
 
-  // If user clicked this jacket and it is marked out of stock, trigger waitlist popup with jacket details!
+  // Clear any existing pending waitlist popup timer
+  if (window.pendingWaitlistTimer) {
+    clearTimeout(window.pendingWaitlistTimer);
+    window.pendingWaitlistTimer = null;
+  }
+
+  // If user clicked this jacket and it is marked out of stock,
+  // allow customer to explore the jacket and clearly see OUT OF STOCK first,
+  // then trigger the waitlist popup!
   if (userInitiated && item.inStock === false) {
-    setTimeout(() => {
+    window.pendingWaitlistTimer = setTimeout(() => {
+      window.pendingWaitlistTimer = null;
       if (window.EkkomiWaitlist && window.EkkomiWaitlist.open) {
         window.EkkomiWaitlist.open({
           collection: item.gender,
@@ -699,7 +716,7 @@ function selectJacket(id, { scroll = false, fromAccordion = false, fromDepartmen
           outOfStock: true
         });
       }
-    }, 320);
+    }, 2400); // 2.4s gives customer time to scroll to showcase and clearly see OUT OF STOCK first
   }
 }
 
@@ -782,7 +799,7 @@ function createAccordionGallery({
 
     const text = document.createElement('span');
     text.className = 'ag-panel__text';
-    text.innerHTML = `<span class="ag-label-title">${item.label}</span>`;
+    text.innerHTML = `<span class="ag-label-title">${item.label}</span>${item.inStock === false ? '<span class="ag-label-stock">OUT OF STOCK</span>' : ''}`;
     textEls[i] = text;
 
     label.appendChild(bar);
@@ -935,21 +952,21 @@ function createAccordionGallery({
    ------------------------------------------------------------------- */
 
 const wallTiles = [
-  { image: '/collection-assets/jackets_original/resized_BEN03137.webp', title: 'Curiosity · Back Silhouette', jacket: 'men-curiosity' },
-  { image: '/collection-assets/jackets_original/resized_BEN03166.webp', title: 'Curiosity · Profile Silhouette', jacket: 'men-curiosity' },
-  { image: '/collection-assets/jackets_original/resized_BEN03202.webp', title: 'Curiosity · Editorial Perspective', jacket: 'men-curiosity' },
-  { image: '/collection-assets/jackets_original/resized_BEN03655.webp', title: 'Temptation · Suede Tailoring', jacket: 'men-temptation' },
+  { image: 'jackets_original/resized_BEN03137.webp', title: 'Curiosity · Back Silhouette', jacket: 'men-curiosity' },
+  { image: 'jackets_original/resized_BEN03166.webp', title: 'Curiosity · Profile Silhouette', jacket: 'men-curiosity' },
+  { image: 'jackets_original/resized_BEN03202.webp', title: 'Curiosity · Editorial Perspective', jacket: 'men-curiosity' },
+  { image: 'jackets_original/resized_BEN03655.webp', title: 'Temptation · Suede Tailoring', jacket: 'men-temptation' },
   { image: '/collection-assets/collection/nocturne/temptation/temptation.jpg', title: 'Temptation · Front Silhouette', jacket: 'men-temptation' },
-  { image: '/collection-assets/jackets_original/resized_BEN03806.webp', title: 'Desire · Suede Tailoring', jacket: 'men-desire' },
-  { image: '/collection-assets/jackets_original/resized_BEN03515.webp', title: 'Desire · Standing Silhouette', jacket: 'men-desire' },
-  { image: '/collection-assets/jackets_original/resized_BEN03619.webp', title: 'Desire · Tonal Embroidery', jacket: 'men-desire' },
-  { image: '/collection-assets/jackets_original/resized_BEN03767.webp', title: 'Desire · Portrait Perspective', jacket: 'men-desire' },
+  { image: 'jackets_original/resized_BEN03806.webp', title: 'Desire · Suede Tailoring', jacket: 'men-desire' },
+  { image: 'jackets_original/resized_BEN03515.webp', title: 'Desire · Standing Silhouette', jacket: 'men-desire' },
+  { image: 'jackets_original/resized_BEN03619.webp', title: 'Desire · Tonal Embroidery', jacket: 'men-desire' },
+  { image: 'jackets_original/resized_BEN03767.webp', title: 'Desire · Portrait Perspective', jacket: 'men-desire' },
   { image: '/collection-assets/collection/nocturne/desire/desire_editorial_3.jpg', title: 'Desire · Women’s Standing Portrait', jacket: 'women-desire' },
   { image: '/collection-assets/collection/nocturne/audacity/audacity_editorial_1.jpg', title: 'Audacity · Women’s Seated Portrait', jacket: 'women-audacity' },
   { image: '/collection-assets/collection/nocturne/audacity/audacity_lookbook_1.jpg', title: 'Audacity · Suede Tailoring', jacket: 'men-audacity' },
-  { image: '/collection-assets/jackets_original/resized_BEN03893.webp', title: 'Audacity · Lookbook Styling', jacket: 'men-audacity' },
-  { image: '/collection-assets/jackets_original/resized_BEN03307.webp', title: 'Insolence · Suede Tailoring', jacket: 'men-insolence' },
-  { image: '/collection-assets/jackets_original/resized_BEN03324.webp', title: 'Insolence · Male Model Seated', jacket: 'men-insolence' }
+  { image: 'jackets_original/resized_BEN03893.webp', title: 'Audacity · Lookbook Styling', jacket: 'men-audacity' },
+  { image: 'jackets_original/resized_BEN03307.webp', title: 'Insolence · Suede Tailoring', jacket: 'men-insolence' },
+  { image: 'jackets_original/resized_BEN03324.webp', title: 'Insolence · Male Model Seated', jacket: 'men-insolence' }
 ];
 
 function initDriftWall() {
@@ -1224,6 +1241,7 @@ if (document.readyState === 'loading') {
 }
 
 
+// ─── WAITLIST.JS ───
 /**
  * EKKOMI NOCTURNE — JOIN THE WAITING LIST CONTROLLER
  * Multi-step, editorial, high-fashion modal experience.
@@ -1287,16 +1305,16 @@ if (document.readyState === 'loading') {
   // Jacket Definitions by Collection with Editorial Images
   const JACKET_CATALOG = {
     men: [
-      { key: 'curiosity', id: 'men-curiosity', number: '01', name: 'CURIOSITY', colour: 'Dark Navy', hex: '#1c2838', inStock: false, image: '/collection-assets/collection/nocturne/curiosity/curiosity_lookbook_1.jpg' },
-      { key: 'temptation', id: 'men-temptation', number: '02', name: 'TEMPTATION', colour: 'Forest Green', hex: '#27382b', inStock: true, image: '/collection-assets/collection/nocturne/temptation/temptation.jpg' },
+      { key: 'curiosity', id: 'men-curiosity', number: '01', name: 'CURIOSITY', colour: 'Dark Navy', hex: '#1c2838', inStock: false, image: '/collection-assets/collection/nocturne/curiosity/curiosity.jpg' },
+      { key: 'temptation', id: 'men-temptation', number: '02', name: 'TEMPTATION', colour: 'Forest Green', hex: '#27382b', inStock: false, image: '/collection-assets/collection/nocturne/temptation/temptation_lookbook_1.jpg' },
       { key: 'desire', id: 'men-desire', number: '03', name: 'DESIRE', colour: 'Deep Red', hex: '#662225', inStock: false, image: '/collection-assets/collection/nocturne/desire/desire.jpg' },
-      { key: 'audacity', id: 'men-audacity', number: '04', name: 'AUDACITY', colour: 'Deep Mustard', hex: '#8c6b24', inStock: true, image: '/collection-assets/collection/nocturne/audacity/audacity_lookbook_1.jpg' },
-      { key: 'insolence', id: 'men-insolence', number: '05', name: 'INSOLENCE', colour: 'Black', hex: '#1a1716', inStock: false, image: '/collection-assets/collection/nocturne/insolence/insolence.jpg' }
+      { key: 'audacity', id: 'men-audacity', number: '04', name: 'AUDACITY', colour: 'Deep Mustard', hex: '#8c6b24', inStock: false, image: '/collection-assets/collection/nocturne/audacity/audacity_lookbook_2.jpg' },
+      { key: 'insolence', id: 'men-insolence', number: '05', name: 'INSOLENCE', colour: 'Black', hex: '#1a1716', inStock: false, image: '/collection-assets/collection/nocturne/insolence/insolence_detail.jpg' }
     ],
     women: [
-      { key: 'curiosity', id: 'women-curiosity', number: '01', name: 'CURIOSITY', colour: 'Dark Navy', hex: '#1c2838', inStock: false, image: '/collection-assets/collection/nocturne/curiosity/curiosity_women_1.jpg' },
+      { key: 'curiosity', id: 'women-curiosity', number: '01', name: 'CURIOSITY', colour: 'Dark Navy', hex: '#1c2838', inStock: false, image: '/collection-assets/collection/nocturne/curiosity/curiosity_women_2.jpg' },
       { key: 'desire', id: 'women-desire', number: '02', name: 'DESIRE', colour: 'Deep Red', hex: '#662225', inStock: false, image: '/collection-assets/collection/nocturne/desire/desire_editorial_3.jpg' },
-      { key: 'audacity', id: 'women-audacity', number: '03', name: 'AUDACITY', colour: 'Deep Mustard', hex: '#8c6b24', inStock: true, image: '/collection-assets/collection/nocturne/audacity/audacity.jpg' }
+      { key: 'audacity', id: 'women-audacity', number: '03', name: 'AUDACITY', colour: 'Deep Mustard', hex: '#8c6b24', inStock: false, image: '/collection-assets/collection/nocturne/audacity/audacity.jpg' }
     ]
   };
 
@@ -1688,7 +1706,7 @@ if (document.readyState === 'loading') {
               <span class="jacket-name">${j.name}</span>
             </div>
           </div>
-          
+          <span class="jacket-select-radio" aria-hidden="true"></span>
         </button>
       `;
     }).join('');
