@@ -800,17 +800,25 @@ h1 {
   .accordion-gallery {
     flex-direction: column;
     perspective: 1200px;
-    height: clamp(520px, 75vh, 620px) !important;
-    gap: 8px;
+    height: clamp(560px, 80vh, 700px) !important;
+    gap: 10px;
   }
   .ag-panel {
-  touch-action: pan-y;
-    min-height: 52px;
+    touch-action: pan-y;
+    min-height: 64px;
     touch-action: manipulation;
     will-change: flex-grow, transform;
   }
   .ag-panel--active {
-    min-height: 260px;
+    min-height: 280px;
+  }
+  .accordion-gallery--vertical .ag-panel__text,
+  .accordion-gallery--vertical .ag-panel__bar {
+    opacity: 0.9;
+  }
+  .accordion-gallery--vertical .ag-panel--active .ag-panel__text,
+  .accordion-gallery--vertical .ag-panel--active .ag-panel__bar {
+    opacity: 1;
   }
   .accordion-gallery .ag-panel__media {
     width: 100%;
@@ -3195,15 +3203,15 @@ body.waitlist-open {
 }
 
 .waitlist-size-btn {
-  border: 1.5px solid rgba(64, 48, 44, 0.2);
+  border: 1.5px solid rgba(64, 48, 44, 0.35);
   border-radius: 8px;
-  background: transparent;
+  background: rgba(255, 255, 255, 0.4);
   padding: 16px 14px;
   font-family: var(--font-sans);
-  font-size: 17px;
-  font-weight: 500;
+  font-size: 21px;
+  font-weight: 600;
   letter-spacing: 0.08em;
-  color: var(--color-text);
+  color: #1a110e;
   cursor: pointer;
   transition: all var(--motion);
   outline: none;
@@ -3215,11 +3223,11 @@ body.waitlist-open {
 }
 
 .waitlist-size-btn.is-selected {
-  background: var(--color-text, #14100e);
+  background: var(--color-accent, #773A3C);
   color: #FAF6F1;
-  border-color: var(--color-text, #14100e);
+  border-color: var(--color-accent, #773A3C);
   font-weight: 600;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 4px 14px rgba(119, 58, 60, 0.28);
 }
 
 @media (max-width: 480px) {
@@ -3228,9 +3236,9 @@ body.waitlist-open {
     gap: 10px;
   }
   .waitlist-size-btn {
-    padding: 14px 8px;
-    font-size: 15px;
-    font-weight: 500;
+    padding: 15px 10px;
+    font-size: 19px;
+    font-weight: 600;
   }
 }
 
@@ -3687,4 +3695,31 @@ body.waitlist-open .floating-waitlist-btn {
   50% {
     box-shadow: 0 0 0 4px rgba(119, 58, 60, 0.2);
   }
+}
+
+
+.footer-cookie-link {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  transition: opacity 200ms ease, color 200ms ease;
+  letter-spacing: inherit;
+  display: inline-block;
+}
+
+.footer-cookie-link:hover {
+  opacity: 1;
+  color: #B89B72;
+}
+
+.footer-bullet {
+  display: inline-block;
+  margin: 0 8px;
+  opacity: 0.45;
 }

@@ -106,8 +106,8 @@ const mensJackets = [
     views: [
       { label: 'Front Silhouette', src: imgPath('curiosity', 'curiosity_lookbook_1.jpg'), alt: "Curiosity Front Silhouette" },
       { label: 'Profile Silhouette', src: imgPath('curiosity', 'curiosity_lookbook_2.jpg'), alt: "Curiosity Profile Silhouette" },
-      { label: 'Interior Silk', src: 'jackets_original/resized_BEN03202.webp', alt: "Curiosity Interior Silk Lining" },
-      { label: 'Back Tailoring', src: 'jackets_original/resized_BEN03137.webp', alt: "Curiosity Back Tailoring" },
+      { label: 'Interior Silk', src: '/collection-assets/jackets_original/resized_BEN03202.webp', alt: "Curiosity Interior Silk Lining" },
+      { label: 'Back Tailoring', src: '/collection-assets/jackets_original/resized_BEN03137.webp', alt: "Curiosity Back Tailoring" },
       { label: 'Embroidery Detail', src: imgPath('curiosity', 'curiosity_detail.jpg'), alt: "Curiosity Embroidery Detail" },
       { label: 'Evening Perspective', src: imgPath('curiosity', 'curiosity.jpg'), alt: "Curiosity Evening Perspective" }
     ]
@@ -137,7 +137,7 @@ const mensJackets = [
       { label: 'Back Tailoring', src: imgPath('temptation', 'temptation_back.jpg'), alt: "Temptation Back Tailoring" },
       { label: 'Lookbook Perspective', src: imgPath('temptation', 'temptation_lookbook_1.jpg'), alt: "Temptation Lookbook Perspective" },
       { label: 'Editorial Portrait', src: imgPath('temptation', 'temptation_lookbook_2.jpg'), alt: "Temptation Editorial Portrait" },
-      { label: 'Texture & Finish', src: 'jackets_original/resized_BEN03655.webp', alt: "Temptation Texture and Finish" }
+      { label: 'Texture & Finish', src: '/collection-assets/jackets_original/resized_BEN03655.webp', alt: "Temptation Texture and Finish" }
     ]
   },
   {
@@ -161,10 +161,10 @@ const mensJackets = [
     ],
     views: [
       { label: 'Sitting Silhouette', src: imgPath('desire', 'desire.jpg'), alt: "Desire Sitting Silhouette" },
-      { label: 'Standing Portrait', src: 'jackets_original/resized_BEN03515.webp', alt: "Desire Standing Portrait" },
+      { label: 'Standing Portrait', src: '/collection-assets/jackets_original/resized_BEN03515.webp', alt: "Desire Standing Portrait" },
       { label: 'Back Embroidery', src: imgPath('desire', 'desire_back.jpg'), alt: "Desire Back Embroidery" },
-      { label: 'Evening Perspective', src: 'jackets_original/resized_BEN03767.webp', alt: "Desire Evening Perspective" },
-      { label: 'Tonal Needlework', src: 'jackets_original/resized_BEN03619.webp', alt: "Desire Tonal Needlework" },
+      { label: 'Evening Perspective', src: '/collection-assets/jackets_original/resized_BEN03767.webp', alt: "Desire Evening Perspective" },
+      { label: 'Tonal Needlework', src: '/collection-assets/jackets_original/resized_BEN03619.webp', alt: "Desire Tonal Needlework" },
       { label: 'Suede Nap & Detail', src: imgPath('desire', 'desire_detail.jpg'), alt: "Desire Suede Nap Detail" }
     ]
   },
@@ -190,7 +190,7 @@ const mensJackets = [
     views: [
       { label: 'Standing Silhouette', src: imgPath('audacity', 'audacity_lookbook_1.jpg'), alt: "Audacity Standing Silhouette" },
       { label: 'Tailoring & Scarf', src: imgPath('audacity', 'audacity_lookbook_2.jpg'), alt: "Audacity Tailoring and Scarf" },
-      { label: 'Lookbook Perspective', src: 'jackets_original/resized_BEN03893.webp', alt: "Audacity Lookbook Perspective" },
+      { label: 'Lookbook Perspective', src: '/collection-assets/jackets_original/resized_BEN03893.webp', alt: "Audacity Lookbook Perspective" },
       { label: 'Embroidery Detail', src: imgPath('audacity', 'audacity_detail.jpg'), alt: "Audacity Embroidery Detail" },
       { label: 'Back Tailoring', src: imgPath('audacity', 'audacity_back.jpg'), alt: "Audacity Back Tailoring" }
     ]
@@ -216,8 +216,8 @@ const mensJackets = [
     ],
     views: [
       { label: 'Front Silhouette', src: imgPath('insolence', 'insolence.jpg'), alt: "Insolence Front Silhouette" },
-      { label: 'Standing Perspective', src: 'jackets_original/resized_BEN03307.webp', alt: "Insolence Standing Perspective" },
-      { label: 'Editorial Portrait', src: 'jackets_original/resized_BEN03324.webp', alt: "Insolence Editorial Portrait" },
+      { label: 'Standing Perspective', src: '/collection-assets/jackets_original/resized_BEN03307.webp', alt: "Insolence Standing Perspective" },
+      { label: 'Editorial Portrait', src: '/collection-assets/jackets_original/resized_BEN03324.webp', alt: "Insolence Editorial Portrait" },
       { label: 'Embroidery Detail', src: imgPath('insolence', 'insolence_detail.jpg'), alt: "Insolence Embroidery Detail" },
       { label: 'Back Tailoring', src: imgPath('insolence', 'insolence_back.jpg'), alt: "Insolence Back Tailoring" }
     ]
@@ -859,10 +859,14 @@ function createAccordionGallery({
       }
 
       if (bar && text) {
-        if (isActive) {
-          tl.to([bar, text], { opacity: 1, x: 0, duration: dur, ease, stagger: prefersReduced() ? 0 : stagger }, 0);
+        if (isVert) {
+          tl.to([bar, text], { opacity: isActive ? 1 : 0.9, x: 0, duration: dur, ease }, 0);
         } else {
-          tl.to([bar, text], { opacity: 0, x: -14, duration: dur * 0.6, ease }, 0);
+          if (isActive) {
+            tl.to([bar, text], { opacity: 1, x: 0, duration: dur, ease, stagger: prefersReduced() ? 0 : stagger }, 0);
+          } else {
+            tl.to([bar, text], { opacity: 0, x: -14, duration: dur * 0.6, ease }, 0);
+          }
         }
       }
     });
@@ -952,21 +956,21 @@ function createAccordionGallery({
    ------------------------------------------------------------------- */
 
 const wallTiles = [
-  { image: 'jackets_original/resized_BEN03137.webp', title: 'Curiosity · Back Silhouette', jacket: 'men-curiosity' },
-  { image: 'jackets_original/resized_BEN03166.webp', title: 'Curiosity · Profile Silhouette', jacket: 'men-curiosity' },
-  { image: 'jackets_original/resized_BEN03202.webp', title: 'Curiosity · Editorial Perspective', jacket: 'men-curiosity' },
-  { image: 'jackets_original/resized_BEN03655.webp', title: 'Temptation · Suede Tailoring', jacket: 'men-temptation' },
+  { image: '/collection-assets/jackets_original/resized_BEN03137.webp', title: 'Curiosity · Back Silhouette', jacket: 'men-curiosity' },
+  { image: '/collection-assets/jackets_original/resized_BEN03166.webp', title: 'Curiosity · Profile Silhouette', jacket: 'men-curiosity' },
+  { image: '/collection-assets/jackets_original/resized_BEN03202.webp', title: 'Curiosity · Editorial Perspective', jacket: 'men-curiosity' },
+  { image: '/collection-assets/jackets_original/resized_BEN03655.webp', title: 'Temptation · Suede Tailoring', jacket: 'men-temptation' },
   { image: '/collection-assets/collection/nocturne/temptation/temptation.jpg', title: 'Temptation · Front Silhouette', jacket: 'men-temptation' },
-  { image: 'jackets_original/resized_BEN03806.webp', title: 'Desire · Suede Tailoring', jacket: 'men-desire' },
-  { image: 'jackets_original/resized_BEN03515.webp', title: 'Desire · Standing Silhouette', jacket: 'men-desire' },
-  { image: 'jackets_original/resized_BEN03619.webp', title: 'Desire · Tonal Embroidery', jacket: 'men-desire' },
-  { image: 'jackets_original/resized_BEN03767.webp', title: 'Desire · Portrait Perspective', jacket: 'men-desire' },
+  { image: '/collection-assets/jackets_original/resized_BEN03806.webp', title: 'Desire · Suede Tailoring', jacket: 'men-desire' },
+  { image: '/collection-assets/jackets_original/resized_BEN03515.webp', title: 'Desire · Standing Silhouette', jacket: 'men-desire' },
+  { image: '/collection-assets/jackets_original/resized_BEN03619.webp', title: 'Desire · Tonal Embroidery', jacket: 'men-desire' },
+  { image: '/collection-assets/jackets_original/resized_BEN03767.webp', title: 'Desire · Portrait Perspective', jacket: 'men-desire' },
   { image: '/collection-assets/collection/nocturne/desire/desire_editorial_3.jpg', title: 'Desire · Women’s Standing Portrait', jacket: 'women-desire' },
   { image: '/collection-assets/collection/nocturne/audacity/audacity_editorial_1.jpg', title: 'Audacity · Women’s Seated Portrait', jacket: 'women-audacity' },
   { image: '/collection-assets/collection/nocturne/audacity/audacity_lookbook_1.jpg', title: 'Audacity · Suede Tailoring', jacket: 'men-audacity' },
-  { image: 'jackets_original/resized_BEN03893.webp', title: 'Audacity · Lookbook Styling', jacket: 'men-audacity' },
-  { image: 'jackets_original/resized_BEN03307.webp', title: 'Insolence · Suede Tailoring', jacket: 'men-insolence' },
-  { image: 'jackets_original/resized_BEN03324.webp', title: 'Insolence · Male Model Seated', jacket: 'men-insolence' }
+  { image: '/collection-assets/jackets_original/resized_BEN03893.webp', title: 'Audacity · Lookbook Styling', jacket: 'men-audacity' },
+  { image: '/collection-assets/jackets_original/resized_BEN03307.webp', title: 'Insolence · Suede Tailoring', jacket: 'men-insolence' },
+  { image: '/collection-assets/jackets_original/resized_BEN03324.webp', title: 'Insolence · Male Model Seated', jacket: 'men-insolence' }
 ];
 
 function initDriftWall() {
@@ -1467,6 +1471,12 @@ if (document.readyState === 'loading') {
 
     // Document-level listener for dynamically rendered buttons (e.g. inside dynamic product showcase)
     document.addEventListener('click', (e) => {
+      const cookieBtn = e.target.closest('[data-open-cookie-settings]');
+      if (cookieBtn) {
+        e.preventDefault();
+        window.dispatchEvent(new CustomEvent('ekkomi:open-cookie-settings'));
+        return;
+      }
       const target = e.target.closest('#showcaseWaitlistBtn, .btn-join-waitlist, [data-open-waitlist]');
       if (target) {
         e.preventDefault();

@@ -355,3 +355,564 @@ a { color: inherit; text-decoration: none; }
   .closing-button,
   .closing-back-to-top { opacity: 1; transform: none; transition: none; }
 }
+
+
+/* ==========================================================================
+   EKKOMI LUXURY COOKIE & PRIVACY CONSENT BANNER (UK GDPR / PECR)
+   ========================================================================== */
+
+.ekkomi-cookie-banner {
+  position: fixed;
+  bottom: clamp(16px, 2.5vw, 28px);
+  left: 50%;
+  transform: translate(-50%, 30px);
+  width: calc(100% - clamp(24px, 5vw, 64px));
+  max-width: 1040px;
+  background: rgba(23, 23, 21, 0.96);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(184, 155, 114, 0.32);
+  border-radius: 14px;
+  box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.85), 0 0 1px 1px rgba(184, 155, 114, 0.2);
+  z-index: 99990;
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  transition: opacity 450ms cubic-bezier(0.16, 1, 0.3, 1), transform 450ms cubic-bezier(0.16, 1, 0.3, 1), visibility 450ms;
+}
+
+.ekkomi-cookie-banner.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
+  transform: translate(-50%, 0);
+}
+
+.ekkomi-cookie-banner-inner {
+  padding: clamp(20px, 2.8vw, 28px) clamp(22px, 3.2vw, 36px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(20px, 3vw, 40px);
+}
+
+.ekkomi-cookie-banner-content {
+  flex: 1 1 58%;
+  min-width: 0;
+}
+
+.ekkomi-cookie-eyebrow {
+  display: block;
+  font-family: "Goodnight London Sans", -apple-system, sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  font-weight: 500;
+  color: #B89B72;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.ekkomi-cookie-title {
+  font-family: "Italiana", Georgia, serif;
+  font-size: clamp(20px, 2.4vw, 26px);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: 0.04em;
+  color: #FFFDF8;
+  margin: 0 0 10px;
+}
+
+.ekkomi-cookie-text {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: #D9CEC5;
+  margin: 0;
+}
+
+.ekkomi-cookie-inline-links {
+  margin-top: 10px;
+}
+
+.ekkomi-cookie-link-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: "Goodnight London Sans", -apple-system, sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: #B89B72;
+  text-transform: uppercase;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  transition: opacity 200ms ease, color 200ms ease;
+}
+
+.ekkomi-cookie-link-btn:hover {
+  opacity: 0.8;
+  color: #FAF6F1;
+}
+
+.ekkomi-cookie-banner-actions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Button Tokens */
+.ekkomi-cookie-btn {
+  font-family: "Goodnight London Sans", -apple-system, sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  font-weight: 500;
+  text-transform: uppercase;
+  padding: 13px 20px;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 250ms ease;
+  white-space: nowrap;
+  outline: none;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ekkomi-cookie-btn--primary {
+  background: #773A3C;
+  color: #FAF6F1;
+  border: 1px solid rgba(250, 246, 241, 0.35);
+  box-shadow: 0 4px 16px rgba(119, 58, 60, 0.35);
+}
+
+.ekkomi-cookie-btn--primary:hover {
+  background: #8e4648;
+  border-color: rgba(250, 246, 241, 0.6);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(119, 58, 60, 0.5);
+}
+
+.ekkomi-cookie-btn--secondary {
+  background: rgba(255, 255, 255, 0.05);
+  color: #E8E2D9;
+  border: 1px solid rgba(250, 246, 241, 0.24);
+}
+
+.ekkomi-cookie-btn--secondary:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #FFFFFF;
+  border-color: rgba(250, 246, 241, 0.45);
+  transform: translateY(-1px);
+}
+
+.ekkomi-cookie-btn--tertiary {
+  background: transparent;
+  color: #C7BDB4;
+  border: 1px solid rgba(184, 155, 114, 0.25);
+}
+
+.ekkomi-cookie-btn--tertiary:hover {
+  background: rgba(184, 155, 114, 0.1);
+  color: #FFFDF8;
+  border-color: rgba(184, 155, 114, 0.5);
+  transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   COOKIE PREFERENCES MODAL
+   ========================================================================== */
+
+.ekkomi-cookie-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: rgba(10, 8, 7, 0.82);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  transition: opacity 350ms ease, visibility 350ms;
+}
+
+.ekkomi-cookie-modal-backdrop.is-open {
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
+}
+
+.ekkomi-cookie-modal-card {
+  width: 100%;
+  max-width: 660px;
+  max-height: min(88vh, 760px);
+  background: #1B1715;
+  border: 1px solid rgba(184, 155, 114, 0.35);
+  border-radius: 16px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.9), 0 0 2px 1px rgba(184, 155, 114, 0.25);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transform: scale(0.96) translateY(12px);
+  transition: transform 350ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ekkomi-cookie-modal-backdrop.is-open .ekkomi-cookie-modal-card {
+  transform: scale(1) translateY(0);
+}
+
+.ekkomi-cookie-modal-header {
+  padding: clamp(20px, 3vw, 28px) clamp(22px, 3.5vw, 32px) 16px;
+  border-bottom: 1px solid rgba(184, 155, 114, 0.15);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.ekkomi-cookie-modal-kicker {
+  display: block;
+  font-family: "Goodnight London Sans", -apple-system, sans-serif;
+  font-size: 9.5px;
+  letter-spacing: 0.24em;
+  font-weight: 500;
+  color: #B89B72;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.ekkomi-cookie-modal-title {
+  font-family: "Italiana", Georgia, serif;
+  font-size: clamp(22px, 3vw, 28px);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: #FFFDF8;
+  margin: 0;
+}
+
+.ekkomi-cookie-modal-close {
+  background: transparent;
+  border: 1px solid rgba(250, 246, 241, 0.2);
+  color: #D9CEC5;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  transition: all 200ms ease;
+}
+
+.ekkomi-cookie-modal-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #FFFFFF;
+  border-color: rgba(250, 246, 241, 0.5);
+}
+
+.ekkomi-cookie-modal-body {
+  padding: 20px clamp(22px, 3.5vw, 32px);
+  overflow-y: auto;
+  flex: 1 1 auto;
+}
+
+.ekkomi-cookie-modal-intro {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: #D2C8BF;
+  margin: 0 0 20px;
+}
+
+.ekkomi-cookie-categories {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ekkomi-cookie-category-item {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(184, 155, 114, 0.16);
+  border-radius: 10px;
+  padding: 16px 18px;
+  transition: border-color 200ms ease;
+}
+
+.ekkomi-cookie-category-item:hover {
+  border-color: rgba(184, 155, 114, 0.32);
+}
+
+.ekkomi-cookie-category-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.ekkomi-cookie-category-info {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.ekkomi-cookie-category-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+
+.ekkomi-cookie-category-title-row.is-clickable {
+  cursor: pointer;
+}
+
+.ekkomi-cookie-category-name {
+  font-family: "Italiana", Georgia, serif;
+  font-size: 17px;
+  letter-spacing: 0.03em;
+  color: #FAF6F1;
+}
+
+.ekkomi-cookie-badge {
+  font-family: "Goodnight London Sans", -apple-system, sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  text-transform: uppercase;
+}
+
+.ekkomi-cookie-badge--active {
+  background: rgba(184, 155, 114, 0.2);
+  color: #E2CEB3;
+  border: 1px solid rgba(184, 155, 114, 0.35);
+}
+
+.ekkomi-cookie-category-desc {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 11.5px;
+  line-height: 1.55;
+  color: #B5AAA1;
+  margin: 0;
+}
+
+/* Custom Luxury Switch */
+.ekkomi-cookie-switch-wrapper {
+  flex: 0 0 auto;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  padding-top: 2px;
+}
+
+.ekkomi-cookie-switch-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  margin: 0;
+}
+
+.ekkomi-cookie-switch-track {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(250, 246, 241, 0.2);
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 250ms ease;
+}
+
+.ekkomi-cookie-switch-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  background: #C7BDB4;
+  border-radius: 50%;
+  transition: all 250ms cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.ekkomi-cookie-switch-track.is-checked {
+  background: #773A3C;
+  border-color: rgba(250, 246, 241, 0.45);
+}
+
+.ekkomi-cookie-switch-track.is-checked .ekkomi-cookie-switch-thumb {
+  transform: translateX(20px);
+  background: #FAF6F1;
+}
+
+.ekkomi-cookie-switch-track.is-disabled-checked {
+  background: rgba(184, 155, 114, 0.28);
+  border-color: rgba(184, 155, 114, 0.4);
+  cursor: not-allowed;
+  opacity: 0.85;
+}
+
+.ekkomi-cookie-switch-track.is-disabled-checked .ekkomi-cookie-switch-thumb {
+  transform: translateX(20px);
+  background: #E2CEB3;
+}
+
+/* Policy Accordion Section */
+.ekkomi-cookie-policy-section {
+  margin-top: 18px;
+  border-top: 1px solid rgba(184, 155, 114, 0.15);
+  padding-top: 14px;
+}
+
+.ekkomi-cookie-policy-toggle {
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 6px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: "Goodnight London Sans", -apple-system, sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: #B89B72;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.ekkomi-cookie-policy-toggle:hover {
+  color: #FAF6F1;
+}
+
+.ekkomi-cookie-policy-arrow {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.ekkomi-cookie-policy-content {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: #B5AAA1;
+  padding-top: 10px;
+}
+
+.ekkomi-cookie-policy-content ul {
+  padding-left: 18px;
+  margin: 8px 0;
+}
+
+.ekkomi-cookie-policy-content li {
+  margin-bottom: 4px;
+}
+
+.ekkomi-cookie-text-link {
+  color: #B89B72;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.ekkomi-cookie-text-link:hover {
+  color: #FAF6F1;
+}
+
+/* Modal Footer */
+.ekkomi-cookie-modal-footer {
+  padding: 16px clamp(22px, 3.5vw, 32px);
+  border-top: 1px solid rgba(184, 155, 114, 0.15);
+  background: rgba(18, 15, 13, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.ekkomi-cookie-modal-footer-secondary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Persistent Footer Cookie Link */
+.footer-cookie-link {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  transition: opacity 200ms ease, color 200ms ease;
+  letter-spacing: inherit;
+  display: inline-block;
+}
+
+.footer-cookie-link:hover {
+  opacity: 1;
+  color: #B89B72;
+}
+
+.footer-bullet {
+  display: inline-block;
+  margin: 0 8px;
+  opacity: 0.45;
+}
+
+/* ==========================================================================
+   RESPONSIVE LAYOUTS (MOBILE & TABLET)
+   ========================================================================== */
+
+@media (max-width: 820px) {
+  .ekkomi-cookie-banner-inner {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 18px;
+    padding: 18px 20px;
+  }
+
+  .ekkomi-cookie-banner-actions {
+    flex-direction: column;
+    width: 100%;
+    gap: 8px;
+  }
+
+  .ekkomi-cookie-banner-actions .ekkomi-cookie-btn {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 10.5px;
+  }
+
+  .ekkomi-cookie-modal-card {
+    max-height: 92vh;
+  }
+
+  .ekkomi-cookie-modal-footer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .ekkomi-cookie-modal-footer .ekkomi-cookie-btn {
+    width: 100%;
+  }
+
+  .ekkomi-cookie-modal-footer-secondary {
+    flex-direction: column;
+    width: 100%;
+    gap: 8px;
+  }
+}

@@ -188,7 +188,17 @@ export default function StoryExperience() {
           <div className="hero-overlay">
             <header className="site-header">
               <a className="brand-logo" href="#story" aria-label="EKKOMI home">
-                <img src="/logo/logo.svg" alt="EKKOMI" />
+                <img
+                  src="/logo/logo-2.png"
+                  alt="EKKOMI"
+                  decoding="async"
+                  onError={(e) => {
+                    const img = e.currentTarget as HTMLImageElement;
+                    if (!img.src.endsWith("/logo.svg")) {
+                      img.src = "/logo/logo.svg";
+                    }
+                  }}
+                />
               </a>
               <button
                 className="menu-toggle"
@@ -254,6 +264,14 @@ export default function StoryExperience() {
           </div>
           <div className="footer-bottom">
             <span>© 2026 EKKOMI. All rights reserved.</span>
+            <span className="footer-bullet" aria-hidden="true">•</span>
+            <button
+              type="button"
+              className="footer-cookie-link"
+              onClick={() => window.dispatchEvent(new CustomEvent("ekkomi:open-cookie-settings"))}
+            >
+              Cookie Preferences
+            </button>
           </div>
         </div>
       </footer>
