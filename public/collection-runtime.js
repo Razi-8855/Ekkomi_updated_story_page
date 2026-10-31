@@ -559,10 +559,14 @@ function renderShowcase(jacket) {
                   <span class="stock-pulse-dot" aria-hidden="true"></span>
                   <span>Out of stock &mdash; Available exclusively via priority waitlist</span>
                 </div>
-              ` : ''}
-              <button type="button" class="showcase-waitlist-btn btn-join-waitlist" id="showcaseWaitlistBtn" data-open-waitlist>
-                ${jacket.inStock === false ? 'OUT OF STOCK &mdash; JOIN THE WAITING LIST' : 'JOIN THE WAITING LIST'}
-              </button>
+                <button type="button" class="showcase-notify-btn btn-notify-when-available" id="showcaseNotifyBtn" data-jacket-key="${jacket.key}" data-collection="${jacket.gender}" data-jacket-name="${jacket.impulse}">
+                  NOTIFY ME WHEN AVAILABLE
+                </button>
+              ` : `
+                <button type="button" class="showcase-waitlist-btn btn-join-waitlist" id="showcaseWaitlistBtn" data-open-waitlist>
+                  JOIN THE WAITING LIST
+                </button>
+              `}
             </div>
           </div>
         </div>
@@ -699,25 +703,8 @@ function selectJacket(id, { scroll = false, fromAccordion = false, fromDepartmen
     window.pendingWaitlistTimer = null;
   }
 
-  // If user clicked this jacket and it is marked out of stock,
-  // allow customer to explore the jacket and clearly see OUT OF STOCK first,
-  // then trigger the waitlist popup!
-  if (userInitiated && item.inStock === false) {
-    window.pendingWaitlistTimer = setTimeout(() => {
-      window.pendingWaitlistTimer = null;
-      if (window.EkkomiWaitlist && window.EkkomiWaitlist.open) {
-        window.EkkomiWaitlist.open({
-          collection: item.gender,
-          jacketKey: item.key,
-          jacketName: item.impulse,
-          jacketNumber: item.number,
-          jacketHex: item.hex,
-          jacketColour: item.colour,
-          outOfStock: true
-        });
-      }
-    }, 2400); // 2.4s gives customer time to scroll to showcase and clearly see OUT OF STOCK first
-  }
+  // Out-of-stock jackets display prominent 'NOTIFY ME WHEN AVAILABLE' CTA in showcase.
+  // Popup is user-initiated by clicking the button, not auto-interrupted by timer.
 }
 
 /* -------------------------------------------------------------------
@@ -1262,11 +1249,54 @@ if (document.readyState === 'loading') {
   // Configurable available sizes (centralised for future adjustment)
   const AVAILABLE_SIZES = ['M', 'L', 'XL'];
 
+  const CONSENT_STORAGE_KEY = 'ekkomi_cookie_consent';
+  const DRAFT_STORAGE_KEY = 'ekkomi_waitlist_draft';
+  const CONSENT_POLICY_VERSION = '2026-10-v1';
+  const DRAFT_LIFETIME_MS = 7 * 24 * 60 * 60 * 1000;
+
+  function hasFunctionalStorageConsent() {
+    try {
+      const value = JSON.parse(localStorage.getItem(CONSENT_STORAGE_KEY) || 'null');
+      return value?.necessary === true &&
+        value?.functional === true &&
+        value?.policyVersion === CONSENT_POLICY_VERSION &&
+        Number(value?.expiresAt) > Date.now();
+    } catch {
+      return false;
+    }
+  }
+
+  function readWaitlistDraft() {
+    if (!hasFunctionalStorageConsent()) return null;
+    try {
+      const raw = localStorage.getItem(DRAFT_STORAGE_KEY);
+      if (!raw) return null;
+      const draft = JSON.parse(raw);
+      const age = Date.now() - Number(draft?.savedAt);
+      const jackets = JACKET_CATALOG[draft?.collection?.toLowerCase()] || [];
+      const jacket = jackets.find((item) => item.key === draft?.jacketKey);
+      if (
+        !Number.isFinite(age) || age < 0 || age > DRAFT_LIFETIME_MS ||
+        !jacket || !['XS', 'S', 'M', 'L', 'XL', 'XXL'].includes(draft?.size) ||
+        typeof draft?.fullName !== 'string' ||
+        typeof draft?.email !== 'string' ||
+        typeof draft?.phone !== 'string'
+      ) {
+        localStorage.removeItem(DRAFT_STORAGE_KEY);
+        return null;
+      }
+      return { ...draft, collection: draft.collection.toLowerCase(), jacket };
+    } catch {
+      try { localStorage.removeItem(DRAFT_STORAGE_KEY); } catch { }
+      return null;
+    }
+  }
+
+
   // Optional automatic appearance configuration
   const AUTO_POPUP_CONFIG = {
     enabled: false, // Automatically opens first when customer enters collection page
     delayMs: 600,
-    storageKey: 'ekkomi_waitlist_dismissed'
   };
 
   // Backend API Configuration (Local Dev & Hosted Supabase Edge Function)
@@ -1477,6 +1507,25 @@ if (document.readyState === 'loading') {
         window.dispatchEvent(new CustomEvent('ekkomi:open-cookie-settings'));
         return;
       }
+      const notifyBtn = e.target.closest('.btn-notify-when-available, #showcaseNotifyBtn, [data-notify-jacket]');
+      if (notifyBtn) {
+        e.preventDefault();
+        const activeDept = notifyBtn.dataset.collection || window.currentSelectedDepartment || document.body.dataset.activeDepartment || 'men';
+        const activeJacketKey = notifyBtn.dataset.jacketKey || (window.currentSelectedJacket ? window.currentSelectedJacket.key : null);
+        const catalog = JACKET_CATALOG[activeDept] || mensJackets;
+        const jacketObj = (catalog && catalog.find(j => j.key === activeJacketKey)) || window.currentSelectedJacket;
+
+        openWaitlist({
+          collection: activeDept,
+          jacketKey: activeJacketKey,
+          jacketName: jacketObj ? (jacketObj.impulse || jacketObj.name) : null,
+          jacketNumber: jacketObj ? jacketObj.number : null,
+          jacketHex: jacketObj ? jacketObj.hex : null,
+          jacketColour: jacketObj ? jacketObj.colour : null,
+          outOfStock: true
+        });
+        return;
+      }
       const target = e.target.closest('#showcaseWaitlistBtn, .btn-join-waitlist, [data-open-waitlist]');
       if (target) {
         e.preventDefault();
@@ -1522,6 +1571,15 @@ if (document.readyState === 'loading') {
   let previouslyFocusedElement = null;
 
   function openWaitlist(preselects = {}) {
+    const savedDraft = !preselects.collection && !preselects.jacketKey ? readWaitlistDraft() : null;
+    if (savedDraft) {
+      preselects = {
+        ...preselects,
+        collection: savedDraft.collection,
+        jacketKey: savedDraft.jacket.key,
+        restoreDraft: savedDraft
+      };
+    }
     if (state.isOpen && !preselects.collection && !preselects.jacketKey) {
       return;
     }
@@ -1535,6 +1593,18 @@ if (document.readyState === 'loading') {
 
     state.isOpen = true;
     state.outOfStock = !!preselects.outOfStock;
+    if (preselects.restoreDraft) {
+      state.size = preselects.restoreDraft.size;
+      state.fullName = preselects.restoreDraft.fullName;
+      state.email = preselects.restoreDraft.email;
+      state.phone = preselects.restoreDraft.phone;
+      const nameInput = document.getElementById('waitlistFullName');
+      const emailInput = document.getElementById('waitlistEmail');
+      const phoneInput = document.getElementById('waitlistPhone');
+      if (nameInput) nameInput.value = preselects.restoreDraft.fullName;
+      if (emailInput) emailInput.value = preselects.restoreDraft.email;
+      if (phoneInput) phoneInput.value = preselects.restoreDraft.phone;
+    }
     document.body.classList.add('waitlist-open');
 
     // Preselect collection if passed or keep existing
@@ -1551,8 +1621,11 @@ if (document.readyState === 'loading') {
       }
     }
 
-    // Reset to Step 1 by default, or Step 4 if both collection and jacket are already chosen
-    if (preselects.jacketKey && preselects.collection) {
+    // Resume an interrupted draft only after explicit Functional consent.
+    if (preselects.restoreDraft) {
+      state.history = [1, 2, 3, 4];
+      goToStep(5, false);
+    } else if (preselects.jacketKey && preselects.collection) {
       state.history = [1, 2, 3];
       goToStep(4, false);
     } else {
@@ -1581,10 +1654,6 @@ if (document.readyState === 'loading') {
       try { previouslyFocusedElement.focus(); } catch (e) { }
     }
 
-    // Remember dismissal
-    try {
-      localStorage.setItem(AUTO_POPUP_CONFIG.storageKey, 'true');
-    } catch (e) { }
   }
 
   function goToStep(stepNum, pushHistory = true) {
@@ -1871,7 +1940,6 @@ if (document.readyState === 'loading') {
     };
 
     // Prepare Confirmation Email Text (for backend dispatch)
-    payload.confirmationEmail = generateConfirmationEmail(payload);
 
     // Prevent duplicate submissions & set loading state
     state.isSubmitting = true;
@@ -1889,17 +1957,20 @@ if (document.readyState === 'loading') {
         payload.b_company_url = honeypotInput.value;
       }
 
-      // Save a local draft so if there is a network drop, details are not lost
-      try {
-        localStorage.setItem('ekkomi_waitlist_draft', JSON.stringify({
-          collection: payload.collection,
-          jacketKey: state.jacket ? state.jacket.key : null,
-          size: payload.size,
-          fullName: payload.fullName,
-          email: payload.email,
-          phone: payload.phone
-        }));
-      } catch (storageErr) { }
+      // Store draft details only when the visitor has enabled Functional storage.
+      if (hasFunctionalStorageConsent()) {
+        try {
+          localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify({
+            collection: payload.collection,
+            jacketKey: state.jacket ? state.jacket.key : null,
+            size: payload.size,
+            fullName: payload.fullName,
+            email: payload.email,
+            phone: payload.phone,
+            savedAt: Date.now()
+          }));
+        } catch { }
+      }
 
       // Attempt to post to real backend endpoint
       const endpoint = BACKEND_CONFIG.getEndpoint();
@@ -1934,11 +2005,23 @@ if (document.readyState === 'loading') {
         if (phoneInput) phoneInput.value = '';
         if (consentInput) consentInput.checked = false;
 
-        try {
-          localStorage.removeItem('ekkomi_waitlist_draft');
-        } catch (e) { }
+        if (hasFunctionalStorageConsent()) {
+          try { localStorage.removeItem(DRAFT_STORAGE_KEY); } catch { }
+        }
 
-        goToStep(6, false);
+        try {
+          sessionStorage.setItem('ekkomi_waitlist_success', JSON.stringify({
+            jacketName: state.jacket ? state.jacket.name : '',
+            size: state.size || '',
+            collection: state.collection || '',
+            registrationId: state.registrationId || '',
+            timestamp: Date.now()
+          }));
+        } catch { }
+
+        // Client requirement: redirect browser to dedicated /thank-you page
+        window.location.href = '/thank-you';
+        return;
       } else {
         // Keep customer details intact and show specific error
         showError('generalFormError', errorMessage);
@@ -1952,14 +2035,6 @@ if (document.readyState === 'loading') {
       if (btnText) btnText.textContent = 'JOIN THE WAITING LIST';
       if (btnSpinner) btnSpinner.classList.add('is-hidden');
     }
-  }
-
-  function generateConfirmationEmail(data) {
-    return {
-      to: data.email,
-      subject: 'Your EKKOMI NOCTURNE Waiting List Confirmation',
-      body: `Thank you for joining the EKKOMI NOCTURNE waiting list.\n\nWe've successfully received your request for the following piece:\n\nCollection: ${data.collection}\nJacket: ${data.jacketName}\nSize: ${data.size}\n\nWe'll notify you about your selected jacket's availability.\n\nThank you for your interest in EKKOMI.\n\nEKKOMI`
-    };
   }
 
   function showError(elementId, msg) {
@@ -1995,4 +2070,3 @@ if (document.readyState === 'loading') {
   };
 
 })();
-

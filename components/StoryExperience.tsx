@@ -14,7 +14,7 @@ const baseSceneDuration = 2;
 const introDuration = 1;
 const captionFade = 0.12;
 const captionHold = 1;
-const finalHold = 1;
+const finalHold = 0.25;
 const sceneStarts = scenes.map((_, index) =>
   scenes.slice(0, index).reduce((total, scene) => total + scene.count, 0)
 );
@@ -108,7 +108,16 @@ export default function StoryExperience() {
         trigger: host,
         pin: screen,
         start: "top top",
-        end: () => `+=${Math.round(window.innerHeight * totalScrollUnits)}`,
+        end: () => {
+          const sceneTimelineUnits = captionFade * 2 + captionHold + sceneDurations[0];
+          const targetSceneVh = window.matchMedia("(max-width: 767px)").matches
+            ? 1
+            : window.matchMedia("(max-width: 1023px)").matches
+              ? 1.35
+              : 1.75;
+          const scrollScale = targetSceneVh / sceneTimelineUnits;
+          return `+=${Math.round(window.innerHeight * totalScrollUnits * scrollScale)}`;
+        },
         scrub: 0.4,
         invalidateOnRefresh: true,
         onUpdate: syncHeaderState,
@@ -210,7 +219,7 @@ export default function StoryExperience() {
               </button>
               <nav className={menuOpen ? "nav-open" : ""} aria-label="Main navigation">
                 <a href="#story" onClick={navigateToStoryIntro}>STORY</a>
-                <a href="#collection" onClick={closeMenu}>COLLECTION</a>
+                <a href="/collection" onClick={closeMenu}>COLLECTION</a>
                 <a href="#contact" onClick={closeMenu}>CONTACT</a>
               </nav>
             </header>
@@ -260,6 +269,9 @@ export default function StoryExperience() {
                 </svg>
                 <span>info@ekkomi.co.uk</span>
               </a>
+              <button className="footer-contact-link footer-cookie-settings" type="button" data-cookie-settings-trigger>
+                COOKIE SETTINGS
+              </button>
             </div>
           </div>
           <div className="footer-bottom">

@@ -2719,7 +2719,7 @@ h1 {
   background: rgba(119, 58, 60, 0.04);
 }
 
-.showcase-waitlist-btn {
+.showcase-notify-btn, .showcase-waitlist-btn {
   background: var(--color-text, #14100e);
   color: #FAF6F1;
   border: 1px solid var(--color-text, #14100e);
@@ -3722,4 +3722,35 @@ body.waitlist-open .floating-waitlist-btn {
   display: inline-block;
   margin: 0 8px;
   opacity: 0.45;
+}
+
+
+/* ==========================================================================
+   SHOWCASE NOTIFY ME WHEN AVAILABLE BUTTON
+   ========================================================================== */
+.showcase-notify-btn {
+  display: block;
+  width: 100%;
+  padding: 16px 28px;
+  border-radius: 9999px;
+  background: #773A3C;
+  color: #FAF6F1;
+  border: 1px solid rgba(250, 246, 241, 0.35);
+  font-family: var(--font-sans, "Goodnight London Sans", -apple-system, sans-serif);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(119, 58, 60, 0.35);
+  transition: all 250ms ease;
+  margin-top: 14px;
+  text-align: center;
+  outline: none;
+}
+
+.showcase-notify-btn:hover {
+  background: #8e4648;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(119, 58, 60, 0.5);
 }
