@@ -106,8 +106,8 @@ const mensJackets = [
     views: [
       { label: 'Front Silhouette', src: imgPath('curiosity', 'curiosity_lookbook_1.jpg'), alt: "Curiosity Front Silhouette" },
       { label: 'Profile Silhouette', src: imgPath('curiosity', 'curiosity_lookbook_2.jpg'), alt: "Curiosity Profile Silhouette" },
-      { label: 'Interior Silk', src: 'jackets_original/resized_BEN03202.webp', alt: "Curiosity Interior Silk Lining" },
-      { label: 'Back Tailoring', src: 'jackets_original/resized_BEN03137.webp', alt: "Curiosity Back Tailoring" },
+      { label: 'Interior Silk', src: '/collection-assets/jackets_original/resized_BEN03202.webp', alt: "Curiosity Interior Silk Lining" },
+      { label: 'Back Tailoring', src: '/collection-assets/jackets_original/resized_BEN03137.webp', alt: "Curiosity Back Tailoring" },
       { label: 'Embroidery Detail', src: imgPath('curiosity', 'curiosity_detail.jpg'), alt: "Curiosity Embroidery Detail" },
       { label: 'Evening Perspective', src: imgPath('curiosity', 'curiosity.jpg'), alt: "Curiosity Evening Perspective" }
     ]
@@ -137,7 +137,7 @@ const mensJackets = [
       { label: 'Back Tailoring', src: imgPath('temptation', 'temptation_back.jpg'), alt: "Temptation Back Tailoring" },
       { label: 'Lookbook Perspective', src: imgPath('temptation', 'temptation_lookbook_1.jpg'), alt: "Temptation Lookbook Perspective" },
       { label: 'Editorial Portrait', src: imgPath('temptation', 'temptation_lookbook_2.jpg'), alt: "Temptation Editorial Portrait" },
-      { label: 'Texture & Finish', src: 'jackets_original/resized_BEN03655.webp', alt: "Temptation Texture and Finish" }
+      { label: 'Texture & Finish', src: '/collection-assets/jackets_original/resized_BEN03655.webp', alt: "Temptation Texture and Finish" }
     ]
   },
   {
@@ -161,10 +161,10 @@ const mensJackets = [
     ],
     views: [
       { label: 'Sitting Silhouette', src: imgPath('desire', 'desire.jpg'), alt: "Desire Sitting Silhouette" },
-      { label: 'Standing Portrait', src: 'jackets_original/resized_BEN03515.webp', alt: "Desire Standing Portrait" },
+      { label: 'Standing Portrait', src: '/collection-assets/jackets_original/resized_BEN03515.webp', alt: "Desire Standing Portrait" },
       { label: 'Back Embroidery', src: imgPath('desire', 'desire_back.jpg'), alt: "Desire Back Embroidery" },
-      { label: 'Evening Perspective', src: 'jackets_original/resized_BEN03767.webp', alt: "Desire Evening Perspective" },
-      { label: 'Tonal Needlework', src: 'jackets_original/resized_BEN03619.webp', alt: "Desire Tonal Needlework" },
+      { label: 'Evening Perspective', src: '/collection-assets/jackets_original/resized_BEN03767.webp', alt: "Desire Evening Perspective" },
+      { label: 'Tonal Needlework', src: '/collection-assets/jackets_original/resized_BEN03619.webp', alt: "Desire Tonal Needlework" },
       { label: 'Suede Nap & Detail', src: imgPath('desire', 'desire_detail.jpg'), alt: "Desire Suede Nap Detail" }
     ]
   },
@@ -190,7 +190,7 @@ const mensJackets = [
     views: [
       { label: 'Standing Silhouette', src: imgPath('audacity', 'audacity_lookbook_1.jpg'), alt: "Audacity Standing Silhouette" },
       { label: 'Tailoring & Scarf', src: imgPath('audacity', 'audacity_lookbook_2.jpg'), alt: "Audacity Tailoring and Scarf" },
-      { label: 'Lookbook Perspective', src: 'jackets_original/resized_BEN03893.webp', alt: "Audacity Lookbook Perspective" },
+      { label: 'Lookbook Perspective', src: '/collection-assets/jackets_original/resized_BEN03893.webp', alt: "Audacity Lookbook Perspective" },
       { label: 'Embroidery Detail', src: imgPath('audacity', 'audacity_detail.jpg'), alt: "Audacity Embroidery Detail" },
       { label: 'Back Tailoring', src: imgPath('audacity', 'audacity_back.jpg'), alt: "Audacity Back Tailoring" }
     ]
@@ -216,8 +216,8 @@ const mensJackets = [
     ],
     views: [
       { label: 'Front Silhouette', src: imgPath('insolence', 'insolence.jpg'), alt: "Insolence Front Silhouette" },
-      { label: 'Standing Perspective', src: 'jackets_original/resized_BEN03307.webp', alt: "Insolence Standing Perspective" },
-      { label: 'Editorial Portrait', src: 'jackets_original/resized_BEN03324.webp', alt: "Insolence Editorial Portrait" },
+      { label: 'Standing Perspective', src: '/collection-assets/jackets_original/resized_BEN03307.webp', alt: "Insolence Standing Perspective" },
+      { label: 'Editorial Portrait', src: '/collection-assets/jackets_original/resized_BEN03324.webp', alt: "Insolence Editorial Portrait" },
       { label: 'Embroidery Detail', src: imgPath('insolence', 'insolence_detail.jpg'), alt: "Insolence Embroidery Detail" },
       { label: 'Back Tailoring', src: imgPath('insolence', 'insolence_back.jpg'), alt: "Insolence Back Tailoring" }
     ]
@@ -952,21 +952,21 @@ function createAccordionGallery({
    ------------------------------------------------------------------- */
 
 const wallTiles = [
-  { image: 'jackets_original/resized_BEN03137.webp', title: 'Curiosity · Back Silhouette', jacket: 'men-curiosity' },
-  { image: 'jackets_original/resized_BEN03166.webp', title: 'Curiosity · Profile Silhouette', jacket: 'men-curiosity' },
-  { image: 'jackets_original/resized_BEN03202.webp', title: 'Curiosity · Editorial Perspective', jacket: 'men-curiosity' },
-  { image: 'jackets_original/resized_BEN03655.webp', title: 'Temptation · Suede Tailoring', jacket: 'men-temptation' },
+  { image: '/collection-assets/jackets_original/resized_BEN03137.webp', title: 'Curiosity · Back Silhouette', jacket: 'men-curiosity' },
+  { image: '/collection-assets/jackets_original/resized_BEN03166.webp', title: 'Curiosity · Profile Silhouette', jacket: 'men-curiosity' },
+  { image: '/collection-assets/jackets_original/resized_BEN03202.webp', title: 'Curiosity · Editorial Perspective', jacket: 'men-curiosity' },
+  { image: '/collection-assets/jackets_original/resized_BEN03655.webp', title: 'Temptation · Suede Tailoring', jacket: 'men-temptation' },
   { image: '/collection-assets/collection/nocturne/temptation/temptation.jpg', title: 'Temptation · Front Silhouette', jacket: 'men-temptation' },
-  { image: 'jackets_original/resized_BEN03806.webp', title: 'Desire · Suede Tailoring', jacket: 'men-desire' },
-  { image: 'jackets_original/resized_BEN03515.webp', title: 'Desire · Standing Silhouette', jacket: 'men-desire' },
-  { image: 'jackets_original/resized_BEN03619.webp', title: 'Desire · Tonal Embroidery', jacket: 'men-desire' },
-  { image: 'jackets_original/resized_BEN03767.webp', title: 'Desire · Portrait Perspective', jacket: 'men-desire' },
+  { image: '/collection-assets/jackets_original/resized_BEN03806.webp', title: 'Desire · Suede Tailoring', jacket: 'men-desire' },
+  { image: '/collection-assets/jackets_original/resized_BEN03515.webp', title: 'Desire · Standing Silhouette', jacket: 'men-desire' },
+  { image: '/collection-assets/jackets_original/resized_BEN03619.webp', title: 'Desire · Tonal Embroidery', jacket: 'men-desire' },
+  { image: '/collection-assets/jackets_original/resized_BEN03767.webp', title: 'Desire · Portrait Perspective', jacket: 'men-desire' },
   { image: '/collection-assets/collection/nocturne/desire/desire_editorial_3.jpg', title: 'Desire · Women’s Standing Portrait', jacket: 'women-desire' },
   { image: '/collection-assets/collection/nocturne/audacity/audacity_editorial_1.jpg', title: 'Audacity · Women’s Seated Portrait', jacket: 'women-audacity' },
   { image: '/collection-assets/collection/nocturne/audacity/audacity_lookbook_1.jpg', title: 'Audacity · Suede Tailoring', jacket: 'men-audacity' },
-  { image: 'jackets_original/resized_BEN03893.webp', title: 'Audacity · Lookbook Styling', jacket: 'men-audacity' },
-  { image: 'jackets_original/resized_BEN03307.webp', title: 'Insolence · Suede Tailoring', jacket: 'men-insolence' },
-  { image: 'jackets_original/resized_BEN03324.webp', title: 'Insolence · Male Model Seated', jacket: 'men-insolence' }
+  { image: '/collection-assets/jackets_original/resized_BEN03893.webp', title: 'Audacity · Lookbook Styling', jacket: 'men-audacity' },
+  { image: '/collection-assets/jackets_original/resized_BEN03307.webp', title: 'Insolence · Suede Tailoring', jacket: 'men-insolence' },
+  { image: '/collection-assets/jackets_original/resized_BEN03324.webp', title: 'Insolence · Male Model Seated', jacket: 'men-insolence' }
 ];
 
 function initDriftWall() {
@@ -1258,11 +1258,54 @@ if (document.readyState === 'loading') {
   // Configurable available sizes (centralised for future adjustment)
   const AVAILABLE_SIZES = ['M', 'L', 'XL'];
 
+  const CONSENT_STORAGE_KEY = 'ekkomi_cookie_consent';
+  const DRAFT_STORAGE_KEY = 'ekkomi_waitlist_draft';
+  const CONSENT_POLICY_VERSION = '2026-10-v1';
+  const DRAFT_LIFETIME_MS = 7 * 24 * 60 * 60 * 1000;
+
+  function hasFunctionalStorageConsent() {
+    try {
+      const value = JSON.parse(localStorage.getItem(CONSENT_STORAGE_KEY) || 'null');
+      return value?.necessary === true &&
+        value?.functional === true &&
+        value?.policyVersion === CONSENT_POLICY_VERSION &&
+        Number(value?.expiresAt) > Date.now();
+    } catch {
+      return false;
+    }
+  }
+
+  function readWaitlistDraft() {
+    if (!hasFunctionalStorageConsent()) return null;
+    try {
+      const raw = localStorage.getItem(DRAFT_STORAGE_KEY);
+      if (!raw) return null;
+      const draft = JSON.parse(raw);
+      const age = Date.now() - Number(draft?.savedAt);
+      const jackets = JACKET_CATALOG[draft?.collection?.toLowerCase()] || [];
+      const jacket = jackets.find((item) => item.key === draft?.jacketKey);
+      if (
+        !Number.isFinite(age) || age < 0 || age > DRAFT_LIFETIME_MS ||
+        !jacket || !['XS', 'S', 'M', 'L', 'XL', 'XXL'].includes(draft?.size) ||
+        typeof draft?.fullName !== 'string' ||
+        typeof draft?.email !== 'string' ||
+        typeof draft?.phone !== 'string'
+      ) {
+        localStorage.removeItem(DRAFT_STORAGE_KEY);
+        return null;
+      }
+      return { ...draft, collection: draft.collection.toLowerCase(), jacket };
+    } catch {
+      try { localStorage.removeItem(DRAFT_STORAGE_KEY); } catch { }
+      return null;
+    }
+  }
+
+
   // Optional automatic appearance configuration
   const AUTO_POPUP_CONFIG = {
     enabled: false, // Automatically opens first when customer enters collection page
     delayMs: 600,
-    storageKey: 'ekkomi_waitlist_dismissed'
   };
 
   // Backend API Configuration (Local Dev & Hosted Supabase Edge Function)
@@ -1512,6 +1555,15 @@ if (document.readyState === 'loading') {
   let previouslyFocusedElement = null;
 
   function openWaitlist(preselects = {}) {
+    const savedDraft = !preselects.collection && !preselects.jacketKey ? readWaitlistDraft() : null;
+    if (savedDraft) {
+      preselects = {
+        ...preselects,
+        collection: savedDraft.collection,
+        jacketKey: savedDraft.jacket.key,
+        restoreDraft: savedDraft
+      };
+    }
     if (state.isOpen && !preselects.collection && !preselects.jacketKey) {
       return;
     }
@@ -1525,6 +1577,18 @@ if (document.readyState === 'loading') {
 
     state.isOpen = true;
     state.outOfStock = !!preselects.outOfStock;
+    if (preselects.restoreDraft) {
+      state.size = preselects.restoreDraft.size;
+      state.fullName = preselects.restoreDraft.fullName;
+      state.email = preselects.restoreDraft.email;
+      state.phone = preselects.restoreDraft.phone;
+      const nameInput = document.getElementById('waitlistFullName');
+      const emailInput = document.getElementById('waitlistEmail');
+      const phoneInput = document.getElementById('waitlistPhone');
+      if (nameInput) nameInput.value = preselects.restoreDraft.fullName;
+      if (emailInput) emailInput.value = preselects.restoreDraft.email;
+      if (phoneInput) phoneInput.value = preselects.restoreDraft.phone;
+    }
     document.body.classList.add('waitlist-open');
 
     // Preselect collection if passed or keep existing
@@ -1541,8 +1605,11 @@ if (document.readyState === 'loading') {
       }
     }
 
-    // Reset to Step 1 by default, or Step 4 if both collection and jacket are already chosen
-    if (preselects.jacketKey && preselects.collection) {
+    // Resume an interrupted draft only after explicit Functional consent.
+    if (preselects.restoreDraft) {
+      state.history = [1, 2, 3, 4];
+      goToStep(5, false);
+    } else if (preselects.jacketKey && preselects.collection) {
       state.history = [1, 2, 3];
       goToStep(4, false);
     } else {
@@ -1571,10 +1638,6 @@ if (document.readyState === 'loading') {
       try { previouslyFocusedElement.focus(); } catch (e) { }
     }
 
-    // Remember dismissal
-    try {
-      localStorage.setItem(AUTO_POPUP_CONFIG.storageKey, 'true');
-    } catch (e) { }
   }
 
   function goToStep(stepNum, pushHistory = true) {
@@ -1861,7 +1924,6 @@ if (document.readyState === 'loading') {
     };
 
     // Prepare Confirmation Email Text (for backend dispatch)
-    payload.confirmationEmail = generateConfirmationEmail(payload);
 
     // Prevent duplicate submissions & set loading state
     state.isSubmitting = true;
@@ -1879,17 +1941,20 @@ if (document.readyState === 'loading') {
         payload.b_company_url = honeypotInput.value;
       }
 
-      // Save a local draft so if there is a network drop, details are not lost
-      try {
-        localStorage.setItem('ekkomi_waitlist_draft', JSON.stringify({
-          collection: payload.collection,
-          jacketKey: state.jacket ? state.jacket.key : null,
-          size: payload.size,
-          fullName: payload.fullName,
-          email: payload.email,
-          phone: payload.phone
-        }));
-      } catch (storageErr) { }
+      // Store draft details only when the visitor has enabled Functional storage.
+      if (hasFunctionalStorageConsent()) {
+        try {
+          localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify({
+            collection: payload.collection,
+            jacketKey: state.jacket ? state.jacket.key : null,
+            size: payload.size,
+            fullName: payload.fullName,
+            email: payload.email,
+            phone: payload.phone,
+            savedAt: Date.now()
+          }));
+        } catch { }
+      }
 
       // Attempt to post to real backend endpoint
       const endpoint = BACKEND_CONFIG.getEndpoint();
@@ -1924,9 +1989,9 @@ if (document.readyState === 'loading') {
         if (phoneInput) phoneInput.value = '';
         if (consentInput) consentInput.checked = false;
 
-        try {
-          localStorage.removeItem('ekkomi_waitlist_draft');
-        } catch (e) { }
+        if (hasFunctionalStorageConsent()) {
+          try { localStorage.removeItem(DRAFT_STORAGE_KEY); } catch { }
+        }
 
         goToStep(6, false);
       } else {
@@ -1942,14 +2007,6 @@ if (document.readyState === 'loading') {
       if (btnText) btnText.textContent = 'JOIN THE WAITING LIST';
       if (btnSpinner) btnSpinner.classList.add('is-hidden');
     }
-  }
-
-  function generateConfirmationEmail(data) {
-    return {
-      to: data.email,
-      subject: 'Your EKKOMI NOCTURNE Waiting List Confirmation',
-      body: `Thank you for joining the EKKOMI NOCTURNE waiting list.\n\nWe've successfully received your request for the following piece:\n\nCollection: ${data.collection}\nJacket: ${data.jacketName}\nSize: ${data.size}\n\nWe'll notify you about your selected jacket's availability.\n\nThank you for your interest in EKKOMI.\n\nEKKOMI`
-    };
   }
 
   function showError(elementId, msg) {
@@ -1985,4 +2042,3 @@ if (document.readyState === 'loading') {
   };
 
 })();
-

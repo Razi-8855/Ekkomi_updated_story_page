@@ -17,8 +17,7 @@ export default function CollectionExperience({ markup }: { markup: string }) {
     const host = root.current;
     if (!host) return;
 
-    // The Collection's existing interaction controller uses GSAP's browser global.
-    // Reuse the same installed GSAP instance as the Story experience.
+    // The Collection interaction controller shares the app's installed GSAP instance.
     window.gsap = gsap;
 
     if (window.ekkomiCollectionRuntimeLoading) return;
@@ -30,5 +29,9 @@ export default function CollectionExperience({ markup }: { markup: string }) {
     document.body.appendChild(script);
   }, []);
 
-  return <div id="collection-experience" ref={root} dangerouslySetInnerHTML={{ __html: markup }} />;
+  return (
+    <>
+      <div id="collection-experience" ref={root} dangerouslySetInnerHTML={{ __html: markup }} />
+    </>
+  );
 }
