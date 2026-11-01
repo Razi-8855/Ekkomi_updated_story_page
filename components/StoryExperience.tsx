@@ -168,7 +168,7 @@ export default function StoryExperience() {
               ? 1.35
               : 1.75;
           const scrollScale = targetSceneVh / sceneTimelineUnits;
-          return `+=${Math.round(window.innerHeight * totalScrollUnits * scrollScale)}`;
+          return `+=${Math.round(screen.clientHeight * totalScrollUnits * scrollScale)}`;
         },
         scrub: 0.4,
         invalidateOnRefresh: true,
@@ -177,7 +177,7 @@ export default function StoryExperience() {
       },
     });
 
-    timeline.to(".hero-overlay", { y: () => -window.innerHeight * 1.1, opacity: 0, duration: introDuration, ease: "none" }, 0);
+    timeline.to(".hero-overlay", { y: () => -screen.clientHeight * 1.1, opacity: 0, duration: introDuration, ease: "none" }, 0);
     timeline.to(".hero-shade", { opacity: 0, duration: introDuration, ease: "none" }, 0);
     let timelinePosition = introDuration;
 

@@ -33,15 +33,23 @@ export default function SmoothScroll() {
     gsap.ticker.add(tick);
     gsap.ticker.lagSmoothing(0);
     const refresh = () => ScrollTrigger.refresh();
+    const visualViewport = window.visualViewport;
     let refreshTimer: number | undefined;
+    let lastViewportWidth = visualViewport?.width ?? window.innerWidth;
+    let lastViewportHeight = visualViewport?.height ?? window.innerHeight;
     const refreshAfterViewportSettles = () => {
       window.clearTimeout(refreshTimer);
       refreshTimer = window.setTimeout(() => {
+        const nextWidth = visualViewport?.width ?? window.innerWidth;
+        const nextHeight = visualViewport?.height ?? window.innerHeight;
+        if (nextWidth === lastViewportWidth && nextHeight === lastViewportHeight) return;
+
+        lastViewportWidth = nextWidth;
+        lastViewportHeight = nextHeight;
         activeLenis.resize();
-        ScrollTrigger.refresh();
+        if (ScrollTrigger.getById("ekkomi-story")) ScrollTrigger.refresh();
       }, 120);
     };
-    const visualViewport = window.visualViewport;
     window.addEventListener("load", refresh);
     visualViewport?.addEventListener("resize", refreshAfterViewportSettles);
     return () => {
