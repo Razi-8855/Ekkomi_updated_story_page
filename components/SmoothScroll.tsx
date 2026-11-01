@@ -33,10 +33,22 @@ export default function SmoothScroll() {
     gsap.ticker.add(tick);
     gsap.ticker.lagSmoothing(0);
     const refresh = () => ScrollTrigger.refresh();
+    let refreshTimer: number | undefined;
+    const refreshAfterViewportSettles = () => {
+      window.clearTimeout(refreshTimer);
+      refreshTimer = window.setTimeout(() => {
+        activeLenis.resize();
+        ScrollTrigger.refresh();
+      }, 120);
+    };
+    const visualViewport = window.visualViewport;
     window.addEventListener("load", refresh);
+    visualViewport?.addEventListener("resize", refreshAfterViewportSettles);
     return () => {
       window.removeEventListener("ekkomi:story-intro", navigateToStoryIntro);
       window.removeEventListener("load", refresh);
+      visualViewport?.removeEventListener("resize", refreshAfterViewportSettles);
+      window.clearTimeout(refreshTimer);
       gsap.ticker.remove(tick);
       activeLenis.off("scroll", ScrollTrigger.update);
       activeLenis.destroy();

@@ -1329,7 +1329,7 @@ if (document.readyState === 'loading') {
   'use strict';
 
   // Configurable available sizes (centralised for future adjustment)
-  const AVAILABLE_SIZES = ['M', 'L', 'XL'];
+  const AVAILABLE_SIZES = ['S', 'M', 'L', 'XL'];
 
   const CONSENT_STORAGE_KEY = 'ekkomi_cookie_consent';
   const DRAFT_STORAGE_KEY = 'ekkomi_waitlist_draft';
