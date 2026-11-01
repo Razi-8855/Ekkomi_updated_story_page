@@ -7,6 +7,7 @@ declare global {
   interface Window {
     gsap: typeof gsap;
     ekkomiCollectionRuntimeLoading?: boolean;
+    initEkkomiCollection?: () => void;
   }
 }
 
@@ -19,6 +20,11 @@ export default function CollectionExperience({ markup }: { markup: string }) {
 
     // The Collection interaction controller shares the app's installed GSAP instance.
     window.gsap = gsap;
+
+    if (typeof window.initEkkomiCollection === "function") {
+      window.initEkkomiCollection();
+      return;
+    }
 
     if (window.ekkomiCollectionRuntimeLoading) return;
     window.ekkomiCollectionRuntimeLoading = true;

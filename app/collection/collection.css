@@ -2935,6 +2935,13 @@ body.waitlist-open {
   text-align: center;
 }
 
+
+#waitlistStep1 .waitlist-eyebrow {
+  color: var(--color-accent, #773A3C);
+  font-weight: 600;
+  letter-spacing: 0.22em;
+}
+
 .waitlist-eyebrow {
   font-family: var(--font-sans);
   font-size: 12px;

@@ -560,7 +560,7 @@ function renderShowcase(jacket) {
                   <span>Out of stock &mdash; Available exclusively via priority waitlist</span>
                 </div>
                 <button type="button" class="showcase-notify-btn btn-notify-when-available" id="showcaseNotifyBtn" data-jacket-key="${jacket.key}" data-collection="${jacket.gender}" data-jacket-name="${jacket.impulse}">
-                  NOTIFY ME WHEN AVAILABLE
+                  NOTIFY WHEN AVAILABLE
                 </button>
               ` : `
                 <button type="button" class="showcase-waitlist-btn btn-join-waitlist" id="showcaseWaitlistBtn" data-open-waitlist>
@@ -1224,6 +1224,13 @@ function init() {
   });
 }
 
+window.initEkkomiCollection = function() {
+  init();
+  if (window.initEkkomiWaitlist) {
+    window.initEkkomiWaitlist();
+  }
+};
+
 // Kick off when DOM is ready
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', init);
@@ -1295,8 +1302,9 @@ if (document.readyState === 'loading') {
 
   // Optional automatic appearance configuration
   const AUTO_POPUP_CONFIG = {
-    enabled: false, // Automatically opens first when customer enters collection page
-    delayMs: 600,
+    enabled: true, // Automatically opens first when customer enters collection page
+    delayMs: 500,
+    storageKey: 'ekkomi_waitlist_dismissed_v2'
   };
 
   // Backend API Configuration (Local Dev & Hosted Supabase Edge Function)
@@ -1560,7 +1568,15 @@ if (document.readyState === 'loading') {
     } catch (e) { }
 
     if (!AUTO_POPUP_CONFIG.enabled) return;
-    // Show first when customer opens the collection page
+
+    // Avoid repeatedly reopening after dismissal during the same browsing session
+    try {
+      if (sessionStorage.getItem(AUTO_POPUP_CONFIG.storageKey) === 'true') {
+        return;
+      }
+    } catch (e) { }
+
+    // Automatically trigger the existing waitlist popup when opening the collection page
     setTimeout(() => {
       if (!state.isOpen) {
         openWaitlist();
@@ -1571,15 +1587,6 @@ if (document.readyState === 'loading') {
   let previouslyFocusedElement = null;
 
   function openWaitlist(preselects = {}) {
-    const savedDraft = !preselects.collection && !preselects.jacketKey ? readWaitlistDraft() : null;
-    if (savedDraft) {
-      preselects = {
-        ...preselects,
-        collection: savedDraft.collection,
-        jacketKey: savedDraft.jacket.key,
-        restoreDraft: savedDraft
-      };
-    }
     if (state.isOpen && !preselects.collection && !preselects.jacketKey) {
       return;
     }
@@ -1593,18 +1600,6 @@ if (document.readyState === 'loading') {
 
     state.isOpen = true;
     state.outOfStock = !!preselects.outOfStock;
-    if (preselects.restoreDraft) {
-      state.size = preselects.restoreDraft.size;
-      state.fullName = preselects.restoreDraft.fullName;
-      state.email = preselects.restoreDraft.email;
-      state.phone = preselects.restoreDraft.phone;
-      const nameInput = document.getElementById('waitlistFullName');
-      const emailInput = document.getElementById('waitlistEmail');
-      const phoneInput = document.getElementById('waitlistPhone');
-      if (nameInput) nameInput.value = preselects.restoreDraft.fullName;
-      if (emailInput) emailInput.value = preselects.restoreDraft.email;
-      if (phoneInput) phoneInput.value = preselects.restoreDraft.phone;
-    }
     document.body.classList.add('waitlist-open');
 
     // Preselect collection if passed or keep existing
@@ -1621,14 +1616,15 @@ if (document.readyState === 'loading') {
       }
     }
 
-    // Resume an interrupted draft only after explicit Functional consent.
-    if (preselects.restoreDraft) {
-      state.history = [1, 2, 3, 4];
-      goToStep(5, false);
-    } else if (preselects.jacketKey && preselects.collection) {
+    // Direct routing:
+    // If a specific jacket is preselected (e.g. from NOTIFY WHEN AVAILABLE button):
+    // Jump straight to Step 4: Size Selection with jacket preselected
+    if (preselects.jacketKey && preselects.collection) {
       state.history = [1, 2, 3];
       goToStep(4, false);
     } else {
+      // Automatic popup on page load, or general header/floating CTA:
+      // Always start at Step 1: SOLD OUT intro screen
       state.history = [1];
       goToStep(1, false);
     }
@@ -1654,6 +1650,10 @@ if (document.readyState === 'loading') {
       try { previouslyFocusedElement.focus(); } catch (e) { }
     }
 
+    // Remember dismissal for the current browsing session so it does not repeatedly reopen
+    try {
+      sessionStorage.setItem(AUTO_POPUP_CONFIG.storageKey, 'true');
+    } catch (e) { }
   }
 
   function goToStep(stepNum, pushHistory = true) {
@@ -2060,12 +2060,15 @@ if (document.readyState === 'loading') {
     init();
   }
 
+  window.initEkkomiWaitlist = init;
+
   // Expose global API
   window.EkkomiWaitlist = {
     open: openWaitlist,
     close: closeWaitlist,
     goToStep: goToStep,
     getState: () => ({ ...state }),
+    init: init,
     shopify: SHOPIFY_CONFIG
   };
 
