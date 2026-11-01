@@ -493,6 +493,15 @@ function renderShowcase(jacket) {
                      fetchpriority="high"
                      width="1200"
                      height="1800" />
+                <div class="gallery-mobile-controls" aria-label="Product image navigation">
+                  <button type="button" class="gallery-mobile-arrow gallery-mobile-arrow--prev" aria-label="Previous product image" disabled>
+                    <span aria-hidden="true">&larr;</span>
+                  </button>
+                  <span class="gallery-mobile-counter" aria-live="polite">${String(1).padStart(2, '0')} / ${String(jacket.views.length).padStart(2, '0')}</span>
+                  <button type="button" class="gallery-mobile-arrow gallery-mobile-arrow--next" aria-label="Next product image" ${jacket.views.length <= 1 ? 'disabled' : ''}>
+                    <span aria-hidden="true">&rarr;</span>
+                  </button>
+                </div>
                 <div class="gallery-stage__badge">
                   <span class="badge-indicator" aria-hidden="true"></span>
                   <span class="stage-caption" id="showcaseStageCaption">${firstView.label}</span>
@@ -600,30 +609,63 @@ function renderShowcase(jacket) {
     const stageImg = document.getElementById('showcaseStageImg');
     const stageCaption = document.getElementById('showcaseStageCaption');
     const cards = showcase.querySelectorAll('.gallery-view-card');
+    const frame = showcase.querySelector('.gallery-stage__frame');
+    const mobileCounter = showcase.querySelector('.gallery-mobile-counter');
+    const mobilePrev = showcase.querySelector('.gallery-mobile-arrow--prev');
+    const mobileNext = showcase.querySelector('.gallery-mobile-arrow--next');
+
+    let activeViewIndex = 0;
+    const setActiveView = (index) => {
+      if (!cards.length) return;
+      activeViewIndex = Math.max(0, Math.min(index, cards.length - 1));
+      const card = cards[activeViewIndex];
+      const src = card.dataset.src;
+      const alt = card.dataset.alt;
+      const label = card.dataset.label;
+
+      cards.forEach((item, itemIndex) => {
+        item.classList.toggle('is-active', itemIndex === activeViewIndex);
+        item.setAttribute('aria-pressed', itemIndex === activeViewIndex ? 'true' : 'false');
+      });
+      if (stage && stageImg) {
+        stage.classList.add('is-switching');
+        window.setTimeout(() => {
+          stageImg.src = src;
+          stageImg.alt = alt;
+          if (stageCaption) stageCaption.textContent = label;
+          stage.classList.remove('is-switching');
+        }, 140);
+      }
+      if (mobileCounter) mobileCounter.textContent = `${String(activeViewIndex + 1).padStart(2, '0')} / ${String(cards.length).padStart(2, '0')}`;
+      if (mobilePrev) mobilePrev.disabled = activeViewIndex === 0;
+      if (mobileNext) mobileNext.disabled = activeViewIndex === cards.length - 1;
+    };
+
+    if (mobilePrev) mobilePrev.addEventListener('click', () => setActiveView(activeViewIndex - 1));
+    if (mobileNext) mobileNext.addEventListener('click', () => setActiveView(activeViewIndex + 1));
+
+    // Pointer events cover touch swipes without adding global listeners; the frame is replaced on jacket changes.
+    if (frame) {
+      let pointerStart = null;
+      frame.addEventListener('pointerdown', (event) => {
+        if (event.target.closest('.gallery-mobile-arrow')) return;
+        pointerStart = { x: event.clientX, y: event.clientY };
+      }, { passive: true });
+      frame.addEventListener('pointerup', (event) => {
+        if (!pointerStart) return;
+        const deltaX = event.clientX - pointerStart.x;
+        const deltaY = event.clientY - pointerStart.y;
+        pointerStart = null;
+        if (Math.abs(deltaX) < 42 || Math.abs(deltaX) < Math.abs(deltaY) * 1.2) return;
+        setActiveView(activeViewIndex + (deltaX < 0 ? 1 : -1));
+      }, { passive: true });
+      frame.addEventListener('pointercancel', () => { pointerStart = null; }, { passive: true });
+    }
 
     cards.forEach(card => {
       card.addEventListener('click', (e) => {
         e.preventDefault();
-        const src = card.dataset.src;
-        const alt = card.dataset.alt;
-        const label = card.dataset.label;
-
-        cards.forEach(c => {
-          c.classList.remove('is-active');
-          c.setAttribute('aria-pressed', 'false');
-        });
-        card.classList.add('is-active');
-        card.setAttribute('aria-pressed', 'true');
-
-        if (stage && stageImg) {
-          stage.classList.add('is-switching');
-          setTimeout(() => {
-            stageImg.src = src;
-            stageImg.alt = alt;
-            if (stageCaption) stageCaption.textContent = label;
-            stage.classList.remove('is-switching');
-          }, 140);
-        }
+        setActiveView(Number(card.dataset.viewIndex));
       });
     });
 
