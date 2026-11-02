@@ -512,31 +512,16 @@ function renderShowcase(jacket) {
 
           <!-- Right Column: Unified Story, Perspectives & Craftsmanship -->
           <div class="showcase-narrative-col">
-            <!-- Meta Bar: Eyebrow + Quick Nav -->
-            <div class="showcase-meta-bar">
-              <div class="jacket-collection-eyebrow">
-                <span class="eyebrow-prefix">${departmentTitle}</span>
-                <span class="eyebrow-sep">/</span>
-                <span class="eyebrow-num">${jacket.number}</span>
-              </div>
-              <div class="jacket-quick-nav">
-                <button type="button" class="quick-nav-btn prev-quick-btn" id="prevQuickBtn" aria-label="Previous: ${prevJacket.impulse}" title="Previous jacket">
-                  <span aria-hidden="true">&larr;</span>
-                </button>
-                <span class="quick-nav-counter">${jacket.number} / ${String(currentList.length).padStart(2, '0')}</span>
-                <button type="button" class="quick-nav-btn next-quick-btn" id="nextQuickBtn" aria-label="Next: ${nextJacket.impulse}" title="Next jacket">
-                  <span aria-hidden="true">&rarr;</span>
-                </button>
-              </div>
-            </div>
-
             <!-- Jacket Title Row -->
             <div class="jacket-title-row">
               <h3 class="jacket-name" id="showcaseJacketTitle">${jacket.impulse}</h3>
-              ${jacket.inStock === false ? '<span class="jacket-stock-badge is-oos">OUT OF STOCK</span>' : ''}
+              ${jacket.inStock === false ? `
+                <span class="jacket-stock-badge is-oos">OUT OF STOCK</span>
+                <button type="button" class="showcase-notify-btn btn-notify-when-available" id="showcaseNotifyBtn" data-jacket-key="${jacket.key}" data-collection="${jacket.gender}" data-jacket-name="${jacket.impulse}">
+                  NOTIFY WHEN AVAILABLE
+                </button>
+              ` : ''}
             </div>
-
-
             <!-- Poetic Script Headline Quote -->
             <p class="jacket-headline">${jacket.headline}</p>
 
@@ -561,22 +546,13 @@ function renderShowcase(jacket) {
               ${craftHtml}
             </dl>
 
-            <!-- Waitlist CTA inside Showcase (Positioned after craftsmanship specs) -->
-            <div class="showcase-cta-wrap">
-              ${jacket.inStock === false ? `
-                <div class="showcase-stock-callout">
-                  <span class="stock-pulse-dot" aria-hidden="true"></span>
-                  <span>OUT OF STOCK</span>
-                </div>
-                <button type="button" class="showcase-notify-btn btn-notify-when-available" id="showcaseNotifyBtn" data-jacket-key="${jacket.key}" data-collection="${jacket.gender}" data-jacket-name="${jacket.impulse}">
-                  NOTIFY WHEN AVAILABLE
-                </button>
-              ` : `
+            ${jacket.inStock === false ? '' : `
+              <div class="showcase-cta-wrap">
                 <button type="button" class="showcase-waitlist-btn btn-join-waitlist" id="showcaseWaitlistBtn" data-open-waitlist>
                   JOIN THE WAITING LIST
                 </button>
-              `}
-            </div>
+              </div>
+            `}
           </div>
         </div>
 

@@ -516,7 +516,7 @@ h1 {
   margin: 1.5rem 0 2.25rem;
   max-width: 620px;
   font-family: var(--font-script);
-  font-size: clamp(1.25rem, 2.2vw, 1.85rem);
+  font-size: clamp(1.4rem, 2.45vw, 2rem);
   line-height: 1.5;
   color: #EFE3DC;
   text-shadow: 0 2px 20px rgba(0, 0, 0, 0.9);
@@ -1771,17 +1771,17 @@ h1 {
 }
 
 .gender-switch-btn {
-  min-height: 44px;
+  min-height: 56px;
   touch-action: manipulation;
   background: transparent;
   border: 1px solid transparent;
   font-family: var(--font-sans);
-  font-size: 11px;
+  font-size: 13px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--color-muted);
   cursor: pointer;
-  padding: 8px 18px;
+  padding: 12px 26px;
   border-radius: 24px;
   display: inline-flex;
   align-items: center;
@@ -1809,7 +1809,7 @@ h1 {
 }
 
 .gender-badge {
-  font-size: 9.5px;
+  font-size: 10.5px;
   letter-spacing: 0.1em;
   opacity: 0.85;
   padding: 2px 6px;
@@ -1926,10 +1926,10 @@ h1 {
     padding: 0.6rem 0;
   }
   .gender-switch-btn {
-  min-height: 44px;
-  touch-action: manipulation;
-    padding: 6px 12px;
-    font-size: 9.5px;
+    min-height: 52px;
+    touch-action: manipulation;
+    padding: 10px 20px;
+    font-size: 12px;
   }
   .gender-badge {
     display: none;
@@ -2008,7 +2008,7 @@ h1 {
 }
 
 .stage-placeholder__desc {
-  font-family: var(--font-serif);
+  font-family: var(--font-body);
   font-size: clamp(0.9375rem, 1.2vw, 1.0625rem);
   line-height: 1.6;
   color: rgba(250, 246, 241, 0.72);
@@ -3916,33 +3916,111 @@ body.waitlist-open .floating-waitlist-btn {
 /* ==========================================================================
    SHOWCASE NOTIFY ME WHEN AVAILABLE BUTTON
    ========================================================================== */
-.showcase-notify-btn {
-  display: block;
-  width: 100%;
-  padding: 16px 28px;
-  border-radius: 9999px;
-  background: #773A3C;
-  color: #FAF6F1;
-  border: 1px solid rgba(250, 246, 241, 0.35);
-  font-family: var(--font-sans, "Goodnight London Sans", -apple-system, sans-serif);
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.16em;
+#collection-experience .showcase-notify-btn {
+  display: inline-flex;
+  width: auto;
+  max-width: 100%;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 20px;
+  border-radius: 999px;
+  background: var(--color-accent, #773A3C);
+  color: var(--color-accent-text, #FAF6F1);
+  border: 1px solid var(--color-accent, #773A3C);
+  font-family: var(--font-label, var(--font-sans));
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  line-height: 1.35;
   text-transform: uppercase;
   cursor: pointer;
-  box-shadow: 0 4px 16px rgba(119, 58, 60, 0.35);
-  transition: all 250ms ease;
-  margin-top: 14px;
+  transition: color 220ms ease, background 220ms ease, border-color 220ms ease, transform 220ms ease;
+  margin: 0;
   text-align: center;
+  white-space: nowrap;
   outline: none;
+  box-shadow: 0 3px 10px rgba(119, 58, 60, 0.16);
 }
 
-.showcase-notify-btn:hover {
-  background: #8e4648;
+#collection-experience .showcase-notify-btn:hover {
+  background: var(--color-accent-deep, #5A2A2C);
+  color: var(--color-accent-text, #FAF6F1);
+  border-color: var(--color-accent-deep, #5A2A2C);
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(119, 58, 60, 0.5);
+  box-shadow: 0 5px 14px rgba(119, 58, 60, 0.24);
+}
+#collection-experience .showcase-narrative-col .jacket-title-row {
+  gap: 10px 12px;
+  margin-bottom: 1.15rem;
+  min-width: 0;
 }
 
+#collection-experience .showcase-narrative-col .jacket-name {
+  font-size: clamp(1.9rem, 3.8vw, 3.2rem);
+  line-height: 1.08;
+  letter-spacing: 0.07em;
+  overflow-wrap: anywhere;
+}
+
+#collection-experience .jacket-stock-badge {
+  flex: 0 0 auto;
+  padding: 6px 11px;
+  font-size: 9.5px;
+  letter-spacing: 0.12em;
+}
+
+#collection-experience .showcase-notify-btn {
+  flex: 0 1 auto;
+}
+
+#collection-experience .showcase-narrative-col .jacket-headline {
+  font-size: clamp(1.5rem, 2.25vw, 2rem);
+  line-height: 1.35;
+  margin-bottom: 0.8rem;
+}
+
+#collection-experience .showcase-narrative-col .jacket-narrative {
+  font-size: clamp(1rem, 1.05vw, 1.075rem);
+  line-height: 1.75;
+  letter-spacing: 0;
+}
+
+#collection-experience .showcase-narrative-col .gallery-heading {
+  font-size: 0.75rem;
+  letter-spacing: 0.13em;
+}
+
+#collection-experience .showcase-narrative-col .craft-item dt {
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+}
+
+#collection-experience .showcase-narrative-col .craft-item dd {
+  font-size: 0.9375rem;
+  line-height: 1.65;
+}
+
+@media (max-width: 767px) {
+  #collection-experience .showcase-narrative-col .jacket-title-row {
+    gap: 9px 10px;
+  }
+
+  #collection-experience .showcase-narrative-col .jacket-name {
+    font-size: clamp(1.85rem, 8.5vw, 2.6rem);
+  }
+
+  #collection-experience .showcase-notify-btn {
+    min-height: 46px;
+    padding: 11px 17px;
+    font-size: 10px;
+    white-space: normal;
+  }
+
+  #collection-experience .showcase-narrative-col .jacket-headline {
+    font-size: clamp(1.45rem, 6.6vw, 1.8rem);
+  }
+}
 /* Keep mobile product presentation to the main carousel; never show its duplicate thumbnail block. */
 @media (max-width: 767px) {
   #productShowcase .showcase-narrative-col .jacket-perspectives-block {
