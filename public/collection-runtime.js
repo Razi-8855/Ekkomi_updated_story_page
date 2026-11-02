@@ -471,7 +471,6 @@ function renderShowcase(jacket) {
           <span class="view-card__overlay" aria-hidden="true"></span>
         </div>
         <div class="view-card__info">
-          <span class="view-card__index">${String(i + 1).padStart(2, '0')}</span>
           <span class="view-card__label">${v.label}</span>
         </div>
       </button>
@@ -561,8 +560,7 @@ function renderShowcase(jacket) {
           <button type="button" class="showcase-nav-btn prev-jacket-btn" id="prevJacketBtn" aria-label="Previous jacket: ${prevJacket.number} ${prevJacket.impulse}">
             <span class="nav-arrow" aria-hidden="true">&larr;</span>
             <span class="nav-label-wrap">
-              <span class="nav-sub">Previous Jacket</span>
-              <span class="nav-jacket-name">${prevJacket.number} &middot; ${prevJacket.impulse}</span>
+              <span class="nav-jacket-name">${prevJacket.impulse}</span>
             </span>
           </button>
 
@@ -572,8 +570,7 @@ function renderShowcase(jacket) {
 
           <button type="button" class="showcase-nav-btn next-jacket-btn" id="nextJacketBtn" aria-label="Next jacket: ${nextJacket.number} ${nextJacket.impulse}">
             <span class="nav-label-wrap">
-              <span class="nav-sub">Next Jacket</span>
-              <span class="nav-jacket-name">${nextJacket.number} &middot; ${nextJacket.impulse}</span>
+              <span class="nav-jacket-name">${nextJacket.impulse}</span>
             </span>
             <span class="nav-arrow" aria-hidden="true">&rarr;</span>
           </button>

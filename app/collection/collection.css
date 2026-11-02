@@ -516,7 +516,7 @@ h1 {
   margin: 1.5rem 0 2.25rem;
   max-width: 620px;
   font-family: var(--font-script);
-  font-size: clamp(1.4rem, 2.45vw, 2rem);
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
   line-height: 1.5;
   color: #EFE3DC;
   text-shadow: 0 2px 20px rgba(0, 0, 0, 0.9);
@@ -1854,7 +1854,7 @@ h1 {
 
 .department-title {
   font-family: var(--font-sans);
-  font-size: clamp(1.4rem, 4vw, 3.2rem);
+  font-size: clamp(1.8rem, 4.5vw, 3.6rem);
   font-weight: normal;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -1866,7 +1866,7 @@ h1 {
 
 .department-subtitle {
   font-family: var(--font-script);
-  font-size: clamp(1.6rem, 2.6vw, 2.2rem);
+  font-size: clamp(1.9rem, 3vw, 2.5rem);
   line-height: 1.25;
   color: var(--color-text-secondary);
   margin: 0;
@@ -1935,11 +1935,11 @@ h1 {
     display: none;
   }
   .department-title {
-    font-size: clamp(1.2rem, 5.2vw, 1.6rem);
+    font-size: clamp(1.55rem, 6.6vw, 2.1rem);
     letter-spacing: 0.08em;
   }
   .department-subtitle {
-    font-size: clamp(1.15rem, 4.5vw, 1.5rem);
+    font-size: clamp(1.45rem, 5.5vw, 1.8rem);
   }
 }
 
@@ -2500,17 +2500,18 @@ h1 {
   letter-spacing: 0.16em;
   font-family: var(--font-sans);
   font-size: 10px;
-  font-weight: normal;
-  color: var(--color-text);
+  font-weight: 700;
+  color: #332622;
   line-height: 1.5;
 }
 
 .showcase-narrative-col .craft-item dd {
   margin: 0;
-  font-family: var(--font-body);
-  font-size: 14px;
-  line-height: 1.55;
-  color: #4a3b37;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.65;
+  color: #332622;
 }
 
 /* Understated Showcase Bottom Navigation */
@@ -2527,8 +2528,8 @@ h1 {
 }
 
 .showcase-nav-btn {
-  background: transparent;
-  border: 1px solid var(--color-border);
+  background: rgba(119, 58, 60, 0.035);
+  border: 1px solid rgba(119, 58, 60, 0.24);
   border-radius: 30px;
   padding: 10px 22px;
   display: inline-flex;
@@ -2537,7 +2538,8 @@ h1 {
   cursor: pointer;
   color: var(--color-text);
   font-family: var(--font-sans);
-  font-size: 11px;
+  font-size: 11.5px;
+  font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   transition: all var(--motion);
@@ -2577,14 +2579,15 @@ h1 {
 }
 
 .nav-sub {
-  font-size: 9px;
-  color: var(--color-muted);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
   letter-spacing: 0.16em;
   line-height: 1.2;
 }
 
 .nav-jacket-name {
-  font-weight: 500;
+  font-weight: 700;
   color: var(--color-text);
   line-height: 1.3;
 }
@@ -2598,10 +2601,11 @@ h1 {
   align-items: center;
   gap: 0.6rem;
   font-family: var(--font-sans);
-  font-size: 11px;
+  font-size: 11.5px;
+  font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--color-muted);
+  color: var(--color-text-secondary);
   text-decoration: none;
   border-bottom: 1px solid transparent;
   padding-bottom: 3px;
@@ -2690,16 +2694,7 @@ h1 {
     cursor: default;
   }
   .gallery-mobile-counter {
-    position: absolute;
-    right: 12px;
-    bottom: 12px;
-    color: #FAF6F1;
-    font-family: var(--font-sans);
-    font-size: 10px;
-    letter-spacing: 0.15em;
-    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.8);
-    white-space: nowrap;
-    pointer-events: none;
+    display: none;
   }
   .showcase-narrative-col .jacket-perspectives-block {
     display: none;
@@ -4011,9 +4006,11 @@ body.waitlist-open .floating-waitlist-btn {
   }
 
   #collection-experience .showcase-notify-btn {
-    min-height: 46px;
-    padding: 11px 17px;
-    font-size: 10px;
+    flex: 0 0 100%;
+    width: 100%;
+    min-height: 56px;
+    padding: 14px 20px;
+    font-size: 11px;
     white-space: normal;
   }
 
