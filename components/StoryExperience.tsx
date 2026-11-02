@@ -272,7 +272,7 @@ export default function StoryExperience() {
               </button>
               <nav className={menuOpen ? "nav-open" : ""} aria-label="Main navigation">
                 <a href="#story" onClick={navigateToStoryIntro}>STORY</a>
-                <a href="/collection" onClick={closeMenu}>COLLECTION</a>
+                <a href="#collection" onClick={closeMenu}>COLLECTION</a>
                 <a href="#contact" onClick={closeMenu}>CONTACT</a>
               </nav>
             </header>
@@ -302,40 +302,47 @@ export default function StoryExperience() {
         </div>
       </section>
       <ClosingSection />
-      <footer className="site-footer" id="contact">
-        <div className="footer-inner">
-          <div className="footer-top">
-            <span className="footer-brand">EKKOMI</span>
-            <div className="footer-contact">
-              <a className="footer-contact-link" href="https://instagram.com/ekkomi_official" target="_blank" rel="noopener noreferrer" aria-label="EKKOMI on Instagram">
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                  <rect x="3.5" y="3.5" width="17" height="17" rx="5" />
-                  <circle cx="12" cy="12" r="4" />
-                  <circle className="icon-dot" cx="17.6" cy="6.7" r=".9" />
-                </svg>
-                <span>INSTAGRAM</span>
-              </a>
-              <a className="footer-contact-link" href="mailto:info@ekkomi.co.uk" aria-label="Email EKKOMI at info@ekkomi.co.uk">
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                  <rect x="3" y="5" width="18" height="14" rx="1" />
-                  <path d="m4 7 8 6 8-6" />
-                </svg>
-                <span>info@ekkomi.co.uk</span>
-              </a>
+      <footer className="story-footer" id="contact">
+        <div className="story-footer__inner">
+          <div className="story-footer__brand">
+            <span className="story-footer__wordmark">EKKOMI</span>
+          </div>
 
-            </div>
-          </div>
-          <div className="footer-bottom story-footer-bottom">
-            <span>© 2026 EKKOMI. All rights reserved.</span>
-            <span className="footer-bullet" aria-hidden="true">•</span>
-            <button
-              type="button"
-              className="story-cookie-preferences"
-              onClick={() => window.dispatchEvent(new CustomEvent("ekkomi:open-cookie-settings"))}
-            >
-              COOKIE PREFERENCES
-            </button>
-          </div>
+          <nav className="story-footer__group" aria-label="Information">
+            <h2 className="story-footer__heading">Information</h2>
+            <a className="story-footer__link" href="https://shop.ekkomi.co.uk/policies/privacy-policy">Privacy Policy</a>
+            <a className="story-footer__link" href="https://shop.ekkomi.co.uk/policies/terms-of-service">Terms of Service</a>
+            <a className="story-footer__link" href="https://shop.ekkomi.co.uk/pages/contact">Contact Us</a>
+          </nav>
+
+          <nav className="story-footer__group" aria-label="About us">
+            <h2 className="story-footer__heading">About Us</h2>
+            <a className="story-footer__link" href="https://www.ekkomi.co.uk/">Our Story</a>
+            {/* Configure this item once an Our Crafts destination is published. */}
+            <span className="story-footer__link story-footer__link--pending">Our Craft</span>
+          </nav>
+
+          <nav className="story-footer__group" aria-label="Connect">
+            <h2 className="story-footer__heading">Connect</h2>
+            <a className="story-footer__link story-footer__social-link" href="https://instagram.com/ekkomi_official" target="_blank" rel="noopener noreferrer">
+              <svg className="story-footer__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3.5" y="3.5" width="17" height="17" rx="5" /><circle cx="12" cy="12" r="4" /><circle className="story-footer__icon-dot" cx="17.7" cy="6.6" r=".8" /></svg>
+              <span>Instagram</span>
+            </a>
+            <a className="story-footer__link story-footer__social-link" href="mailto:info@ekkomi.co.uk">
+              <svg className="story-footer__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="14" rx="1.5" /><path d="m4 7 8 6 8-6" /></svg>
+              <span>Email</span>
+            </a>
+          </nav>
+        </div>
+        <div className="story-footer__bottom">
+          <p className="story-footer__copyright">© 2026 EKKOMI. All rights reserved.</p>
+          <button
+            type="button"
+            className="story-footer__settings"
+            onClick={() => window.dispatchEvent(new CustomEvent("ekkomi:open-cookie-settings"))}
+          >
+            Cookie Preferences
+          </button>
         </div>
       </footer>
     </main>

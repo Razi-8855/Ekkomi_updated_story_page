@@ -958,94 +958,134 @@ h1 {
    SITE FOOTER (EXACT EDITORIAL REPLICA — EKKOMI BRAND PALETTE)
    =================================================================== */
 
-.site-footer {
+.collection-footer {
   background: #14100e;
   border-top: 1px solid rgba(250, 246, 241, 0.08);
-  padding: clamp(2.5rem, 5vw, 4rem) 0;
+  padding: clamp(3.25rem, 6vw, 5rem) clamp(1.5rem, 6vw, 5.5rem) 1.75rem;
   color: #FAF6F1;
 }
 
-.footer-inner {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 2rem;
-  flex-wrap: wrap;
+.collection-footer__inner {
+  width: min(100%, 1320px);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(2rem, 6vw, 6rem);
+  align-items: start;
 }
 
-.footer-col-brand {
+.collection-footer__column {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
+  gap: 0.85rem;
+}
+
+.collection-footer__heading {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 9px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: rgba(238, 232, 232, .52);
+  font-weight: 500;
+  margin: 0 0 7px;
+}
+
+.collection-footer__link {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  letter-spacing: .04em;
+  color: #EEE8E8;
+  text-decoration: none;
+  transition: color 180ms ease, opacity 180ms ease;
+}
+
+.collection-footer__link:hover {
+  color: #C5A77A;
+}
+
+.collection-footer__social-link {
+  display: inline-flex;
+  align-items: center;
   gap: 0.65rem;
 }
 
-.footer-wordmark {
-  font-family: var(--font-sans);
-  font-size: clamp(1.4rem, 2.6vw, 1.75rem);
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: #FAF6F1;
-  font-weight: 400;
-  line-height: 1;
+.collection-footer__icon {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
-.footer-copyright {
-  font-family: var(--font-sans);
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  color: rgba(250, 246, 241, 0.5);
-  margin: 0;
+.collection-footer__icon-dot {
+  fill: currentColor;
+  stroke: none;
 }
 
-.footer-col-links {
+.collection-footer__link--pending {
+  cursor: default;
+}
+
+.collection-footer__bottom {
+  width: min(100%, 1320px);
+  margin: clamp(2.5rem, 5vw, 4rem) auto 0;
+  padding-top: 1.25rem;
+  padding-bottom: 5rem;
+  border-top: 1px solid rgba(250, 246, 241, 0.1);
   display: flex;
   align-items: center;
-  gap: clamp(1.6rem, 3.5vw, 3rem);
-  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
-.footer-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  color: #FAF6F1;
-  text-decoration: none;
-  transition: color var(--motion), opacity var(--motion);
-}
-
-.footer-link-ig {
-  font-family: var(--font-sans);
+.collection-footer__copyright {
+  margin: 0;
+  color: rgba(238, 232, 232, .62);
+  font-family: Arial, Helvetica, sans-serif;
   font-size: 11px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  letter-spacing: .04em;
 }
 
-.footer-link-email {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  font-size: 11.5px;
-  letter-spacing: 0.04em;
-  text-transform: none;
+.collection-footer__settings {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: rgba(238, 232, 232, .62);
+  font: inherit;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+  transition: color 180ms ease;
 }
 
-.footer-link:hover {
-  color: #B89B72;
+.collection-footer__settings:hover {
+  color: #EEE8E8;
 }
 
-.footer-icon {
-  flex-shrink: 0;
-  stroke: currentColor;
-}
-
-@media (max-width: 600px) {
-  .footer-inner {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1.8rem;
+@media (max-width: 700px) {
+  .collection-footer {
+    padding: 3rem 1.4rem 1.4rem;
   }
-  .footer-col-links {
-    flex-direction: column;
+  .collection-footer__inner {
+    grid-template-columns: 1fr;
+    gap: 2.25rem;
+  }
+  .collection-footer__column {
+    gap: 0.75rem;
+  }
+  .collection-footer__bottom {
+    margin-top: 2.5rem;
+    padding-bottom: 5.5rem;
     align-items: flex-start;
-    gap: 1.1rem;
+    flex-direction: column;
+    gap: 0.9rem;
   }
 }
 
