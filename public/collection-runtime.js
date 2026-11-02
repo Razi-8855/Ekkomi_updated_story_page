@@ -801,7 +801,8 @@ function createAccordionGallery({
 
     const text = document.createElement('span');
     text.className = 'ag-panel__text';
-    text.innerHTML = `<span class="ag-label-title">${item.label}</span>${item.inStock === false ? '<span class="ag-label-stock">OUT OF STOCK</span>' : ''}`;
+    const jacketName = item.label.replace(/^\d+\s*\/\s*/, '');
+    text.innerHTML = `<span class="ag-label-title">${jacketName}</span>`;
     textEls[i] = text;
 
     label.appendChild(bar);
@@ -1228,7 +1229,11 @@ function init() {
     rootId: 'accordionGalleryMen',
     items: mensJackets,
     defaultIndex: 2, // Desire
-    onSelectJacket: (id) => selectJacket(id, { scroll: true, fromAccordion: true, userInitiated: true })
+    onSelectJacket: (id) => {
+      const jacket = mensJackets.find((item) => item.id === id);
+      selectJacket(id, { scroll: true, fromAccordion: true, userInitiated: true });
+      if (jacket) window.EkkomiWaitlist?.open({ collection: jacket.gender, jacketKey: jacket.key });
+    }
   });
 
   // Initialize Women's Accordion Carousel (3 jackets)
@@ -1236,7 +1241,11 @@ function init() {
     rootId: 'accordionGalleryWomen',
     items: womensJackets,
     defaultIndex: 1, // Desire
-    onSelectJacket: (id) => selectJacket(id, { scroll: true, fromAccordion: true, userInitiated: true })
+    onSelectJacket: (id) => {
+      const jacket = womensJackets.find((item) => item.id === id);
+      selectJacket(id, { scroll: true, fromAccordion: true, userInitiated: true });
+      if (jacket) window.EkkomiWaitlist?.open({ collection: jacket.gender, jacketKey: jacket.key });
+    }
   });
 
   // Department switch button click listeners
@@ -1351,8 +1360,7 @@ if (document.readyState === 'loading') {
   // Optional automatic appearance configuration
   const AUTO_POPUP_CONFIG = {
     enabled: true, // Automatically opens first when customer enters collection page
-    delayMs: 500,
-    storageKey: 'ekkomi_waitlist_dismissed_v2'
+    delayMs: 500
   };
 
   // Backend API Configuration (Local Dev & Hosted Supabase Edge Function)
@@ -1617,14 +1625,7 @@ if (document.readyState === 'loading') {
 
     if (!AUTO_POPUP_CONFIG.enabled) return;
 
-    // Avoid repeatedly reopening after dismissal during the same browsing session
-    try {
-      if (sessionStorage.getItem(AUTO_POPUP_CONFIG.storageKey) === 'true') {
-        return;
-      }
-    } catch (e) { }
-
-    // Automatically trigger the existing waitlist popup when opening the collection page
+    // Show the popup on each Collection page entry, even if it was dismissed earlier.
     setTimeout(() => {
       if (!state.isOpen) {
         openWaitlist();
@@ -1698,10 +1699,6 @@ if (document.readyState === 'loading') {
       try { previouslyFocusedElement.focus(); } catch (e) { }
     }
 
-    // Remember dismissal for the current browsing session so it does not repeatedly reopen
-    try {
-      sessionStorage.setItem(AUTO_POPUP_CONFIG.storageKey, 'true');
-    } catch (e) { }
   }
 
   function goToStep(stepNum, pushHistory = true) {
