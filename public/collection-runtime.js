@@ -1535,18 +1535,8 @@ if (document.readyState === 'loading') {
     if (floatingBtn) {
       floatingBtn.addEventListener('click', (e) => {
         e.preventDefault();
-        const activeDept = window.currentSelectedDepartment || document.body.dataset.activeDepartment || 'men';
-        const activeJacket = window.userHasSelectedJacket ? (window.currentSelectedJacket || null) : null;
-
-        openWaitlist({
-          collection: activeDept,
-          jacketKey: activeJacket ? activeJacket.key : null,
-          jacketName: activeJacket ? activeJacket.impulse : null,
-          jacketNumber: activeJacket ? activeJacket.number : null,
-          jacketHex: activeJacket ? activeJacket.hex : null,
-          jacketColour: activeJacket ? activeJacket.colour : null,
-          outOfStock: activeJacket ? (activeJacket.inStock === false) : false
-        });
+        // A general Join CTA always opens the introduction at step 1.
+        openWaitlist();
       });
     }
 
@@ -1580,18 +1570,8 @@ if (document.readyState === 'loading') {
       const target = e.target.closest('#showcaseWaitlistBtn, .btn-join-waitlist, [data-open-waitlist]');
       if (target) {
         e.preventDefault();
-        // If customer is viewing a specific jacket, preselect it!
-        const activeDept = window.currentSelectedDepartment || document.body.dataset.activeDepartment || 'men';
-        const activeJacket = window.currentSelectedJacket || null;
-
-        openWaitlist({
-          collection: activeDept,
-          jacketKey: activeJacket ? activeJacket.key : null,
-          jacketName: activeJacket ? activeJacket.impulse : null,
-          jacketNumber: activeJacket ? activeJacket.number : null,
-          jacketHex: activeJacket ? activeJacket.hex : null,
-          jacketColour: activeJacket ? activeJacket.colour : null
-        });
+        // Unlike Notify, Join starts the complete waitlist flow at step 1.
+        openWaitlist();
       }
     });
   }
@@ -1789,7 +1769,6 @@ if (document.readyState === 'loading') {
             ` : ''}
             <span class="jacket-swatch" style="background-color: ${j.hex};" aria-hidden="true"></span>
             <div class="jacket-meta">
-              <span class="jacket-number">${j.number}</span>
               <span class="jacket-name">${j.name}</span>
             </div>
           </div>
