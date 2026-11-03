@@ -1230,9 +1230,7 @@ function init() {
     items: mensJackets,
     defaultIndex: 2, // Desire
     onSelectJacket: (id) => {
-      const jacket = mensJackets.find((item) => item.id === id);
       selectJacket(id, { scroll: true, fromAccordion: true, userInitiated: true });
-      if (jacket) window.EkkomiWaitlist?.open({ collection: jacket.gender, jacketKey: jacket.key });
     }
   });
 
@@ -1242,9 +1240,7 @@ function init() {
     items: womensJackets,
     defaultIndex: 1, // Desire
     onSelectJacket: (id) => {
-      const jacket = womensJackets.find((item) => item.id === id);
       selectJacket(id, { scroll: true, fromAccordion: true, userInitiated: true });
-      if (jacket) window.EkkomiWaitlist?.open({ collection: jacket.gender, jacketKey: jacket.key });
     }
   });
 
@@ -1356,12 +1352,6 @@ if (document.readyState === 'loading') {
     }
   }
 
-
-  // Optional automatic appearance configuration
-  const AUTO_POPUP_CONFIG = {
-    enabled: true, // Automatically opens first when customer enters collection page
-    delayMs: 500
-  };
 
   // Backend API Configuration (Local Dev & Hosted Supabase Edge Function)
   // Backend API Configuration — Supabase Edge Function
@@ -1517,9 +1507,6 @@ if (document.readyState === 'loading') {
     // Bind page-level entry buttons
     bindEntryButtons();
 
-    // Setup optional auto popup
-    setupAutoPopup();
-
     // Render sizes grid
     renderSizesGrid();
   }
@@ -1607,30 +1594,6 @@ if (document.readyState === 'loading') {
         });
       }
     });
-  }
-
-  function setupAutoPopup() {
-    // Check URL parameters for deep-linking or instant step navigation (e.g. ?step=4 or ?step=5)
-    try {
-      const urlParams = new URLSearchParams(window.location.search);
-      const stepParam = parseInt(urlParams.get('step') || urlParams.get('waitlist_step'), 10);
-      if (stepParam && stepParam >= 1 && stepParam <= 6) {
-        setTimeout(() => {
-          openWaitlist({ collection: urlParams.get('col') || 'men', jacketKey: urlParams.get('jacket') || 'desire' });
-          goToStep(stepParam, false);
-        }, 80);
-        return;
-      }
-    } catch (e) { }
-
-    if (!AUTO_POPUP_CONFIG.enabled) return;
-
-    // Show the popup on each Collection page entry, even if it was dismissed earlier.
-    setTimeout(() => {
-      if (!state.isOpen) {
-        openWaitlist();
-      }
-    }, AUTO_POPUP_CONFIG.delayMs);
   }
 
   let previouslyFocusedElement = null;

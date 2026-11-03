@@ -20,8 +20,7 @@ const collectionFooter = `<footer class="collection-footer" role="contentinfo">
     <nav class="collection-footer__column" aria-label="About us">
       <h2 class="collection-footer__heading">About Us</h2>
       <a class="collection-footer__link" href="https://www.ekkomi.co.uk/">Our Story</a>
-      <!-- Configure this item when an Our Crafts destination is published. -->
-      <span class="collection-footer__link collection-footer__link--pending">Our Crafts</span>
+      <a class="collection-footer__link" href="https://www.ekkomi.co.uk/collection">Our Crafts</a>
     </nav>
     <nav class="collection-footer__column" aria-label="Connect">
       <h2 class="collection-footer__heading">Connect</h2>

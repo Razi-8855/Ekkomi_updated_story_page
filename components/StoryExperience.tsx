@@ -318,8 +318,7 @@ export default function StoryExperience() {
           <nav className="story-footer__group" aria-label="About us">
             <h2 className="story-footer__heading">About Us</h2>
             <a className="story-footer__link" href="https://www.ekkomi.co.uk/">Our Story</a>
-            {/* Configure this item once an Our Crafts destination is published. */}
-            <span className="story-footer__link story-footer__link--pending">Our Craft</span>
+            <a className="story-footer__link" href="https://www.ekkomi.co.uk/collection">Our Crafts</a>
           </nav>
 
           <nav className="story-footer__group" aria-label="Connect">
