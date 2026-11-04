@@ -4,10 +4,10 @@ import markup from "./markup";
 import "./collection.css";
 
 export const metadata: Metadata = {
-  title: "Nocturne Collection | Luxury Suede Jackets",
+  title: "Nocturne Collection | Luxury Suede Jackets – Ekkomi",
 
   description:
-    "Discover Nocturne by Ekkomi: five distinctive luxury suede jackets defined by considered British design, fine needlework and bespoke silk linings.",
+    "Discover Nocturne by Ekkomi: five distinctive suede jackets inspired by individuality, intricate embroidery and understated British luxury.",
 
   alternates: {
     canonical: "/collection",
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Nocturne Collection | Luxury Suede Jackets – Ekkomi",
     description:
-      "Five impulses. Five jackets. Discover Nocturne, the first collection from Ekkomi, celebrating individuality and considered craftsmanship.",
+      "Discover Nocturne by Ekkomi: five distinctive suede jackets inspired by individuality, intricate embroidery and understated British luxury.",
     url: "/collection",
     type: "website",
     images: [
@@ -33,12 +33,15 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Nocturne Collection | Luxury Suede Jackets – Ekkomi",
     description:
-      "Five impulses. Five jackets. Discover Nocturne, the first collection from Ekkomi.",
+      "Discover Nocturne by Ekkomi: five distinctive suede jackets inspired by individuality, intricate embroidery and understated British luxury.",
     images: ["/collection-assets/collection/nocturne/temptation/temptation.jpg"],
   },
 };
 
 const collectionJsonLd = {
+  "breadcrumb": {
+    "@id": "https://www.ekkomi.co.uk/collection#breadcrumb",
+  },
   "@context": "https://schema.org",
   "@graph": [
     {
@@ -93,10 +96,10 @@ const collectionJsonLd = {
             "@id": "https://www.ekkomi.co.uk/collection#temptation",
             "name": "Temptation Suede Jacket",
             "description":
-              "Rich red luxury suede jacket with shifting needlework across the upper chest and bespoke Nocturne silk lining.",
+              "Forest Green luxury suede jacket with shifting needlework across the upper chest and bespoke Nocturne silk lining.",
             "image":
               "https://www.ekkomi.co.uk/collection-assets/collection/nocturne/temptation/temptation.jpg",
-            "color": "Red",
+            "color": "Forest Green",
             "material": "Luxury Suede",
             "brand": { "@type": "Brand", "name": "Ekkomi" },
             "offers": {
@@ -116,10 +119,10 @@ const collectionJsonLd = {
             "@id": "https://www.ekkomi.co.uk/collection#desire",
             "name": "Desire Suede Jacket",
             "description":
-              "Olive green tactile luxury suede jacket with shifting embroidery and bespoke Nocturne silk lining.",
+              "Deep Red luxury suede jacket with shifting embroidery and bespoke Nocturne silk lining.",
             "image":
               "https://www.ekkomi.co.uk/collection-assets/collection/nocturne/desire/desire.jpg",
-            "color": "Olive green",
+            "color": "Deep Red",
             "material": "Luxury Suede",
             "brand": { "@type": "Brand", "name": "Ekkomi" },
             "offers": {
