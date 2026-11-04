@@ -30,7 +30,7 @@ export default function CollectionExperience({ markup }: { markup: string }) {
     window.ekkomiCollectionRuntimeLoading = true;
 
     const script = document.createElement("script");
-    script.src = "/collection-runtime.js";
+    script.src = `/collection-runtime.js?v=${Date.now()}`;
     script.async = false;
     document.body.appendChild(script);
   }, []);

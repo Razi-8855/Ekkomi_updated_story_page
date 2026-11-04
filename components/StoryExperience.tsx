@@ -309,20 +309,20 @@ export default function StoryExperience() {
           </div>
 
           <nav className="story-footer__group" aria-label="Information">
-            <h2 className="story-footer__heading">Information</h2>
+            <h3 className="story-footer__heading">Information</h3>
             <a className="story-footer__link" href="https://shop.ekkomi.co.uk/policies/privacy-policy">Privacy Policy</a>
             <a className="story-footer__link" href="https://shop.ekkomi.co.uk/policies/terms-of-service">Terms of Service</a>
             <a className="story-footer__link" href="https://shop.ekkomi.co.uk/pages/contact">Contact Us</a>
           </nav>
 
           <nav className="story-footer__group" aria-label="About us">
-            <h2 className="story-footer__heading">About Us</h2>
+            <h3 className="story-footer__heading">About Us</h3>
             <a className="story-footer__link" href="https://www.ekkomi.co.uk/">Our Story</a>
             <a className="story-footer__link" href="https://www.ekkomi.co.uk/collection">Our Crafts</a>
           </nav>
 
           <nav className="story-footer__group" aria-label="Connect">
-            <h2 className="story-footer__heading">Connect</h2>
+            <h3 className="story-footer__heading">Connect</h3>
             <a className="story-footer__link story-footer__social-link" href="https://instagram.com/ekkomi_official" target="_blank" rel="noopener noreferrer">
               <svg className="story-footer__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3.5" y="3.5" width="17" height="17" rx="5" /><circle cx="12" cy="12" r="4" /><circle className="story-footer__icon-dot" cx="17.7" cy="6.6" r=".8" /></svg>
               <span>Instagram</span>

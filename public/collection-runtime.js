@@ -79,6 +79,11 @@ const IMAGE_BASE = '/collection-assets/collection/nocturne';
 const IMG_V = '?v=curiosity_female_v1';
 const imgPath = (folder, file) => `${IMAGE_BASE}/${folder}/${file}${IMG_V}`;
 
+// Ekkomi WhatsApp Business Configuration
+const EKKOMI_WHATSAPP_NUMBER = (typeof window !== 'undefined' && window.EKKOMI_WHATSAPP_NUMBER) || '447123456789';
+let currentSelectedSize = 'M';
+let currentSelectedQuantity = 1;
+
 /* -------------------------------------------------------------------
    MEN'S COLLECTION DATA (5 JACKETS — 100% MALE / STILL GARMENT)
    ------------------------------------------------------------------- */
@@ -92,6 +97,8 @@ const mensJackets = [
     impulse: "Curiosity",
     colour: "Dark Navy",
     hex: "#1c2838",
+    price: "£785",
+    sku: "EKK-NOC-01-NAV",
     inStock: false,
     image: imgPath('curiosity', 'curiosity_lookbook_1.jpg'),
     label: "01 / CURIOSITY",
@@ -120,6 +127,8 @@ const mensJackets = [
     impulse: "Temptation",
     colour: "Forest Green",
     hex: "#27382b",
+    price: "£855",
+    sku: "EKK-NOC-02-GRN",
     inStock: false,
     image: imgPath('temptation', 'temptation.jpg'),
     label: "02 / TEMPTATION",
@@ -148,6 +157,8 @@ const mensJackets = [
     impulse: "Desire",
     colour: "Deep Red",
     hex: "#662225",
+    price: "£855",
+    sku: "EKK-NOC-03-RED",
     inStock: false,
     image: imgPath('desire', 'desire.jpg'),
     label: "03 / DESIRE",
@@ -176,6 +187,8 @@ const mensJackets = [
     impulse: "Audacity",
     colour: "Deep Mustard",
     hex: "#8c6b24",
+    price: "£970",
+    sku: "EKK-NOC-04-MUS",
     inStock: false,
     image: imgPath('audacity', 'audacity_lookbook_1.jpg'),
     label: "04 / AUDACITY",
@@ -203,6 +216,8 @@ const mensJackets = [
     impulse: "Insolence",
     colour: "Black",
     hex: "#1a1716",
+    price: "£1,050",
+    sku: "EKK-NOC-05-BLK",
     inStock: false,
     image: imgPath('insolence', 'insolence.jpg'),
     label: "05 / INSOLENCE",
@@ -237,6 +252,8 @@ const womensJackets = [
     impulse: "Curiosity",
     colour: "Dark Navy",
     hex: "#1c2838",
+    price: "£785",
+    sku: "EKK-NOC-W01-NAV",
     inStock: false,
     image: imgPath('curiosity', 'curiosity_women_1.jpg'),
     label: "01 / CURIOSITY",
@@ -264,6 +281,8 @@ const womensJackets = [
     impulse: "Desire",
     colour: "Deep Red",
     hex: "#662225",
+    price: "£855",
+    sku: "EKK-NOC-W02-RED",
     inStock: false,
     image: imgPath('desire', 'desire_editorial_3.jpg'),
     label: "02 / DESIRE",
@@ -290,6 +309,8 @@ const womensJackets = [
     impulse: "Audacity",
     colour: "Deep Mustard",
     hex: "#8c6b24",
+    price: "£970",
+    sku: "EKK-NOC-W03-MUS",
     inStock: false,
     image: imgPath('audacity', 'audacity.jpg'),
     label: "03 / AUDACITY",
@@ -422,7 +443,95 @@ function switchDepartment(dept, { syncJacket = true, scroll = false } = {}) {
    DYNAMIC PRODUCT SHOWCASE (UPDATES IN-PLACE WITHOUT LONG SCROLLING)
    ------------------------------------------------------------------- */
 
+
+/* -------------------------------------------------------------------
+   CAMPAIGN CHECKOUT NOTICE MODAL (COMMERCE INTEGRATION FALLBACK)
+   ------------------------------------------------------------------- */
+
+function showCampaignCheckoutNotice({ jacket, size, quantity, actionType }) {
+  let modal = document.getElementById('campaignCheckoutNotice');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'campaignCheckoutNotice';
+    modal.className = 'campaign-checkout-notice';
+    modal.innerHTML = `
+      <div class="campaign-notice-backdrop" data-close-campaign-notice></div>
+      <div class="campaign-notice-card" role="dialog" aria-modal="true" aria-labelledby="campaignNoticeTitle">
+        <button type="button" class="campaign-notice-close" data-close-campaign-notice aria-label="Close modal">&times;</button>
+        <p class="campaign-notice-eyebrow">NOCTURNE LAUNCH CAMPAIGN</p>
+        <h3 class="campaign-notice-title" id="campaignNoticeTitle">ALLOCATION PREPARATION</h3>
+        <p class="campaign-notice-lead">
+          Direct payment checkout for the Nocturne launch allocation is finalizing for immediate deployment.
+        </p>
+        <div class="campaign-notice-summary">
+          <div class="summary-line">
+            <span class="summary-label">Selected Piece:</span>
+            <span class="summary-val" id="noticeSummaryPiece"></span>
+          </div>
+          <div class="summary-line">
+            <span class="summary-label">Size &amp; Quantity:</span>
+            <span class="summary-val" id="noticeSummarySize"></span>
+          </div>
+        </div>
+        <p class="campaign-notice-desc">
+          To reserve this exact piece immediately before release or explore custom fitting, connect with our private stylist or join priority allocation.
+        </p>
+        <div class="campaign-notice-actions">
+          <button type="button" class="notice-action-btn notice-action-btn--stylist" id="noticeStylistBtn">
+            SPEAK TO STYLIST ON WHATSAPP
+          </button>
+          <button type="button" class="notice-action-btn notice-action-btn--waitlist" id="noticeWaitlistBtn">
+            JOIN PRIORITY ALLOCATION
+          </button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+
+    modal.querySelectorAll('[data-close-campaign-notice]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        modal.classList.remove('is-active');
+      });
+    });
+  }
+
+  const pieceEl = document.getElementById('noticeSummaryPiece');
+  const sizeEl = document.getElementById('noticeSummarySize');
+  if (pieceEl) pieceEl.textContent = `${jacket.impulse} (${jacket.colour})`;
+  if (sizeEl) sizeEl.textContent = `Size ${size} · Qty ${quantity}`;
+
+  const stylistBtn = document.getElementById('noticeStylistBtn');
+  if (stylistBtn) {
+    stylistBtn.onclick = () => {
+      modal.classList.remove('is-active');
+      const text = `Hello Ekkomi, I would like to reserve the ${jacket.impulse} jacket in Size ${size} (Qty: ${quantity}).\n\nProduct: ${jacket.impulse}\nProduct URL: ${window.location.href}`;
+      window.open(`https://wa.me/${EKKOMI_WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
+    };
+  }
+
+  const waitlistBtn = document.getElementById('noticeWaitlistBtn');
+  if (waitlistBtn) {
+    waitlistBtn.onclick = () => {
+      modal.classList.remove('is-active');
+      if (window.EkkomiWaitlist && window.EkkomiWaitlist.open) {
+        window.EkkomiWaitlist.open({
+          collection: jacket.gender || 'men',
+          jacketKey: jacket.key,
+          outOfStock: true
+        });
+      } else {
+        const fallbackBtn = document.getElementById('showcaseNotifyBtn') || document.getElementById('floatingWaitlistBtn');
+        if (fallbackBtn) fallbackBtn.click();
+      }
+    };
+  }
+
+  modal.classList.add('is-active');
+}
+
 function renderShowcase(jacket) {
+  currentSelectedSize = "M";
+  currentSelectedQuantity = 1;
   const showcase = document.getElementById('productShowcase');
   if (!showcase) return;
 
@@ -514,20 +623,96 @@ function renderShowcase(jacket) {
             <!-- Jacket Title Row -->
             <div class="jacket-title-row">
               <h3 class="jacket-name" id="showcaseJacketTitle">${jacket.impulse}</h3>
-              ${jacket.inStock === false ? `
-                <span class="jacket-stock-badge is-oos">OUT OF STOCK</span>
-                <button type="button" class="showcase-notify-btn btn-notify-when-available" id="showcaseNotifyBtn" data-jacket-key="${jacket.key}" data-collection="${jacket.gender}" data-jacket-name="${jacket.impulse}">
-                  NOTIFY WHEN AVAILABLE
-                </button>
-              ` : ''}
+              <div class="jacket-meta-tags">
+                <span class="jacket-colour-tag" aria-label="Colour: ${jacket.colour}">
+                  <span class="colour-swatch" style="background-color: ${jacket.hex};" aria-hidden="true"></span>
+                  ${jacket.colour}
+                </span>
+                ${jacket.sku ? `<span class="jacket-sku-tag">SKU: ${jacket.sku}</span>` : ''}
+              </div>
             </div>
+
+            <!-- Price & Tax Row -->
+            <div class="product-price-row">
+              <span class="product-price">${jacket.price || '£1,950'}</span>
+              <span class="product-tax-note">Taxes &amp; duties included &middot; Complimentary delivery</span>
+            </div>
+
             <!-- Poetic Script Headline Quote -->
             <p class="jacket-headline">${jacket.headline}</p>
 
+            <!-- Commerce Controls Block (Gargee Functional Adaptation) -->
+            <div class="product-commerce-controls" id="productCommerceControls">
+              <!-- Size Selection -->
+              <div class="product-option-group product-size-group">
+                <div class="product-option-header">
+                  <span class="product-option-label">Select Size</span>
+                  <button type="button" class="product-custom-sizing-hint" id="customSizingHintBtn">Bespoke atelier sizing &rarr;</button>
+                </div>
+                <div class="product-size-pills" role="radiogroup" aria-label="Select size for ${jacket.impulse}">
+                  <button type="button" class="size-pill" data-size="S" role="radio" aria-checked="false">S</button>
+                  <button type="button" class="size-pill is-active" data-size="M" role="radio" aria-checked="true">M</button>
+                  <button type="button" class="size-pill" data-size="L" role="radio" aria-checked="false">L</button>
+                  <button type="button" class="size-pill" data-size="XL" role="radio" aria-checked="false">XL</button>
+                  <button type="button" class="size-pill size-pill--custom" data-size="Custom" role="radio" aria-checked="false">Custom</button>
+                </div>
+                <p class="custom-sizing-note is-hidden" id="customSizingNote">
+                  Bespoke sizing selected &mdash; our master atelier will contact you to take exact made-to-measure specifications.
+                </p>
+              </div>
+
+              <!-- Quantity Selector -->
+              <div class="product-option-group product-quantity-group">
+                <span class="product-option-label">Quantity</span>
+                <div class="product-quantity-counter" role="group" aria-label="Product quantity">
+                  <button type="button" class="qty-btn qty-btn--minus" id="qtyMinusBtn" aria-label="Decrease quantity" disabled>
+                    <span aria-hidden="true">&minus;</span>
+                  </button>
+                  <span class="qty-value" id="productQtyDisplay" aria-live="polite">1</span>
+                  <button type="button" class="qty-btn qty-btn--plus" id="qtyPlusBtn" aria-label="Increase quantity">
+                    <span aria-hidden="true">&plus;</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- CTA Stack -->
+              <div class="product-cta-stack">
+                <!-- Dual WhatsApp Enquiry Buttons (Equal Width Side-by-Side) -->
+                <div class="whatsapp-cta-grid">
+                  <button type="button" class="btn-whatsapp btn-whatsapp-stylist" id="btnWhatsappStylist" aria-label="Speak to Our Stylist on WhatsApp">
+                    <svg class="wa-btn-icon" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
+                      <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2M12.05 3.67C14.25 3.67 16.31 4.53 17.87 6.09C19.42 7.65 20.28 9.72 20.28 11.92C20.28 16.46 16.58 20.15 12.04 20.15C10.56 20.15 9.11 19.76 7.85 19.01L7.55 18.83L4.43 19.65L5.26 16.61L5.06 16.29C4.24 14.99 3.81 13.47 3.81 11.91C3.81 7.37 7.5 3.67 12.05 3.67M8.53 7.33C8.37 7.33 8.1 7.39 7.87 7.64C7.65 7.89 7.02 8.48 7.02 9.68C7.02 10.88 7.9 12.03 8.02 12.19C8.14 12.35 9.73 14.81 12.17 15.86C12.75 16.11 13.2 16.26 13.55 16.37C14.13 16.56 14.67 16.53 15.09 16.47C15.56 16.4 16.53 15.88 16.73 15.31C16.94 14.74 16.94 14.25 16.88 14.15C16.81 14.05 16.66 13.99 16.43 13.88C16.2 13.77 15.07 13.21 14.86 13.13C14.65 13.05 14.5 13.01 14.34 13.24C14.19 13.47 13.75 14.01 13.62 14.17C13.49 14.33 13.36 14.35 13.13 14.23C12.9 14.12 11.93 13.8 10.78 12.78C9.89 11.98 9.28 11 9.05 10.61C8.82 10.22 9.03 10.01 9.14 9.9C9.25 9.79 9.38 9.61 9.5 9.47C9.62 9.33 9.66 9.23 9.74 9.07C9.82 8.91 9.78 8.77 9.72 8.65C9.66 8.53 9.22 7.45 9.04 7.01C8.86 6.58 8.68 6.64 8.53 6.63L8.53 7.33Z"/>
+                    </svg>
+                    <span>Speak to Our Stylist</span>
+                  </button>
+                  <button type="button" class="btn-whatsapp btn-whatsapp-custom" id="btnWhatsappCustom" aria-label="Customize Your Jacket on WhatsApp">
+                    <svg class="wa-btn-icon" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
+                      <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2M12.05 3.67C14.25 3.67 16.31 4.53 17.87 6.09C19.42 7.65 20.28 9.72 20.28 11.92C20.28 16.46 16.58 20.15 12.04 20.15C10.56 20.15 9.11 19.76 7.85 19.01L7.55 18.83L4.43 19.65L5.26 16.61L5.06 16.29C4.24 14.99 3.81 13.47 3.81 11.91C3.81 7.37 7.5 3.67 12.05 3.67M8.53 7.33C8.37 7.33 8.1 7.39 7.87 7.64C7.65 7.89 7.02 8.48 7.02 9.68C7.02 10.88 7.9 12.03 8.02 12.19C8.14 12.35 9.73 14.81 12.17 15.86C12.75 16.11 13.2 16.26 13.55 16.37C14.13 16.56 14.67 16.53 15.09 16.47C15.56 16.4 16.53 15.88 16.73 15.31C16.94 14.74 16.94 14.25 16.88 14.15C16.81 14.05 16.66 13.99 16.43 13.88C16.2 13.77 15.07 13.21 14.86 13.13C14.65 13.05 14.5 13.01 14.34 13.24C14.19 13.47 13.75 14.01 13.62 14.17C13.49 14.33 13.36 14.35 13.13 14.23C12.9 14.12 11.93 13.8 10.78 12.78C9.89 11.98 9.28 11 9.05 10.61C8.82 10.22 9.03 10.01 9.14 9.9C9.25 9.79 9.38 9.61 9.5 9.47C9.62 9.33 9.66 9.23 9.74 9.07C9.82 8.91 9.78 8.77 9.72 8.65C9.66 8.53 9.22 7.45 9.04 7.01C8.86 6.58 8.68 6.64 8.53 6.63L8.53 7.33Z"/>
+                    </svg>
+                    <span>Customize Your Jacket</span>
+                  </button>
+                </div>
+
+                <!-- Purchase Buttons -->
+                <button type="button" class="btn-purchase btn-add-to-bag" id="btnAddToBag">
+                  ADD TO BAG
+                </button>
+                <button type="button" class="btn-purchase btn-buy-it-now" id="btnBuyItNow">
+                  BUY IT NOW
+                </button>
+
+                <!-- Priority Waitlist Option -->
+                <div class="product-waitlist-row">
+                  <span class="waitlist-row-text">Prefer priority reservation?</span>
+                  <button type="button" class="btn-link-waitlist" id="showcaseNotifyBtn" data-jacket-key="${jacket.key}" data-collection="${jacket.gender}" data-jacket-name="${jacket.impulse}">
+                    NOTIFY WHEN AVAILABLE &rarr;
+                  </button>
+                </div>
+              </div>
+            </div>
+
             <!-- Narrative Story Paragraph -->
             <p class="jacket-narrative">${jacket.narrative}</p>
-
-            
 
             <!-- Photographic Perspectives Gallery -->
             <div class="jacket-perspectives-block" data-gallery-jacket="${jacket.id}">
@@ -545,13 +730,12 @@ function renderShowcase(jacket) {
               ${craftHtml}
             </dl>
 
-            ${jacket.inStock === false ? '' : `
-              <div class="showcase-cta-wrap">
-                <button type="button" class="showcase-waitlist-btn btn-join-waitlist" id="showcaseWaitlistBtn" data-open-waitlist>
-                  JOIN THE WAITING LIST
-                </button>
-              </div>
-            `}
+            <!-- Bottom Direct Checkout CTA (Guarantees visible action after scrolling specifications) -->
+            <div class="showcase-bottom-cta-wrap">
+              <button type="button" class="btn-purchase btn-buy-it-now btn-buy-it-now--bottom" id="btnBuyItNowBottom" aria-label="Buy ${jacket.impulse} now">
+                BUY IT NOW &mdash; ${jacket.price || '£1,950'}
+              </button>
+            </div>
           </div>
         </div>
 
@@ -662,6 +846,138 @@ function renderShowcase(jacket) {
     if (nextBtn) nextBtn.addEventListener('click', handleNext);
     if (prevQuick) prevQuick.addEventListener('click', handlePrev);
     if (nextQuick) nextQuick.addEventListener('click', handleNext);
+
+    // Size pills selection
+    const sizePills = showcase.querySelectorAll('.size-pill');
+    const customNote = document.getElementById('customSizingNote');
+    sizePills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        sizePills.forEach(p => {
+          p.classList.remove('is-active');
+          p.setAttribute('aria-checked', 'false');
+        });
+        pill.classList.add('is-active');
+        pill.setAttribute('aria-checked', 'true');
+        currentSelectedSize = pill.dataset.size;
+        if (customNote) {
+          if (currentSelectedSize === 'Custom') {
+            customNote.classList.remove('is-hidden');
+          } else {
+            customNote.classList.add('is-hidden');
+          }
+        }
+      });
+    });
+
+    const customHint = document.getElementById('customSizingHintBtn');
+    if (customHint) {
+      customHint.addEventListener('click', () => {
+        const customPill = showcase.querySelector('.size-pill[data-size="Custom"]');
+        if (customPill) customPill.click();
+      });
+    }
+
+    // Quantity selector
+    const minusBtn = document.getElementById('qtyMinusBtn');
+    const plusBtn = document.getElementById('qtyPlusBtn');
+    const qtyDisplay = document.getElementById('productQtyDisplay');
+
+    const updateQty = (newQty) => {
+      currentSelectedQuantity = Math.max(1, Math.min(10, newQty));
+      if (qtyDisplay) qtyDisplay.textContent = String(currentSelectedQuantity);
+      if (minusBtn) minusBtn.disabled = currentSelectedQuantity <= 1;
+    };
+
+    if (minusBtn) minusBtn.addEventListener('click', () => updateQty(currentSelectedQuantity - 1));
+    if (plusBtn) plusBtn.addEventListener('click', () => updateQty(currentSelectedQuantity + 1));
+
+    // WhatsApp Stylist CTA
+    const stylistBtn = document.getElementById('btnWhatsappStylist');
+    if (stylistBtn) {
+      stylistBtn.addEventListener('click', () => {
+        const productName = jacket.impulse;
+        const currentUrl = window.location.href;
+        const text = `Hello Ekkomi, I'm interested in the ${productName} jacket. I'd like to speak with your stylist.\n\nProduct: ${productName}\nProduct URL: ${currentUrl}`;
+        const waUrl = `https://wa.me/${EKKOMI_WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
+        window.open(waUrl, '_blank', 'noopener,noreferrer');
+      });
+    }
+
+    // WhatsApp Customize CTA
+    const customBtn = document.getElementById('btnWhatsappCustom');
+    if (customBtn) {
+      customBtn.addEventListener('click', () => {
+        const productName = jacket.impulse;
+        const currentUrl = window.location.href;
+        const text = `Hello Ekkomi, I'd like to explore customization options for the ${productName} jacket.\n\nProduct: ${productName}\nProduct URL: ${currentUrl}`;
+        const waUrl = `https://wa.me/${EKKOMI_WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
+        window.open(waUrl, '_blank', 'noopener,noreferrer');
+      });
+    }
+
+    // Add to Bag & Buy It Now Handlers
+    const handlePurchase = (actionType) => {
+      if (currentSelectedSize === 'Custom') {
+        const productName = jacket.impulse;
+        const currentUrl = window.location.href;
+        const customText = `Hello Ekkomi, I would like to order a bespoke made-to-measure ${productName} jacket (${jacket.colour}, Qty: ${currentSelectedQuantity}).\n\nProduct: ${productName}\nProduct URL: ${currentUrl}`;
+        const customWaUrl = `https://wa.me/${EKKOMI_WHATSAPP_NUMBER}?text=${encodeURIComponent(customText)}`;
+        window.open(customWaUrl, '_blank', 'noopener,noreferrer');
+        return;
+      }
+
+      const department = jacket.gender || 'men';
+      const jacketKey = jacket.key;
+      const variantId = (typeof SHOPIFY_CONFIG !== 'undefined' && SHOPIFY_CONFIG.products?.[department]?.[jacketKey]?.variants?.[currentSelectedSize]) || null;
+      const isLiveVariant = variantId && !String(variantId).startsWith('var_');
+
+      if (typeof SHOPIFY_CONFIG !== 'undefined' && SHOPIFY_CONFIG.enabled && isLiveVariant) {
+        const store = SHOPIFY_CONFIG.storeDomain || 'shop.ekkomi.co.uk';
+        if (actionType === 'buy_it_now') {
+          window.location.href = `https://${store}/cart/${variantId}:${currentSelectedQuantity}?checkout=true`;
+        } else {
+          window.location.href = `https://${store}/cart/add?id=${variantId}&quantity=${currentSelectedQuantity}&return_to=/checkout`;
+        }
+        return;
+      }
+
+      console.info('[EKKOMI COMMERCE INTEGRATION NOTICE]', {
+        action: actionType,
+        product: jacket.impulse,
+        department: department,
+        size: currentSelectedSize,
+        quantity: currentSelectedQuantity,
+        sku: jacket.sku,
+        price: jacket.price,
+        configuredVariant: variantId,
+        shopifyEnabled: typeof SHOPIFY_CONFIG !== 'undefined' ? SHOPIFY_CONFIG.enabled : false,
+        storeDomain: typeof SHOPIFY_CONFIG !== 'undefined' ? SHOPIFY_CONFIG.storeDomain : 'shop.ekkomi.co.uk',
+        note: 'To activate live Shopify checkout, configure live numerical variant IDs in SHOPIFY_CONFIG and set enabled: true.'
+      });
+
+      showCampaignCheckoutNotice({
+        jacket: jacket,
+        size: currentSelectedSize,
+        quantity: currentSelectedQuantity,
+        actionType: actionType
+      });
+    };
+
+    const addBagBtn = document.getElementById('btnAddToBag');
+    const buyNowBtn = document.getElementById('btnBuyItNow');
+    if (addBagBtn) addBagBtn.addEventListener('click', () => handlePurchase('add_to_bag'));
+    if (buyNowBtn) buyNowBtn.addEventListener('click', () => handlePurchase('buy_it_now'));
+    const buyNowBottomBtn = document.getElementById('btnBuyItNowBottom');
+    if (buyNowBottomBtn) buyNowBottomBtn.addEventListener('click', () => handlePurchase('buy_it_now'));
+
+    // Dynamic Floating WhatsApp update
+    const floatingWa = document.getElementById('floatingWhatsappBtn');
+    if (floatingWa) {
+      const productName = jacket.impulse;
+      const currentUrl = window.location.href;
+      const waText = `Hello Ekkomi, I'm viewing the ${productName} jacket on your website and would like to speak with a stylist.\n\nProduct: ${productName}\nProduct URL: ${currentUrl}`;
+      floatingWa.href = `https://wa.me/${EKKOMI_WHATSAPP_NUMBER}?text=${encodeURIComponent(waText)}`;
+    }
 
     // Bind Back to Carousel Link
     const backLink = document.getElementById('backToCarouselLink');
@@ -1393,16 +1709,16 @@ if (document.readyState === 'loading') {
   // Jacket Definitions by Collection with Editorial Images
   const JACKET_CATALOG = {
     men: [
-      { key: 'curiosity', id: 'men-curiosity', number: '01', name: 'CURIOSITY', colour: 'Dark Navy', hex: '#1c2838', inStock: false, image: '/collection-assets/collection/nocturne/curiosity/curiosity.jpg' },
-      { key: 'temptation', id: 'men-temptation', number: '02', name: 'TEMPTATION', colour: 'Forest Green', hex: '#27382b', inStock: false, image: '/collection-assets/collection/nocturne/temptation/temptation_lookbook_1.jpg' },
+      { key: 'curiosity', price: '£785', id: 'men-curiosity', number: '01', name: 'CURIOSITY', colour: 'Dark Navy', hex: '#1c2838', inStock: false, image: '/collection-assets/collection/nocturne/curiosity/curiosity.jpg' },
+      { key: 'temptation', price: '£855', id: 'men-temptation', number: '02', name: 'TEMPTATION', colour: 'Forest Green', hex: '#27382b', inStock: false, image: '/collection-assets/collection/nocturne/temptation/temptation_lookbook_1.jpg' },
       { key: 'desire', id: 'men-desire', number: '03', name: 'DESIRE', colour: 'Deep Red', hex: '#662225', inStock: false, image: '/collection-assets/collection/nocturne/desire/desire.jpg' },
-      { key: 'audacity', id: 'men-audacity', number: '04', name: 'AUDACITY', colour: 'Deep Mustard', hex: '#8c6b24', inStock: false, image: '/collection-assets/collection/nocturne/audacity/audacity_lookbook_2.jpg' },
-      { key: 'insolence', id: 'men-insolence', number: '05', name: 'INSOLENCE', colour: 'Black', hex: '#1a1716', inStock: false, image: '/collection-assets/collection/nocturne/insolence/insolence_detail.jpg' }
+      { key: 'audacity', price: '£970', id: 'men-audacity', number: '04', name: 'AUDACITY', colour: 'Deep Mustard', hex: '#8c6b24', inStock: false, image: '/collection-assets/collection/nocturne/audacity/audacity_lookbook_2.jpg' },
+      { key: 'insolence', price: '£1,050', id: 'men-insolence', number: '05', name: 'INSOLENCE', colour: 'Black', hex: '#1a1716', inStock: false, image: '/collection-assets/collection/nocturne/insolence/insolence_detail.jpg' }
     ],
     women: [
-      { key: 'curiosity', id: 'women-curiosity', number: '01', name: 'CURIOSITY', colour: 'Dark Navy', hex: '#1c2838', inStock: false, image: '/collection-assets/collection/nocturne/curiosity/curiosity_women_2.jpg' },
+      { key: 'curiosity', price: '£785', id: 'women-curiosity', number: '01', name: 'CURIOSITY', colour: 'Dark Navy', hex: '#1c2838', inStock: false, image: '/collection-assets/collection/nocturne/curiosity/curiosity_women_2.jpg' },
       { key: 'desire', id: 'women-desire', number: '02', name: 'DESIRE', colour: 'Deep Red', hex: '#662225', inStock: false, image: '/collection-assets/collection/nocturne/desire/desire_editorial_3.jpg' },
-      { key: 'audacity', id: 'women-audacity', number: '03', name: 'AUDACITY', colour: 'Deep Mustard', hex: '#8c6b24', inStock: false, image: '/collection-assets/collection/nocturne/audacity/audacity.jpg' }
+      { key: 'audacity', price: '£970', id: 'women-audacity', number: '03', name: 'AUDACITY', colour: 'Deep Mustard', hex: '#8c6b24', inStock: false, image: '/collection-assets/collection/nocturne/audacity/audacity.jpg' }
     ]
   };
 
