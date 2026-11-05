@@ -5,6 +5,7 @@ export const metadata: Metadata = {
     title: {
         absolute: "Ekkomi | British Luxury Leather & Suede Jackets",
     },
+
     description:
         "Discover Ekkomi, a contemporary British luxury fashion house. Explore distinctive leather and suede jackets defined by craftsmanship, individuality and timeless design.",
 
@@ -36,3 +37,7 @@ export const metadata: Metadata = {
         images: ["/collection-assets/collection/nocturne/temptation/temptation.jpg"],
     },
 };
+
+export default function HomePage() {
+    return <StoryExperience />;
+}

@@ -39,9 +39,6 @@ export const metadata: Metadata = {
 };
 
 const collectionJsonLd = {
-  "breadcrumb": {
-    "@id": "https://www.ekkomi.co.uk/collection#breadcrumb",
-  },
   "@context": "https://schema.org",
   "@graph": [
     {
@@ -51,12 +48,33 @@ const collectionJsonLd = {
       "name": "Nocturne Collection | Luxury Suede Jackets | Ekkomi",
       "description":
         "Discover Nocturne by Ekkomi: five distinctive luxury suede jackets defined by considered British design.",
+      "breadcrumb": {
+        "@id": "https://www.ekkomi.co.uk/collection#breadcrumb",
+      },
       "isPartOf": {
         "@type": "WebSite",
         "@id": "https://www.ekkomi.co.uk/#website",
         "name": "Ekkomi",
         "url": "https://www.ekkomi.co.uk",
       },
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "https://www.ekkomi.co.uk/collection#breadcrumb",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://www.ekkomi.co.uk/",
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Nocturne Collection",
+          "item": "https://www.ekkomi.co.uk/collection",
+        },
+      ],
     },
     {
       "@type": "ItemList",

@@ -57,6 +57,34 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "Organization",
+                  "@id": "https://www.ekkomi.co.uk/#organization",
+                  "name": "Ekkomi",
+                  "url": "https://www.ekkomi.co.uk/",
+                  "description":
+                    "Ekkomi is a contemporary luxury fashion house specialising in distinctive leather and suede jackets.",
+                },
+                {
+                  "@type": "WebSite",
+                  "@id": "https://www.ekkomi.co.uk/#website",
+                  "url": "https://www.ekkomi.co.uk/",
+                  "name": "Ekkomi",
+                  "publisher": {
+                    "@id": "https://www.ekkomi.co.uk/#organization",
+                  },
+                  "inLanguage": "en-GB",
+                },
+              ],
+            }).replace(/</g, "\\u003c"),
+          }}
+        />
         {/* Google Tag Manager - Consent Mode v2 Default Setup */}
         <script
           dangerouslySetInnerHTML={{
