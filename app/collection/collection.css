@@ -4070,19 +4070,6 @@ body.waitlist-open .floating-waitlist-btn {
   flex-wrap: wrap;
 }
 
-.jacket-sku-tag {
-  font-family: var(--font-sans);
-  font-size: 11.5px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: #5a3a38;
-  padding: 5px 11px;
-  border-radius: 12px;
-  border: 1px solid rgba(106, 42, 48, 0.24);
-  background: rgba(106, 42, 48, 0.08);
-}
-
 /* Price & Tax Row */
 .product-price-row {
   display: flex;
@@ -4120,7 +4107,7 @@ body.waitlist-open .floating-waitlist-btn {
 .product-offer-label {
   color: #27382b;
   font-family: var(--font-sans);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -4640,15 +4627,15 @@ body.waitlist-open .floating-whatsapp-btn {
 }
 
 .notice-action-btn--stylist {
-  background: #141820;
+  background: #34483a;
   color: #FAF6F1;
-  border: 1px solid #141820;
+  border: 1px solid #34483a;
 }
 
 .notice-action-btn--stylist:hover {
-  background: #25D366;
-  border-color: #25D366;
-  color: #ffffff;
+  background: #27382b;
+  border-color: #27382b;
+  color: #FAF6F1;
 }
 
 .notice-action-btn--waitlist {

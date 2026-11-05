@@ -622,10 +622,6 @@ function renderShowcase(jacket) {
                     <span aria-hidden="true">&rarr;</span>
                   </button>
                 </div>
-                <div class="gallery-stage__badge">
-                  <span class="badge-indicator" aria-hidden="true"></span>
-                  <span class="stage-caption" id="showcaseStageCaption">${firstView.label}</span>
-                </div>
               </div>
             </div>
           </div>
@@ -640,7 +636,6 @@ function renderShowcase(jacket) {
                   <span class="colour-swatch" style="background-color: ${jacket.hex};" aria-hidden="true"></span>
                   ${jacket.colour}
                 </span>
-                ${jacket.sku ? `<span class="jacket-sku-tag">SKU: ${jacket.sku}</span>` : ''}
               </div>
             </div>
 
@@ -774,7 +769,6 @@ function renderShowcase(jacket) {
     // Bind thumbnail click events for main stage swapping
     const stage = document.getElementById('showcaseStage');
     const stageImg = document.getElementById('showcaseStageImg');
-    const stageCaption = document.getElementById('showcaseStageCaption');
     const cards = showcase.querySelectorAll('.gallery-view-card');
     const frame = showcase.querySelector('.gallery-stage__frame');
     const mobileCounter = showcase.querySelector('.gallery-mobile-counter');
@@ -788,7 +782,6 @@ function renderShowcase(jacket) {
       const card = cards[activeViewIndex];
       const src = card.dataset.src;
       const alt = card.dataset.alt;
-      const label = card.dataset.label;
 
       cards.forEach((item, itemIndex) => {
         item.classList.toggle('is-active', itemIndex === activeViewIndex);
@@ -799,7 +792,6 @@ function renderShowcase(jacket) {
         window.setTimeout(() => {
           stageImg.src = src;
           stageImg.alt = alt;
-          if (stageCaption) stageCaption.textContent = label;
           stage.classList.remove('is-switching');
         }, 140);
       }
