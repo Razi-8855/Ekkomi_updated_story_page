@@ -333,6 +333,18 @@ const womensJackets = [
 
 const allCollectionJackets = [...mensJackets, ...womensJackets];
 
+const getSellingPrice = (jacket) => {
+  const amount = Number.parseFloat(String(jacket?.price ?? '').replace(/[^\d.]/g, ''));
+  return Number.isFinite(amount) ? amount : 0;
+};
+
+const formatGBP = (amount) => new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'GBP',
+  useGrouping: false,
+  maximumFractionDigits: Number.isInteger(amount) ? 0 : 2
+}).format(amount);
+
 /* -------------------------------------------------------------------
    STATE & UTILITIES
    ------------------------------------------------------------------- */
@@ -632,9 +644,14 @@ function renderShowcase(jacket) {
               </div>
             </div>
 
+            <div class="product-offer-row">
+              <span class="product-offer-label">Introductory Offer</span>
+            </div>
+
             <!-- Price & Tax Row -->
             <div class="product-price-row">
-              <span class="product-price">${jacket.price || '£1,950'}</span>
+              <span class="product-original-price">${formatGBP(getSellingPrice(jacket) * 1.2)}</span>
+              <span class="product-price">${formatGBP(getSellingPrice(jacket))}</span>
               <span class="product-tax-note">Taxes &amp; duties included &middot; Complimentary delivery</span>
             </div>
 
@@ -647,7 +664,6 @@ function renderShowcase(jacket) {
               <div class="product-option-group product-size-group">
                 <div class="product-option-header">
                   <span class="product-option-label">Select Size</span>
-                  <button type="button" class="product-custom-sizing-hint" id="customSizingHintBtn">Bespoke atelier sizing &rarr;</button>
                 </div>
                 <div class="product-size-pills" role="radiogroup" aria-label="Select size for ${jacket.impulse}">
                   <button type="button" class="size-pill" data-size="S" role="radio" aria-checked="false">S</button>
@@ -657,7 +673,7 @@ function renderShowcase(jacket) {
                   <button type="button" class="size-pill size-pill--custom" data-size="Custom" role="radio" aria-checked="false">Custom</button>
                 </div>
                 <p class="custom-sizing-note is-hidden" id="customSizingNote">
-                  Bespoke sizing selected &mdash; our master atelier will contact you to take exact made-to-measure specifications.
+                  Bespoke sizing selected &mdash; please contact our stylist to arrange your made-to-measure specifications.
                 </p>
               </div>
 
@@ -698,7 +714,7 @@ function renderShowcase(jacket) {
                   ADD TO BAG
                 </button>
                 <button type="button" class="btn-purchase btn-buy-it-now" id="btnBuyItNow">
-                  BUY IT NOW
+                  BUY IT NOW FOR ${formatGBP(getSellingPrice(jacket) * currentSelectedQuantity)}
                 </button>
 
                 <!-- Priority Waitlist Option -->
@@ -730,12 +746,6 @@ function renderShowcase(jacket) {
               ${craftHtml}
             </dl>
 
-            <!-- Bottom Direct Checkout CTA (Guarantees visible action after scrolling specifications) -->
-            <div class="showcase-bottom-cta-wrap">
-              <button type="button" class="btn-purchase btn-buy-it-now btn-buy-it-now--bottom" id="btnBuyItNowBottom" aria-label="Buy ${jacket.impulse} now">
-                BUY IT NOW &mdash; ${jacket.price || '£1,950'}
-              </button>
-            </div>
           </div>
         </div>
 
@@ -869,14 +879,6 @@ function renderShowcase(jacket) {
       });
     });
 
-    const customHint = document.getElementById('customSizingHintBtn');
-    if (customHint) {
-      customHint.addEventListener('click', () => {
-        const customPill = showcase.querySelector('.size-pill[data-size="Custom"]');
-        if (customPill) customPill.click();
-      });
-    }
-
     // Quantity selector
     const minusBtn = document.getElementById('qtyMinusBtn');
     const plusBtn = document.getElementById('qtyPlusBtn');
@@ -886,6 +888,7 @@ function renderShowcase(jacket) {
       currentSelectedQuantity = Math.max(1, Math.min(10, newQty));
       if (qtyDisplay) qtyDisplay.textContent = String(currentSelectedQuantity);
       if (minusBtn) minusBtn.disabled = currentSelectedQuantity <= 1;
+      if (buyNowBtn) buyNowBtn.textContent = `BUY IT NOW FOR ${formatGBP(getSellingPrice(jacket) * currentSelectedQuantity)}`;
     };
 
     if (minusBtn) minusBtn.addEventListener('click', () => updateQty(currentSelectedQuantity - 1));
@@ -967,8 +970,6 @@ function renderShowcase(jacket) {
     const buyNowBtn = document.getElementById('btnBuyItNow');
     if (addBagBtn) addBagBtn.addEventListener('click', () => handlePurchase('add_to_bag'));
     if (buyNowBtn) buyNowBtn.addEventListener('click', () => handlePurchase('buy_it_now'));
-    const buyNowBottomBtn = document.getElementById('btnBuyItNowBottom');
-    if (buyNowBottomBtn) buyNowBottomBtn.addEventListener('click', () => handlePurchase('buy_it_now'));
 
     // Dynamic Floating WhatsApp update
     const floatingWa = document.getElementById('floatingWhatsappBtn');
