@@ -105,31 +105,31 @@ const collectionMarkup = `
         <article id="curiosity" class="seo-product-item">
           <h2>Curiosity Suede Jacket — £785</h2>
           <p>Color: Navy. Rich tactile luxury suede with a brushed nap that catches and deepens the light. Tonal needlework across the upper chest, lined in bespoke Nocturne silk.</p>
-          <p>Price: £785 GBP. Available for priority waitlist.</p>
+          <p>Price: £785 GBP. Available for purchase.</p>
           <a href="/collection#curiosity">View Curiosity Suede Jacket</a>
         </article>
         <article id="temptation" class="seo-product-item">
           <h2>Temptation Suede Jacket — £855</h2>
           <p>Color: Red. Rich tactile luxury suede with a brushed nap that catches and deepens the light. Shifting needlework across the upper chest, lined in bespoke Nocturne silk.</p>
-          <p>Price: £855 GBP. Available for priority waitlist.</p>
+          <p>Price: £855 GBP. Available for purchase.</p>
           <a href="/collection#temptation">View Temptation Suede Jacket</a>
         </article>
         <article id="desire" class="seo-product-item">
           <h2>Desire Suede Jacket — £855</h2>
           <p>Color: Olive Green. Rich tactile luxury suede with a brushed nap that catches and deepens the light. Shifting needlework across the upper chest, lined in bespoke Nocturne silk.</p>
-          <p>Price: £855 GBP. Available for priority waitlist.</p>
+          <p>Price: £855 GBP. Available for purchase.</p>
           <a href="/collection#desire">View Desire Suede Jacket</a>
         </article>
         <article id="audacity" class="seo-product-item">
           <h2>Audacity Suede Jacket — £970</h2>
           <p>Color: Mustard Yellow. Rich tactile luxury suede with a brushed nap that catches and deepens the light. Tonal needlework across the upper chest, lined in bespoke Nocturne silk.</p>
-          <p>Price: £970 GBP. Available for priority waitlist.</p>
+          <p>Price: £970 GBP. Available for purchase.</p>
           <a href="/collection#audacity">View Audacity Suede Jacket</a>
         </article>
         <article id="insolence" class="seo-product-item">
           <h2>Insolence Suede Jacket — £1,050</h2>
           <p>Color: Jet Black. Rich tactile luxury suede with a brushed nap that catches and deepens the light. Tonal needlework across the upper chest, lined in bespoke Nocturne silk.</p>
-          <p>Price: £1,050 GBP. Available for priority waitlist.</p>
+          <p>Price: £1,050 GBP. Available for purchase.</p>
           <a href="/collection#insolence">View Insolence Suede Jacket</a>
         </article>
       </section>
@@ -162,12 +162,13 @@ const collectionMarkup = `
       </div>
     </div>
   </footer>
-
-  <!-- Persistent Floating Join Waiting List Button (Bottom-Left) -->
-  <button type="button" class="floating-waitlist-btn" id="floatingWaitlistBtn" aria-label="Join the waiting list">
+  <!-- Persistent Floating Join Waiting List Button (Bottom-Left) [DISABLED for purchase campaign] -->
+  <!--
+<button type="button" class="floating-waitlist-btn" id="floatingWaitlistBtn" aria-label="Join the waiting list">
     <span class="floating-btn-text">JOIN THE WAITING LIST</span>
     <span class="floating-btn-indicator" aria-hidden="true"></span>
   </button>
+  -->
 
   <!-- Floating WhatsApp Stylist Button (Bottom-Right) -->
   <a href="https://wa.me/447123456789?text=Hello%20Ekkomi%2C%20I%20would%20like%20to%20speak%20with%20your%20stylist%20regarding%20the%20Nocturne%20collection." class="floating-whatsapp-btn" id="floatingWhatsappBtn" target="_blank" rel="noopener noreferrer" aria-label="Contact Ekkomi Stylist on WhatsApp">

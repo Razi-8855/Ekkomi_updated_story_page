@@ -716,14 +716,6 @@ function renderShowcase(jacket) {
                 <button type="button" class="btn-purchase btn-buy-it-now" id="btnBuyItNow">
                   BUY IT NOW FOR ${formatGBP(getSellingPrice(jacket) * currentSelectedQuantity)}
                 </button>
-
-                <!-- Priority Waitlist Option -->
-                <div class="product-waitlist-row">
-                  <span class="waitlist-row-text">Prefer priority reservation?</span>
-                  <button type="button" class="btn-link-waitlist" id="showcaseNotifyBtn" data-jacket-key="${jacket.key}" data-collection="${jacket.gender}" data-jacket-name="${jacket.impulse}">
-                    NOTIFY WHEN AVAILABLE &rarr;
-                  </button>
-                </div>
               </div>
             </div>
 

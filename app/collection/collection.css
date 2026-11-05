@@ -4696,3 +4696,20 @@ body.waitlist-open .floating-whatsapp-btn {
 .btn-buy-it-now--bottom {
   box-shadow: 0 4px 16px rgba(106, 42, 48, 0.22);
 }
+
+
+/* ============================================================
+   DISABLED FOR LIVE PURCHASE CAMPAIGN:
+   - Persistent Floating Join Waiting List Button
+   - Product Showcase Priority Waitlist ("NOTIFY WHEN AVAILABLE")
+   ============================================================ */
+.floating-waitlist-btn,
+#floatingWaitlistBtn,
+.product-waitlist-row,
+#showcaseNotifyBtn,
+.btn-link-waitlist {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  opacity: 0 !important;
+}
