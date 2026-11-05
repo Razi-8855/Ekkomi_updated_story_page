@@ -256,8 +256,10 @@ export default function StoryExperience() {
                   decoding="async"
                   onError={(e) => {
                     const img = e.currentTarget as HTMLImageElement;
-                    if (!img.src.endsWith("/logo.svg")) {
-                      img.src = "/logo/logo.svg";
+                    if (!img.src.endsWith("/logo-1.png")) {
+                      img.src = "/logo/logo-1.png";
+                    } else if (!img.src.endsWith("/collection-assets/Ekkomi_logo_1.png")) {
+                      img.src = "/collection-assets/Ekkomi_logo_1.png";
                     }
                   }}
                 />
