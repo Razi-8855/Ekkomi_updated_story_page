@@ -546,6 +546,88 @@ Product URL: ${currentUrl}`;
   modal.classList.add('is-active');
 }
 
+/* -------------------------------------------------------------------
+   SIZE GUIDE MODAL CONTROLLER
+   ------------------------------------------------------------------- */
+let sizeGuidePrevFocus = null;
+
+function openSizeGuide() {
+  const modal = document.getElementById('sizeGuideModal');
+  if (!modal) return;
+  sizeGuidePrevFocus = document.activeElement;
+  try {
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    if (scrollbarWidth > 0) {
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+    }
+  } catch (e) {}
+  document.body.classList.add('size-guide-open');
+  modal.classList.add('is-active');
+  modal.setAttribute('aria-hidden', 'false');
+  const closeBtn = document.getElementById('sizeGuideCloseBtn');
+  if (closeBtn) {
+    window.setTimeout(() => closeBtn.focus(), 60);
+  }
+}
+
+function closeSizeGuide() {
+  const modal = document.getElementById('sizeGuideModal');
+  if (!modal) return;
+  modal.classList.remove('is-active');
+  modal.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('size-guide-open');
+  document.body.style.paddingRight = '';
+  if (sizeGuidePrevFocus && typeof sizeGuidePrevFocus.focus === 'function') {
+    try { sizeGuidePrevFocus.focus(); } catch (e) {}
+  }
+}
+
+function initSizeGuide() {
+  const modal = document.getElementById('sizeGuideModal');
+  if (!modal) return;
+  const closeBtn = document.getElementById('sizeGuideCloseBtn');
+  if (closeBtn && !closeBtn._sizeGuideBound) {
+    closeBtn._sizeGuideBound = true;
+    closeBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      closeSizeGuide();
+    });
+  }
+
+  if (!modal._sizeGuideBound) {
+    modal._sizeGuideBound = true;
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        closeSizeGuide();
+      }
+    });
+  }
+
+  if (!document._sizeGuideKeyBound) {
+    document._sizeGuideKeyBound = true;
+    document.addEventListener('keydown', (e) => {
+      const activeModal = document.getElementById('sizeGuideModal');
+      if (activeModal && activeModal.classList.contains('is-active') && e.key === 'Escape') {
+        closeSizeGuide();
+      }
+    });
+  }
+
+  if (!document._sizeGuideClickBound) {
+    document._sizeGuideClickBound = true;
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('#btnSizeGuide, .btn-size-guide');
+      if (btn) {
+        e.preventDefault();
+        openSizeGuide();
+      }
+    });
+  }
+}
+
+window.openEkkomiSizeGuide = openSizeGuide;
+window.closeEkkomiSizeGuide = closeSizeGuide;
+
 function renderShowcase(jacket) {
   currentSelectedSize = "M";
   currentSelectedQuantity = 1;
@@ -664,6 +746,7 @@ function renderShowcase(jacket) {
               <div class="product-option-group product-size-group">
                 <div class="product-option-header">
                   <span class="product-option-label">Select Size</span>
+                  <button type="button" class="btn-size-guide" id="btnSizeGuide" aria-label="Open Size Guide" aria-haspopup="dialog">SIZE GUIDE</button>
                 </div>
                 <div class="product-size-pills" role="radiogroup" aria-label="Select size for ${jacket.impulse}">
                   <button type="button" class="size-pill" data-size="S" role="radio" aria-checked="false">S</button>
@@ -912,6 +995,15 @@ function renderShowcase(jacket) {
         const message = `Hello Ekkomi, I'm interested in the ${productName} and would like to explore customisation possibilities. Could you please guide me?\n\nProduct: ${productName}\nProduct URL: ${currentUrl}`;
         const waUrl = `https://wa.me/${EKKOMI_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
         window.open(waUrl, '_blank', 'noopener,noreferrer');
+      });
+    }
+
+    // Size Guide Trigger
+    const sizeGuideBtn = document.getElementById('btnSizeGuide');
+    if (sizeGuideBtn) {
+      sizeGuideBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        openSizeGuide();
       });
     }
 
@@ -1575,6 +1667,8 @@ function init() {
       switchDepartment('women', { syncJacket: true, scroll: false });
     });
   }
+
+  initSizeGuide();
 
   // Pre-render the default active jacket (Men's Desire) in showcase
   const defaultJacket = mensJackets[2];

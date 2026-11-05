@@ -4742,3 +4742,282 @@ body.waitlist-open .floating-whatsapp-btn {
     line-height: 1.5;
   }
 }
+
+/* ===================================================================
+   SIZE GUIDE - BUTTON & MODAL (EKKOMI NOCTURNE LUXURY AESTHETIC)
+   =================================================================== */
+
+/* Size Guide Trigger Button */
+.btn-size-guide {
+  display: inline-flex;
+  align-items: center;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-accent, #773A3C);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  transition: color 220ms ease, text-underline-offset 220ms ease, opacity 220ms ease;
+}
+
+.btn-size-guide:hover {
+  color: var(--color-text, #14100e);
+  text-underline-offset: 4.5px;
+  opacity: 0.9;
+}
+
+.btn-size-guide:focus-visible {
+  outline: 1px solid var(--color-accent, #773A3C);
+  outline-offset: 3px;
+}
+
+/* Background scroll lock */
+body.size-guide-open {
+  overflow: hidden !important;
+}
+
+/* Modal Backdrop */
+.size-guide-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100010;
+  background: rgba(10, 8, 8, 0.78);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  box-sizing: border-box;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 280ms cubic-bezier(0.16, 1, 0.3, 1),
+              visibility 280ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.size-guide-modal-backdrop.is-active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* Modal Dialog */
+.size-guide-modal-dialog {
+  position: relative;
+  width: 100%;
+  max-width: 680px;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  background: #110e0c;
+  color: #FAF6F1;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.65), 0 0 1px 1px rgba(255, 255, 255, 0.05);
+  padding: 38px 42px 42px;
+  box-sizing: border-box;
+  border-radius: 2px;
+  transform: translateY(12px) scale(0.985);
+  transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.size-guide-modal-backdrop.is-active .size-guide-modal-dialog {
+  transform: translateY(0) scale(1);
+}
+
+/* Close Button */
+.size-guide-close-btn {
+  position: absolute;
+  top: 22px;
+  right: 22px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: #9f9188;
+  cursor: pointer;
+  padding: 0;
+  border-radius: 50%;
+  transition: color 200ms ease, background 200ms ease, transform 200ms ease;
+}
+
+.size-guide-close-btn:hover {
+  color: #FAF6F1;
+  background: rgba(255, 255, 255, 0.06);
+  transform: scale(1.05);
+}
+
+.size-guide-close-btn:focus-visible {
+  outline: 1px solid rgba(255, 255, 255, 0.3);
+  outline-offset: 2px;
+}
+
+/* Modal Header */
+.size-guide-header {
+  text-align: center;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.size-guide-title {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  font-weight: 400;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #FAF6F1;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.size-guide-subtitle {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #a89c93;
+  margin: 8px 0 0;
+}
+
+.size-guide-note {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 12.5px;
+  letter-spacing: 0.04em;
+  color: #7d7067;
+  margin: 6px 0 0;
+}
+
+/* Table Wrapper */
+.size-guide-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-top: 24px;
+}
+
+/* Measurement Table */
+.size-guide-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  border: none;
+}
+
+.size-guide-table thead th {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #cfc4b8;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+  white-space: nowrap;
+}
+
+.size-guide-table thead th.th-measurement {
+  text-align: left;
+  width: 52%;
+}
+
+.size-guide-table thead th.th-size {
+  text-align: right;
+  width: 12%;
+}
+
+.size-guide-table tbody tr {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  transition: background 180ms ease;
+}
+
+.size-guide-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.size-guide-table tbody tr:last-child {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.size-guide-table tbody th.td-measurement {
+  font-family: var(--font-body, var(--font-sans));
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: #ebe2d7;
+  padding: 13px 16px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.size-guide-table tbody td.td-val {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  color: #FAF6F1;
+  padding: 13px 16px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 640px) {
+  .size-guide-modal-backdrop {
+    padding: 16px 12px;
+  }
+
+  .size-guide-modal-dialog {
+    padding: 28px 18px 24px;
+    max-height: calc(100vh - 32px);
+  }
+
+  .size-guide-close-btn {
+    top: 14px;
+    right: 14px;
+    width: 32px;
+    height: 32px;
+  }
+
+  .size-guide-title {
+    font-size: 17px;
+    letter-spacing: 0.18em;
+  }
+
+  .size-guide-subtitle {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+  }
+
+  .size-guide-note {
+    font-size: 11.5px;
+  }
+
+  .size-guide-table thead th {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    padding: 10px 10px;
+  }
+
+  .size-guide-table tbody th.td-measurement {
+    font-size: 11.5px;
+    padding: 10px 10px;
+  }
+
+  .size-guide-table tbody td.td-val {
+    font-size: 11.5px;
+    padding: 10px 10px;
+  }
+}

@@ -329,6 +329,96 @@ const collectionMarkup = `
 
     </div>
   </div>
+
+  <!-- Size Guide Modal Overlay -->
+  <div class="size-guide-modal-backdrop" id="sizeGuideModal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="sizeGuideTitle">
+    <div class="size-guide-modal-dialog">
+      <button type="button" class="size-guide-close-btn" id="sizeGuideCloseBtn" aria-label="Close size guide">
+        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+
+      <div class="size-guide-header">
+        <h2 class="size-guide-title" id="sizeGuideTitle">SIZE GUIDE</h2>
+        <p class="size-guide-subtitle">Garment measurements</p>
+        <p class="size-guide-note">All measurements are in inches.</p>
+      </div>
+
+      <div class="size-guide-table-wrap">
+        <table class="size-guide-table">
+          <thead>
+            <tr>
+              <th scope="col" class="th-measurement">Measurement Point</th>
+              <th scope="col" class="th-size">S (36)</th>
+              <th scope="col" class="th-size">M (38)</th>
+              <th scope="col" class="th-size">L (40)</th>
+              <th scope="col" class="th-size">XL (42)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row" class="td-measurement">Front Length (From HPS)</th>
+              <td class="td-val">26.0</td>
+              <td class="td-val">26.5</td>
+              <td class="td-val">27.0</td>
+              <td class="td-val">27.5</td>
+            </tr>
+            <tr>
+              <th scope="row" class="td-measurement">Sleeve Length (From Shoulder Tip)</th>
+              <td class="td-val">25.5</td>
+              <td class="td-val">26.0</td>
+              <td class="td-val">26.5</td>
+              <td class="td-val">27.0</td>
+            </tr>
+            <tr>
+              <th scope="row" class="td-measurement">Shoulder (Seam to Seam)</th>
+              <td class="td-val">18.0</td>
+              <td class="td-val">18.5</td>
+              <td class="td-val">19.25</td>
+              <td class="td-val">20.0</td>
+            </tr>
+            <tr>
+              <th scope="row" class="td-measurement">Chest (1&quot; Below Underarm - Doubled)</th>
+              <td class="td-val">42.0</td>
+              <td class="td-val">44.0</td>
+              <td class="td-val">46.5</td>
+              <td class="td-val">49.0</td>
+            </tr>
+            <tr>
+              <th scope="row" class="td-measurement">Waist (Natural Waist - Doubled)</th>
+              <td class="td-val">39.5</td>
+              <td class="td-val">41.5</td>
+              <td class="td-val">44.0</td>
+              <td class="td-val">46.5</td>
+            </tr>
+            <tr>
+              <th scope="row" class="td-measurement">Bottom (Relaxed Hem - Doubled)</th>
+              <td class="td-val">40.0</td>
+              <td class="td-val">42.0</td>
+              <td class="td-val">44.5</td>
+              <td class="td-val">47.0</td>
+            </tr>
+            <tr>
+              <th scope="row" class="td-measurement">Biceps (1&quot; Below Underarm Around)</th>
+              <td class="td-val">15.5</td>
+              <td class="td-val">16.25</td>
+              <td class="td-val">17.25</td>
+              <td class="td-val">18.25</td>
+            </tr>
+            <tr>
+              <th scope="row" class="td-measurement">Forearm (Widest Part Around)</th>
+              <td class="td-val">11.5</td>
+              <td class="td-val">12.0</td>
+              <td class="td-val">12.75</td>
+              <td class="td-val">13.5</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 `;
 
 const collectionFooter = `<footer class="collection-footer" role="contentinfo">
