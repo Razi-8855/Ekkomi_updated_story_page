@@ -105,31 +105,31 @@ const collectionMarkup = `
         <article id="curiosity" class="seo-product-item">
           <h2>Curiosity Suede Jacket — £785</h2>
           <p>Color: Navy. Rich tactile luxury suede with a brushed nap that catches and deepens the light. Tonal needlework across the upper chest, lined in bespoke Nocturne silk.</p>
-          <p>Price: £785 GBP. Available for priority waitlist.</p>
+          <p>Price: £785 GBP. Available for purchase.</p>
           <a href="/collection#curiosity">View Curiosity Suede Jacket</a>
         </article>
         <article id="temptation" class="seo-product-item">
           <h2>Temptation Suede Jacket — £855</h2>
           <p>Color: Red. Rich tactile luxury suede with a brushed nap that catches and deepens the light. Shifting needlework across the upper chest, lined in bespoke Nocturne silk.</p>
-          <p>Price: £855 GBP. Available for priority waitlist.</p>
+          <p>Price: £855 GBP. Available for purchase.</p>
           <a href="/collection#temptation">View Temptation Suede Jacket</a>
         </article>
         <article id="desire" class="seo-product-item">
           <h2>Desire Suede Jacket — £855</h2>
           <p>Color: Olive Green. Rich tactile luxury suede with a brushed nap that catches and deepens the light. Shifting needlework across the upper chest, lined in bespoke Nocturne silk.</p>
-          <p>Price: £855 GBP. Available for priority waitlist.</p>
+          <p>Price: £855 GBP. Available for purchase.</p>
           <a href="/collection#desire">View Desire Suede Jacket</a>
         </article>
         <article id="audacity" class="seo-product-item">
           <h2>Audacity Suede Jacket — £970</h2>
           <p>Color: Mustard Yellow. Rich tactile luxury suede with a brushed nap that catches and deepens the light. Tonal needlework across the upper chest, lined in bespoke Nocturne silk.</p>
-          <p>Price: £970 GBP. Available for priority waitlist.</p>
+          <p>Price: £970 GBP. Available for purchase.</p>
           <a href="/collection#audacity">View Audacity Suede Jacket</a>
         </article>
         <article id="insolence" class="seo-product-item">
           <h2>Insolence Suede Jacket — £1,050</h2>
           <p>Color: Jet Black. Rich tactile luxury suede with a brushed nap that catches and deepens the light. Tonal needlework across the upper chest, lined in bespoke Nocturne silk.</p>
-          <p>Price: £1,050 GBP. Available for priority waitlist.</p>
+          <p>Price: £1,050 GBP. Available for purchase.</p>
           <a href="/collection#insolence">View Insolence Suede Jacket</a>
         </article>
       </section>
@@ -162,15 +162,16 @@ const collectionMarkup = `
       </div>
     </div>
   </footer>
-
-  <!-- Persistent Floating Join Waiting List Button (Bottom-Left) -->
-  <button type="button" class="floating-waitlist-btn" id="floatingWaitlistBtn" aria-label="Join the waiting list">
+  <!-- Persistent Floating Join Waiting List Button (Bottom-Left) [DISABLED for purchase campaign] -->
+  <!--
+<button type="button" class="floating-waitlist-btn" id="floatingWaitlistBtn" aria-label="Join the waiting list">
     <span class="floating-btn-text">JOIN THE WAITING LIST</span>
     <span class="floating-btn-indicator" aria-hidden="true"></span>
   </button>
+  -->
 
   <!-- Floating WhatsApp Stylist Button (Bottom-Right) -->
-  <a href="https://wa.me/447123456789?text=Hello%20Ekkomi%2C%20I%20would%20like%20to%20speak%20with%20your%20stylist%20regarding%20the%20Nocturne%20collection." class="floating-whatsapp-btn" id="floatingWhatsappBtn" target="_blank" rel="noopener noreferrer" aria-label="Contact Ekkomi Stylist on WhatsApp">
+  <a href="https://wa.me/447344601474?text=Hello%20Ekkomi%2C%20I%20would%20like%20to%20speak%20with%20your%20stylist%20regarding%20the%20Nocturne%20collection." class="floating-whatsapp-btn" id="floatingWhatsappBtn" target="_blank" rel="noopener noreferrer" aria-label="Contact Ekkomi Stylist on WhatsApp">
     <svg class="floating-wa-icon" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true">
       <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2M12.05 3.67C14.25 3.67 16.31 4.53 17.87 6.09C19.42 7.65 20.28 9.72 20.28 11.92C20.28 16.46 16.58 20.15 12.04 20.15C10.56 20.15 9.11 19.76 7.85 19.01L7.55 18.83L4.43 19.65L5.26 16.61L5.06 16.29C4.24 14.99 3.81 13.47 3.81 11.91C3.81 7.37 7.5 3.67 12.05 3.67M8.53 7.33C8.37 7.33 8.1 7.39 7.87 7.64C7.65 7.89 7.02 8.48 7.02 9.68C7.02 10.88 7.9 12.03 8.02 12.19C8.14 12.35 9.73 14.81 12.17 15.86C12.75 16.11 13.2 16.26 13.55 16.37C14.13 16.56 14.67 16.53 15.09 16.47C15.56 16.4 16.53 15.88 16.73 15.31C16.94 14.74 16.94 14.25 16.88 14.15C16.81 14.05 16.66 13.99 16.43 13.88C16.2 13.77 15.07 13.21 14.86 13.13C14.65 13.05 14.5 13.01 14.34 13.24C14.19 13.47 13.75 14.01 13.62 14.17C13.49 14.33 13.36 14.35 13.13 14.23C12.9 14.12 11.93 13.8 10.78 12.78C9.89 11.98 9.28 11 9.05 10.61C8.82 10.22 9.03 10.01 9.14 9.9C9.25 9.79 9.38 9.61 9.5 9.47C9.62 9.33 9.66 9.23 9.74 9.07C9.82 8.91 9.78 8.77 9.72 8.65C9.66 8.53 9.22 7.45 9.04 7.01C8.86 6.58 8.68 6.64 8.53 6.63L8.53 7.33Z"/>
     </svg>

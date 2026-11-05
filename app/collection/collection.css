@@ -4683,3 +4683,62 @@ body.waitlist-open .floating-whatsapp-btn {
 .btn-buy-it-now--bottom {
   box-shadow: 0 4px 16px rgba(106, 42, 48, 0.22);
 }
+
+
+/* ============================================================
+   DISABLED FOR LIVE PURCHASE CAMPAIGN:
+   - Persistent Floating Join Waiting List Button
+   - Product Showcase Priority Waitlist ("NOTIFY WHEN AVAILABLE")
+   ============================================================ */
+.floating-waitlist-btn,
+#floatingWaitlistBtn,
+.product-waitlist-row,
+#showcaseNotifyBtn,
+.btn-link-waitlist {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  opacity: 0 !important;
+}
+
+
+/* Stylist Editorial Consultation Note */
+.stylist-editorial-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 13px 16px;
+  margin-bottom: 14px;
+  background: rgba(119, 58, 60, 0.05);
+  border: 1px solid rgba(119, 58, 60, 0.16);
+  border-radius: 3px;
+  box-sizing: border-box;
+}
+
+.editorial-note-icon {
+  color: var(--color-accent, #773A3C);
+  font-size: 11px;
+  line-height: 1.5;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.editorial-note-text {
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  line-height: 1.55;
+  color: #4a3a37;
+  letter-spacing: 0.025em;
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .stylist-editorial-note {
+    padding: 11px 13px;
+    margin-bottom: 12px;
+  }
+  .editorial-note-text {
+    font-size: 11px;
+    line-height: 1.5;
+  }
+}
