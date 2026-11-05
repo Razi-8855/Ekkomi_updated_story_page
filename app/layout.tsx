@@ -7,12 +7,12 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://www.ekkomi.co.uk"),
 
   title: {
-    default: "Ekkomi | Luxury Suede & Leather Jackets",
+    default: "Ekkomi | British Luxury Leather & Suede Jackets",
     template: "%s | Ekkomi",
   },
 
   description:
-    "Discover Ekkomi, a contemporary luxury fashion house. Explore distinctive suede and leather jackets defined by considered design, craftsmanship and individuality.",
+    "Discover Ekkomi, a contemporary British luxury fashion house. Explore distinctive leather and suede jackets defined by craftsmanship, individuality and timeless design.",
 
   applicationName: "Ekkomi",
 
@@ -20,24 +20,25 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_GB",
     siteName: "Ekkomi",
-    title: "Ekkomi | Luxury Suede & Leather Jackets",
+    title: "Ekkomi | British Luxury Leather & Suede Jackets",
     description:
-      "Discover Ekkomi's distinctive approach to luxury fashion, craftsmanship and contemporary design.",
+      "Discover Ekkomi, a contemporary British luxury fashion house. Explore distinctive leather and suede jackets defined by craftsmanship, individuality and timeless design.",
+    url: "https://www.ekkomi.co.uk/",
     images: [
       {
         url: "/collection-assets/collection/nocturne/temptation/temptation.jpg",
         width: 1200,
         height: 1800,
-        alt: "Ekkomi | Luxury Suede & Leather Jackets",
+        alt: "Ekkomi luxury suede and leather jackets",
       },
     ],
   },
 
   twitter: {
     card: "summary_large_image",
-    title: "Ekkomi | Luxury Suede & Leather Jackets",
+    title: "Ekkomi | British Luxury Leather & Suede Jackets",
     description:
-      "Discover Ekkomi's distinctive approach to luxury fashion, craftsmanship and contemporary design.",
+      "Discover Ekkomi, a contemporary British luxury fashion house. Explore distinctive leather and suede jackets defined by craftsmanship, individuality and timeless design.",
     images: ["/collection-assets/collection/nocturne/temptation/temptation.jpg"],
   },
 
@@ -54,37 +55,44 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://www.ekkomi.co.uk/#organization",
+        name: "Ekkomi",
+        url: "https://www.ekkomi.co.uk/",
+        description:
+          "Ekkomi is a contemporary British luxury fashion house specialising in distinctive leather and suede jackets.",
+        logo: {
+          "@type": "ImageObject",
+          url: "https://www.ekkomi.co.uk/icon.png",
+        },
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://www.ekkomi.co.uk/#website",
+        url: "https://www.ekkomi.co.uk/",
+        name: "Ekkomi",
+        publisher: {
+          "@id": "https://www.ekkomi.co.uk/#organization",
+        },
+        inLanguage: "en-GB",
+      },
+    ],
+  };
+
   return (
-    <html lang="en">
+    <html lang="en-GB">
       <head>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@graph": [
-                {
-                  "@type": "Organization",
-                  "@id": "https://www.ekkomi.co.uk/#organization",
-                  "name": "Ekkomi",
-                  "url": "https://www.ekkomi.co.uk/",
-                  "description":
-                    "Ekkomi is a contemporary luxury fashion house specialising in distinctive leather and suede jackets.",
-                },
-                {
-                  "@type": "WebSite",
-                  "@id": "https://www.ekkomi.co.uk/#website",
-                  "url": "https://www.ekkomi.co.uk/",
-                  "name": "Ekkomi",
-                  "publisher": {
-                    "@id": "https://www.ekkomi.co.uk/#organization",
-                  },
-                  "inLanguage": "en-GB",
-                },
-              ],
-            }).replace(/</g, "\\u003c"),
+            __html: JSON.stringify(structuredData).replace(/</g, "\\u003c"),
           }}
         />
+
         {/* Google Tag Manager - Consent Mode v2 Default Setup */}
         <script
           dangerouslySetInnerHTML={{
