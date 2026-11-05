@@ -1,40 +1,50 @@
+
 import type { Metadata } from "next";
 import CollectionExperience from "@/components/collection/CollectionExperience";
 import markup from "./markup";
 import "./collection.css";
 
-export const metadata: Metadata = {
-  title: "Nocturne Collection | Luxury Suede Jackets – Ekkomi",
+const collectionTitle =
+  "Nocturne Collection | Luxury Suede Jackets – Ekkomi";
 
-  description:
-    "Discover Nocturne by Ekkomi: five distinctive suede jackets inspired by individuality, intricate embroidery and understated British luxury.",
+const collectionDescription =
+  "Discover Nocturne by Ekkomi, a collection of five distinctive suede jackets inspired by individuality, intricate embroidery and understated luxury.";
+
+export const metadata: Metadata = {
+  title: {
+    absolute: collectionTitle,
+  },
+
+  description: collectionDescription,
 
   alternates: {
     canonical: "/collection",
   },
 
   openGraph: {
-    title: "Nocturne Collection | Luxury Suede Jackets – Ekkomi",
-    description:
-      "Discover Nocturne by Ekkomi: five distinctive suede jackets inspired by individuality, intricate embroidery and understated British luxury.",
+    title: collectionTitle,
+    description: collectionDescription,
     url: "/collection",
     type: "website",
+    siteName: "Ekkomi",
+    locale: "en_GB",
     images: [
       {
         url: "/collection-assets/collection/nocturne/temptation/temptation.jpg",
         width: 1200,
         height: 1800,
-        alt: "Ekkomi Nocturne Collection - Luxury Suede Jackets",
+        alt: "Ekkomi Nocturne Collection - Five Luxury Suede Jackets",
       },
     ],
   },
 
   twitter: {
     card: "summary_large_image",
-    title: "Nocturne Collection | Luxury Suede Jackets – Ekkomi",
-    description:
-      "Discover Nocturne by Ekkomi: five distinctive suede jackets inspired by individuality, intricate embroidery and understated British luxury.",
-    images: ["/collection-assets/collection/nocturne/temptation/temptation.jpg"],
+    title: collectionTitle,
+    description: collectionDescription,
+    images: [
+      "/collection-assets/collection/nocturne/temptation/temptation.jpg",
+    ],
   },
 };
 
@@ -45,17 +55,16 @@ const collectionJsonLd = {
       "@type": "CollectionPage",
       "@id": "https://www.ekkomi.co.uk/collection#webpage",
       "url": "https://www.ekkomi.co.uk/collection",
-      "name": "Nocturne Collection | Luxury Suede Jackets | Ekkomi",
-      "description":
-        "Discover Nocturne by Ekkomi: five distinctive luxury suede jackets defined by considered British design.",
+      "name": collectionTitle,
+      "description": collectionDescription,
       "breadcrumb": {
         "@id": "https://www.ekkomi.co.uk/collection#breadcrumb",
       },
       "isPartOf": {
-        "@type": "WebSite",
         "@id": "https://www.ekkomi.co.uk/#website",
-        "name": "Ekkomi",
-        "url": "https://www.ekkomi.co.uk",
+      },
+      "publisher": {
+        "@id": "https://www.ekkomi.co.uk/#organization",
       },
     },
     {
@@ -80,7 +89,7 @@ const collectionJsonLd = {
       "@type": "ItemList",
       "@id": "https://www.ekkomi.co.uk/collection#itemlist",
       "name": "Nocturne Collection",
-      "description": "Five luxury suede jackets by Ekkomi.",
+      "description": collectionDescription,
       "numberOfItems": 5,
       "itemListElement": [
         {
@@ -96,7 +105,10 @@ const collectionJsonLd = {
               "https://www.ekkomi.co.uk/collection-assets/collection/nocturne/curiosity/curiosity.jpg",
             "color": "Navy",
             "material": "Luxury Suede",
-            "brand": { "@type": "Brand", "name": "Ekkomi" },
+            "brand": {
+              "@type": "Brand",
+              "name": "Ekkomi",
+            },
             "offers": {
               "@type": "Offer",
               "price": "785.00",
@@ -119,7 +131,10 @@ const collectionJsonLd = {
               "https://www.ekkomi.co.uk/collection-assets/collection/nocturne/temptation/temptation.jpg",
             "color": "Forest Green",
             "material": "Luxury Suede",
-            "brand": { "@type": "Brand", "name": "Ekkomi" },
+            "brand": {
+              "@type": "Brand",
+              "name": "Ekkomi",
+            },
             "offers": {
               "@type": "Offer",
               "price": "855.00",
@@ -142,7 +157,10 @@ const collectionJsonLd = {
               "https://www.ekkomi.co.uk/collection-assets/collection/nocturne/desire/desire.jpg",
             "color": "Deep Red",
             "material": "Luxury Suede",
-            "brand": { "@type": "Brand", "name": "Ekkomi" },
+            "brand": {
+              "@type": "Brand",
+              "name": "Ekkomi",
+            },
             "offers": {
               "@type": "Offer",
               "price": "855.00",
@@ -165,7 +183,10 @@ const collectionJsonLd = {
               "https://www.ekkomi.co.uk/collection-assets/collection/nocturne/audacity/audacity.jpg",
             "color": "Mustard yellow",
             "material": "Luxury Suede",
-            "brand": { "@type": "Brand", "name": "Ekkomi" },
+            "brand": {
+              "@type": "Brand",
+              "name": "Ekkomi",
+            },
             "offers": {
               "@type": "Offer",
               "price": "970.00",
@@ -188,7 +209,10 @@ const collectionJsonLd = {
               "https://www.ekkomi.co.uk/collection-assets/collection/nocturne/insolence/insolence.jpg",
             "color": "Jet black",
             "material": "Luxury Suede",
-            "brand": { "@type": "Brand", "name": "Ekkomi" },
+            "brand": {
+              "@type": "Brand",
+              "name": "Ekkomi",
+            },
             "offers": {
               "@type": "Offer",
               "price": "1050.00",
@@ -209,7 +233,7 @@ export default function CollectionPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(collectionJsonLd),
+          __html: JSON.stringify(collectionJsonLd).replace(/</g, "\\u003c"),
         }}
       />
       <CollectionExperience markup={markup} />
