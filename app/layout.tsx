@@ -16,6 +16,16 @@ export const metadata: Metadata = {
 
   applicationName: "Ekkomi",
 
+  icons: {
+    icon: [
+      { url: "/icon.png", sizes: "512x512", type: "image/png" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: [
+      { url: "/icon.png", sizes: "512x512", type: "image/png" },
+    ],
+  },
+
   openGraph: {
     type: "website",
     locale: "en_GB",
