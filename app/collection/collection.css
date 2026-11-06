@@ -4910,51 +4910,118 @@ body.size-guide-open {
   will-change: transform, transform-origin;
 }
 
-/* On-stage Zoom / Expand Hint Badge */
-.gallery-stage__zoom-hint {
+/* Gargee-style Top-Right Circular Zoom Trigger Button */
+.gallery-stage__zoom-btn {
   position: absolute;
-  bottom: 16px;
+  top: 16px;
   right: 16px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #FAF6F1;
+  color: #0f0c0a;
+  border: 1px solid rgba(0, 0, 0, 0.1);
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  background: rgba(14, 11, 10, 0.82);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 999px;
-  font-family: var(--font-sans);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: #FAF6F1;
-  pointer-events: auto;
+  justify-content: center;
   cursor: pointer;
-  opacity: 0.92;
-  z-index: 6;
-  transition: opacity 0.22s ease, transform 0.22s ease, background 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+  z-index: 10;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.32);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background 0.2s ease, box-shadow 0.2s ease;
 }
 
-.gallery-stage__zoom-hint:hover {
-  opacity: 1;
-  background: rgba(28, 22, 20, 0.94);
-  border-color: rgba(255, 255, 255, 0.4);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.5);
+.gallery-stage__zoom-btn:hover {
+  transform: scale(1.08);
+  background: #ffffff;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.45);
 }
 
-.gallery-stage__zoom-hint:focus-visible {
+.gallery-stage__zoom-btn:focus-visible {
   outline: 2px solid #FAF6F1;
   outline-offset: 2px;
 }
 
-.gallery-stage__frame.is-hover-zooming .gallery-stage__zoom-hint {
-  opacity: 0;
+/* Tooltip: "Click to zoom" (matching Gargee) */
+.zoom-btn-tooltip {
+  position: absolute;
+  right: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%) translateX(4px);
+  background: #111111;
+  color: #FAF6F1;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  padding: 6px 12px;
+  border-radius: 4px;
+  white-space: nowrap;
   pointer-events: none;
-  transform: translateY(4px);
+  opacity: 0;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.zoom-btn-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  transform: translateY(-50%);
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent transparent #111111;
+}
+
+.gallery-stage__zoom-btn:hover .zoom-btn-tooltip,
+.gallery-stage__zoom-btn:focus-visible .zoom-btn-tooltip {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+/* On-Stage Circular Navigation Arrows (Prev / Next - matching Gargee) */
+.gallery-nav-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #FAF6F1;
+  color: #0f0c0a;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 9;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
+}
+
+.gallery-nav-arrow--prev {
+  left: 14px;
+}
+
+.gallery-nav-arrow--next {
+  right: 14px;
+}
+
+.gallery-nav-arrow:hover:not(:disabled) {
+  transform: translateY(-50%) scale(1.08);
+  background: #ffffff;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.45);
+}
+
+.gallery-nav-arrow:disabled {
+  opacity: 0.25;
+  cursor: default;
+  pointer-events: none;
+}
+
+.gallery-nav-arrow:focus-visible {
+  outline: 2px solid #FAF6F1;
+  outline-offset: 2px;
 }
 
 /* Modal Open State on Body */
@@ -5291,13 +5358,21 @@ body.zoom-modal-open {
 
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
-  .gallery-stage__zoom-hint {
-    bottom: auto;
-    top: 12px;
-    right: 12px;
-    font-size: 10px;
-    padding: 5px 10px;
-    letter-spacing: 0.08em;
+  .gallery-stage__zoom-btn {
+    top: 10px;
+    right: 10px;
+    width: 38px;
+    height: 38px;
+  }
+  .gallery-nav-arrow {
+    width: 36px;
+    height: 36px;
+  }
+  .gallery-nav-arrow--prev {
+    left: 8px;
+  }
+  .gallery-nav-arrow--next {
+    right: 8px;
   }
 
   .zoom-modal__top-bar {

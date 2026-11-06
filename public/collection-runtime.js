@@ -899,14 +899,22 @@ function renderShowcase(jacket) {
                      fetchpriority="high"
                      width="1200"
                      height="1800" />
-                <button type="button" class="gallery-stage__zoom-hint" id="stageZoomTriggerBtn" aria-label="Open image inspection viewer">
-                  <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <button type="button" class="gallery-stage__zoom-btn" id="stageZoomTriggerBtn" aria-label="Click to zoom photograph">
+                  <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <circle cx="11" cy="11" r="7"></circle>
                     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                    <line x1="11" y1="8" x2="11" y2="14"></line>
-                    <line x1="8" y1="11" x2="14" y2="11"></line>
                   </svg>
-                  <span>Zoom &middot; Inspect</span>
+                  <span class="zoom-btn-tooltip" role="tooltip">Click to zoom</span>
+                </button>
+                <button type="button" class="gallery-nav-arrow gallery-nav-arrow--prev" id="stagePrevArrow" aria-label="Previous perspective" disabled>
+                  <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                  </svg>
+                </button>
+                <button type="button" class="gallery-nav-arrow gallery-nav-arrow--next" id="stageNextArrow" aria-label="Next perspective" ${jacket.views.length <= 1 ? 'disabled' : ''}>
+                  <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                  </svg>
                 </button>` : '<div class="gallery-image-unavailable" role="img" aria-label="Product image unavailable">Product image unavailable</div>'}
                 <div class="gallery-mobile-controls" aria-label="Product image navigation">
                   <button type="button" class="gallery-mobile-arrow gallery-mobile-arrow--prev" aria-label="Previous product image" disabled>
@@ -1050,6 +1058,9 @@ function renderShowcase(jacket) {
     const stageImg = document.getElementById('showcaseStageImg');
     const cards = showcase.querySelectorAll('.gallery-view-card');
     const frame = showcase.querySelector('.gallery-stage__frame');
+    const stagePrevArrow = showcase.querySelector('#stagePrevArrow');
+    const stageNextArrow = showcase.querySelector('#stageNextArrow');
+    const zoomBtn = showcase.querySelector('#stageZoomTriggerBtn');
     const mobileCounter = showcase.querySelector('.gallery-mobile-counter');
     const mobilePrev = showcase.querySelector('.gallery-mobile-arrow--prev');
     const mobileNext = showcase.querySelector('.gallery-mobile-arrow--next');
@@ -1180,11 +1191,31 @@ function renderShowcase(jacket) {
           stage.classList.remove('is-switching');
         }, 140);
       }
+      if (stagePrevArrow) stagePrevArrow.disabled = activeViewIndex === 0;
+      if (stageNextArrow) stageNextArrow.disabled = activeViewIndex === cards.length - 1;
       if (mobileCounter) mobileCounter.textContent = `${String(activeViewIndex + 1).padStart(2, '0')} / ${String(cards.length).padStart(2, '0')}`;
       if (mobilePrev) mobilePrev.disabled = activeViewIndex === 0;
       if (mobileNext) mobileNext.disabled = activeViewIndex === cards.length - 1;
     };
 
+    if (stagePrevArrow) {
+      stagePrevArrow.addEventListener('click', (e) => {
+        e.stopPropagation();
+        setActiveView(activeViewIndex - 1);
+      });
+    }
+    if (stageNextArrow) {
+      stageNextArrow.addEventListener('click', (e) => {
+        e.stopPropagation();
+        setActiveView(activeViewIndex + 1);
+      });
+    }
+    if (zoomBtn) {
+      zoomBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openProductZoomModal(jacket, activeViewIndex);
+      });
+    }
     if (mobilePrev) mobilePrev.addEventListener('click', () => setActiveView(activeViewIndex - 1));
     if (mobileNext) mobileNext.addEventListener('click', () => setActiveView(activeViewIndex + 1));
 
@@ -1265,7 +1296,7 @@ function renderShowcase(jacket) {
 
       // Click to open full-screen zoom lightbox on desktop
       frame.addEventListener('click', (e) => {
-        if (e.target.closest('.gallery-mobile-arrow')) return;
+        if (e.target.closest('.gallery-nav-arrow') || e.target.closest('.gallery-mobile-arrow') || e.target.closest('.gallery-stage__zoom-btn')) return;
         openProductZoomModal(jacket, activeViewIndex);
       });
 
