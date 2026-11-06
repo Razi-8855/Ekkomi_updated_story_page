@@ -45,17 +45,21 @@ export default function CollectionExperience({
     // The Collection interaction controller shares the app's installed GSAP instance.
     window.gsap = gsap;
 
-    if (typeof window.initEkkomiCollection === "function") {
-      window.initEkkomiCollection();
-      return;
+    // Remove any previously cached script instance to guarantee fresh execution
+    const existingScript = document.getElementById("ekkomi-collection-runtime-script");
+    if (existingScript) {
+      existingScript.remove();
     }
 
-    if (window.ekkomiCollectionRuntimeLoading) return;
-    window.ekkomiCollectionRuntimeLoading = true;
-
     const script = document.createElement("script");
+    script.id = "ekkomi-collection-runtime-script";
     script.src = `/collection-runtime.js?v=${Date.now()}`;
     script.async = false;
+    script.onload = () => {
+      if (typeof window.initEkkomiCollection === "function") {
+        window.initEkkomiCollection();
+      }
+    };
     document.body.appendChild(script);
   }, [catalog, loadError]);
 

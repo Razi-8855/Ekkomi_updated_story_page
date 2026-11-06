@@ -388,6 +388,75 @@ const collectionMarkup = `
       </div>
     </div>
   </div>
+
+  <!-- Product Image Zoom / Lightbox Modal -->
+  <div class="product-zoom-modal" id="productZoomModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Product image inspection viewer">
+    <!-- Close Button -->
+    <button type="button" class="zoom-modal__close-btn" id="zoomModalCloseBtn" aria-label="Close image viewer">
+      <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+
+    <!-- Top Bar: Image details & zoom controls -->
+    <header class="zoom-modal__top-bar">
+      <div class="zoom-modal__meta">
+        <span class="zoom-modal__jacket-name" id="zoomModalJacketName">Ekkomi Nocturne</span>
+        <span class="zoom-modal__meta-sep" aria-hidden="true">&middot;</span>
+        <span class="zoom-modal__view-label" id="zoomModalViewLabel">Perspective</span>
+      </div>
+      <div class="zoom-modal__controls" role="toolbar" aria-label="Zoom controls">
+        <button type="button" class="zoom-control-btn" id="zoomOutBtn" aria-label="Zoom out" title="Zoom out">
+          <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+        </button>
+        <span class="zoom-level-indicator" id="zoomLevelIndicator" aria-live="polite">100%</span>
+        <button type="button" class="zoom-control-btn" id="zoomInBtn" aria-label="Zoom in" title="Zoom in">
+          <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+        </button>
+        <button type="button" class="zoom-control-btn zoom-control-btn--text" id="zoomResetBtn" aria-label="Reset zoom" title="Reset zoom">
+          Reset
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Viewport for enlarged image -->
+    <div class="zoom-modal__viewport" id="zoomModalViewport" tabindex="0" role="region" aria-label="Pan and zoom area">
+      <div class="zoom-modal__stage" id="zoomModalStage">
+        <img class="zoom-modal__img" id="zoomModalImg" src="" alt="Enlarged product perspective" draggable="false" />
+      </div>
+
+      <!-- Previous / Next Navigation Arrows -->
+      <button type="button" class="zoom-nav-arrow zoom-nav-arrow--prev" id="zoomPrevBtn" aria-label="Previous product image">
+        <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
+      <button type="button" class="zoom-nav-arrow zoom-nav-arrow--next" id="zoomNextBtn" aria-label="Next product image">
+        <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </button>
+
+      <!-- Desktop interactive pan hint -->
+      <div class="zoom-pan-hint" id="zoomPanHint" aria-hidden="true">
+        <span>Click to zoom &middot; Drag to pan</span>
+      </div>
+    </div>
+
+    <!-- Bottom Thumbnail Strip & Counter -->
+    <footer class="zoom-modal__bottom-bar">
+      <span class="zoom-modal__counter" id="zoomModalCounter" aria-live="polite">01 / 05</span>
+      <div class="zoom-modal__thumbnails" id="zoomModalThumbnails" role="tablist" aria-label="Product perspectives">
+        <!-- Injected dynamically by runtime.js -->
+      </div>
+    </footer>
+  </div>
 `;
 
 const collectionFooter = `<footer class="collection-footer" id="contact" role="contentinfo">
