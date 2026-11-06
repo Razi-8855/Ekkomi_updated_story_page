@@ -4902,12 +4902,9 @@ body.size-guide-open {
   cursor: zoom-in;
 }
 
-.showcase-stage-col .gallery-stage__frame.is-hover-zooming {
-  cursor: crosshair;
-}
-
-.showcase-stage-col .gallery-stage__frame.is-hover-zooming .gallery-stage__img {
-  will-change: transform, transform-origin;
+/* In-place stage frame has calm, stable display with zoom-in cursor */
+.showcase-stage-col .gallery-stage__frame {
+  cursor: zoom-in;
 }
 
 /* Gargee-style Top-Right Circular Zoom Trigger Button */

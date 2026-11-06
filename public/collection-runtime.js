@@ -497,7 +497,7 @@ function clampZoomPan() {
   zoomModalState.panY = Math.max(-maxPanY, Math.min(maxPanY, zoomModalState.panY));
 }
 
-function openProductZoomModal(jacket, viewIndex = 0) {
+function openProductZoomModal(jacket, viewIndex = 0, autoZoom = false, normX = 0.5, normY = 0.5) {
   const modal = document.getElementById('productZoomModal');
   if (!modal || !jacket) return;
 
@@ -536,6 +536,24 @@ function openProductZoomModal(jacket, viewIndex = 0) {
   }
 
   updateZoomModalView();
+
+  if (autoZoom) {
+    setTimeout(() => {
+      const viewport = document.getElementById('zoomModalViewport');
+      if (viewport) {
+        const vpRect = viewport.getBoundingClientRect();
+        const offsetX = (normX - 0.5) * vpRect.width;
+        const offsetY = (normY - 0.5) * vpRect.height;
+        zoomModalState.scale = 2.2;
+        zoomModalState.panX = -offsetX * (zoomModalState.scale - 1);
+        zoomModalState.panY = -offsetY * (zoomModalState.scale - 1);
+        clampZoomPan();
+        applyZoomTransform(true);
+      }
+    }, 60);
+  } else {
+    resetZoomTransform(false);
+  }
 
   const closeBtn = document.getElementById('zoomModalCloseBtn');
   if (closeBtn) {
@@ -631,13 +649,13 @@ function initProductZoomModal() {
       applyZoomTransform(true);
     }, { passive: false });
 
-    // Click / Double-click toggling
+    // One-tap zoom toggle & Double-click toggle
     let lastClickTime = 0;
     viewport.addEventListener('click', (e) => {
       if (e.target.closest('button')) return;
       const now = Date.now();
       if (now - lastClickTime < 320) {
-        // Double click: toggle
+        // Double click: toggle zoom
         if (zoomModalState.scale > 1.05) {
           resetZoomTransform(true);
         } else {
@@ -646,7 +664,7 @@ function initProductZoomModal() {
           applyZoomTransform(true);
         }
       } else if (zoomModalState.scale <= 1.05) {
-        // Single click when not zoomed: zoom in at cursor
+        // One-tap zoom: smoothly magnify directly at tap/click point
         const vpRect = viewport.getBoundingClientRect();
         const clickX = e.clientX - vpRect.left - vpRect.width / 2;
         const clickY = e.clientY - vpRect.top - vpRect.height / 2;
@@ -655,6 +673,9 @@ function initProductZoomModal() {
         zoomModalState.panY = -clickY * (zoomModalState.scale - 1);
         clampZoomPan();
         applyZoomTransform(true);
+      } else {
+        // One-tap reset: when already zoomed in, tapping resets to normal
+        resetZoomTransform(true);
       }
       lastClickTime = now;
     });
@@ -1222,82 +1243,17 @@ function renderShowcase(jacket) {
     // Expose setActiveView globally for Zoom Lightbox synchronisation
     window.setCollectionActiveView = setActiveView;
 
-    // Desktop In-place Hover Zoom on Main Stage Image
-    let isHoverZooming = false;
-    let hoverRaf = null;
-    let targetOriginX = 50;
-    let targetOriginY = 50;
-    let currentOriginX = 50;
-    let currentOriginY = 50;
-
-    const lerpHoverZoom = () => {
-      if (!isHoverZooming) return;
-      currentOriginX += (targetOriginX - currentOriginX) * 0.18;
-      currentOriginY += (targetOriginY - currentOriginY) * 0.18;
-      if (stageImg) {
-        stageImg.style.transformOrigin = `${currentOriginX}% ${currentOriginY}%`;
-        stageImg.style.transform = 'scale(2.2)';
-      }
-      hoverRaf = requestAnimationFrame(lerpHoverZoom);
-    };
-
+    // One-Tap Zoom / Manual Zoom Interaction (No intrusive automatic hover magnifying glass)
     if (frame) {
-      const zoomBtn = frame.querySelector('.gallery-stage__zoom-hint');
-      if (zoomBtn) {
-        zoomBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          openProductZoomModal(jacket, activeViewIndex);
-        });
-      }
-
-      frame.addEventListener('mouseenter', (e) => {
-        if (e.pointerType === 'touch') return;
-        isHoverZooming = true;
-        const rect = frame.getBoundingClientRect();
-        targetOriginX = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
-        targetOriginY = Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100));
-        currentOriginX = targetOriginX;
-        currentOriginY = targetOriginY;
-        frame.classList.add('is-hover-zooming');
-        if (stageImg) {
-          stageImg.style.transition = 'transform 200ms cubic-bezier(0.16, 1, 0.3, 1)';
-          stageImg.style.transformOrigin = `${currentOriginX}% ${currentOriginY}%`;
-          stageImg.style.transform = 'scale(2.2)';
-        }
-        cancelAnimationFrame(hoverRaf);
-        hoverRaf = requestAnimationFrame(lerpHoverZoom);
-      });
-
-      frame.addEventListener('mousemove', (e) => {
-        if (e.pointerType === 'touch') return;
-        if (!isHoverZooming) {
-          isHoverZooming = true;
-          frame.classList.add('is-hover-zooming');
-          cancelAnimationFrame(hoverRaf);
-          hoverRaf = requestAnimationFrame(lerpHoverZoom);
-        }
-        const rect = frame.getBoundingClientRect();
-        targetOriginX = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
-        targetOriginY = Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100));
-      });
-
-      frame.addEventListener('mouseleave', () => {
-        if (isHoverZooming) {
-          isHoverZooming = false;
-          cancelAnimationFrame(hoverRaf);
-          frame.classList.remove('is-hover-zooming');
-          if (stageImg) {
-            stageImg.style.transition = 'transform 250ms cubic-bezier(0.16, 1, 0.3, 1), transform-origin 250ms cubic-bezier(0.16, 1, 0.3, 1)';
-            stageImg.style.transform = 'scale(1)';
-            stageImg.style.transformOrigin = 'center center';
-          }
-        }
-      });
-
-      // Click to open full-screen zoom lightbox on desktop
+      // One-tap zoom on photograph
       frame.addEventListener('click', (e) => {
-        if (e.target.closest('.gallery-nav-arrow') || e.target.closest('.gallery-mobile-arrow') || e.target.closest('.gallery-stage__zoom-btn')) return;
-        openProductZoomModal(jacket, activeViewIndex);
+        if (e.target.closest('.gallery-nav-arrow') || e.target.closest('.gallery-mobile-arrow')) return;
+        const isTriggerBtn = !!e.target.closest('.gallery-stage__zoom-btn');
+        const rect = frame.getBoundingClientRect();
+        const normX = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+        const normY = Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height));
+        // If clicking photo directly, open and zoom in at tapped spot (one-tap zoom). If clicking button, open fit view.
+        openProductZoomModal(jacket, activeViewIndex, !isTriggerBtn, normX, normY);
       });
 
       // Touch events for mobile: swipe to navigate vs clean tap to open lightbox
