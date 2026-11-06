@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 import CookieConsent from "@/components/CookieConsent";
+import ShopifyCartUI from "@/components/ShopifyCartUI";
+import "./shopify-cart.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.ekkomi.co.uk"),
@@ -130,6 +132,7 @@ gtag('js', new Date());`,
       <body>
         <SmoothScroll />
         {children}
+        <ShopifyCartUI />
         <CookieConsent />
       </body>
     </html>

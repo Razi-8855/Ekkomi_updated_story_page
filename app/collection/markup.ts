@@ -2,12 +2,16 @@
 const collectionMarkup = `
   <a class="skip-link" href="#collection">Skip to collection</a>
   <header class="site-header">
+    <a class="header-contact-link" href="#contact">Contact</a>
     <a class="wordmark" href="#top" aria-label="Ekkomi home">
       <img class="wordmark-logo" src="/collection-assets/Ekkomi_logo_1.png" alt="Ekkomi" width="200" height="120" decoding="async" fetchpriority="high" />
       <span class="wordmark-text">EKKOMI</span>
     </a>
     <div class="header-actions">
-      <button class="menu-button" type="button" aria-label="Open menu">Menu <span aria-hidden="true">+</span></button>
+      <button class="menu-button collection-cart-trigger" type="button" data-ekkomi-cart-open aria-label="Open shopping bag, 0 items">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l1 13H4L5 8Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></svg>
+        <span class="collection-cart-count" data-ekkomi-cart-count>0</span>
+      </button>
     </div>
   </header>
 
@@ -40,12 +44,12 @@ const collectionMarkup = `
           <div class="collection-gender-switch" role="tablist" aria-label="Nocturne collection departments">
             <button class="gender-switch-btn is-active" id="tab-gender-men" type="button" role="tab" aria-selected="true" data-department="men">
               <span class="gender-label">MEN</span>
-              <span class="gender-badge">05 Styles</span>
+              <span class="gender-badge">{{MEN_COUNT}} Styles</span>
             </button>
             <span class="gender-switch-divider" aria-hidden="true">/</span>
             <button class="gender-switch-btn" id="tab-gender-women" type="button" role="tab" aria-selected="false" data-department="women">
               <span class="gender-label">WOMEN</span>
-              <span class="gender-badge">03 Styles</span>
+              <span class="gender-badge">{{WOMEN_COUNT}} Styles</span>
             </button>
           </div>
         </div>
@@ -97,47 +101,12 @@ const collectionMarkup = `
         </section>
       </div>
 
-      <!-- ============================================================
-           CRAWLER & ACCESSIBILITY PRODUCT INDEX (5 NOCTURNE PIECES)
-           Ensures full semantic indexing in SSR HTML without separate URLs
-           ============================================================ -->
-      <section class="collection-seo-index sr-only" aria-label="Nocturne Collection Jackets Overview">
-        <article id="curiosity" class="seo-product-item">
-          <h2>Curiosity Suede Jacket — £785</h2>
-          <p>Color: Navy. Rich tactile luxury suede with a brushed nap that catches and deepens the light. Tonal needlework across the upper chest, lined in bespoke Nocturne silk.</p>
-          <p>Price: £785 GBP. Available for purchase.</p>
-          <a href="/collection#curiosity">View Curiosity Suede Jacket</a>
-        </article>
-        <article id="temptation" class="seo-product-item">
-          <h2>Temptation Suede Jacket — £855</h2>
-          <p>Color: Red. Rich tactile luxury suede with a brushed nap that catches and deepens the light. Shifting needlework across the upper chest, lined in bespoke Nocturne silk.</p>
-          <p>Price: £855 GBP. Available for purchase.</p>
-          <a href="/collection#temptation">View Temptation Suede Jacket</a>
-        </article>
-        <article id="desire" class="seo-product-item">
-          <h2>Desire Suede Jacket — £855</h2>
-          <p>Color: Olive Green. Rich tactile luxury suede with a brushed nap that catches and deepens the light. Shifting needlework across the upper chest, lined in bespoke Nocturne silk.</p>
-          <p>Price: £855 GBP. Available for purchase.</p>
-          <a href="/collection#desire">View Desire Suede Jacket</a>
-        </article>
-        <article id="audacity" class="seo-product-item">
-          <h2>Audacity Suede Jacket — £970</h2>
-          <p>Color: Mustard Yellow. Rich tactile luxury suede with a brushed nap that catches and deepens the light. Tonal needlework across the upper chest, lined in bespoke Nocturne silk.</p>
-          <p>Price: £970 GBP. Available for purchase.</p>
-          <a href="/collection#audacity">View Audacity Suede Jacket</a>
-        </article>
-        <article id="insolence" class="seo-product-item">
-          <h2>Insolence Suede Jacket — £1,050</h2>
-          <p>Color: Jet Black. Rich tactile luxury suede with a brushed nap that catches and deepens the light. Tonal needlework across the upper chest, lined in bespoke Nocturne silk.</p>
-          <p>Price: £1,050 GBP. Available for purchase.</p>
-          <a href="/collection#insolence">View Insolence Suede Jacket</a>
-        </article>
-      </section>
+
 
     </section>
   </main>
 
-  <footer class="site-footer" role="contentinfo">
+  <footer class="site-footer" id="contact" role="contentinfo">
     <div class="section footer-inner">
       <div class="footer-col-brand">
         <span class="footer-wordmark">EKKOMI</span>
@@ -421,7 +390,7 @@ const collectionMarkup = `
   </div>
 `;
 
-const collectionFooter = `<footer class="collection-footer" role="contentinfo">
+const collectionFooter = `<footer class="collection-footer" id="contact" role="contentinfo">
   <div class="collection-footer__inner">
     <nav class="collection-footer__column" aria-label="Privacy and policy">
       <h3 class="collection-footer__heading">Privacy &amp; Policy</h3>
@@ -461,7 +430,7 @@ const collectionFooter = `<footer class="collection-footer" role="contentinfo">
 </footer>`;
 
 const collectionMarkupWithFooter = collectionMarkup.replace(
-  /<footer class="site-footer" role="contentinfo">[\s\S]*?<\/footer>/,
+  /<footer\b(?=[^>]*\bclass="[^"]*\bsite-footer\b")[^>]*>[\s\S]*?<\/footer>/,
   collectionFooter
 );
 

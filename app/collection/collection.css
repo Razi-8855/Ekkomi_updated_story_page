@@ -196,6 +196,20 @@ p {
   border: 0;
 }
 
+.header-contact-link {
+  grid-column: 1;
+  justify-self: start;
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .14em;
+  opacity: 1;
+  text-decoration: none;
+  transition: color var(--motion-fast);
+}
+.header-contact-link:hover { color: var(--color-accent); }
+
 .header-detail {
   grid-column: 1;
   justify-self: start;
@@ -216,12 +230,48 @@ p {
   padding: .5rem 0;
   font-family: var(--font-sans);
   font-size: 11px;
+  color: var(--color-text);
+  opacity: 1;
   transition: color var(--motion-fast);
 }
 .menu-button:hover {
   color: var(--color-accent);
 }
 .menu-button span { margin-left: .45rem; font-size: 16px; }
+.collection-cart-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 56px;
+  min-height: 42px;
+  padding: 6px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  color: var(--color-text);
+  opacity: 1;
+  cursor: pointer;
+  transition: color var(--motion-fast), border-color var(--motion-fast), background var(--motion-fast);
+}
+.collection-cart-trigger svg { display: block; flex: 0 0 auto; }
+.collection-cart-trigger .collection-cart-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 19px;
+  height: 19px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--color-accent);
+  color: #fffaf7;
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0;
+}
+.collection-cart-trigger:hover { color: var(--color-accent); border-color: var(--color-accent); background: rgba(119, 58, 60, .04); }
 
 
 /* -------------------------------------------------------------------
@@ -3560,15 +3610,16 @@ body.waitlist-open {
   /* Mobile Header (< 640px) */
   .site-header {
     padding: 0 1rem;
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: 1fr auto 1fr;
   }
   .header-detail {
     display: none;
   }
   .wordmark {
-    grid-column: 1;
-    justify-self: start;
+    grid-column: 2;
+    justify-self: center;
   }
+  .header-contact-link { grid-column: 1; font-size: 9px; letter-spacing: .1em; }
   .wordmark-logo {
     height: 38px;
     width: auto;
@@ -4128,10 +4179,28 @@ body.waitlist-open .floating-waitlist-btn {
   margin: 1.6rem 0 2rem;
   padding: 1.5rem 0;
   border-top: 1px solid var(--color-border, rgba(64, 48, 44, 0.12));
-  border-bottom: 1px solid var(--color-border, rgba(64, 48, 44, 0.12));
   display: flex;
   flex-direction: column;
   gap: 1.4rem;
+}
+
+#collection-experience .showcase-narrative-col .jacket-narrative--intro {
+  margin-bottom: 0;
+  font-family: var(--font-script, cursive);
+  font-size: clamp(1.45rem, 2.2vw, 1.95rem);
+  line-height: 1.42;
+  letter-spacing: 0.01em;
+}
+
+#collection-experience .jacket-narrative--intro + .product-commerce-controls {
+  margin-top: 1rem;
+}
+
+@media (max-width: 767px) {
+  #collection-experience .showcase-narrative-col .jacket-narrative--intro {
+    font-size: clamp(1.35rem, 5vw, 1.7rem);
+    line-height: 1.45;
+  }
 }
 
 .product-option-group {
@@ -4218,6 +4287,31 @@ body.waitlist-open .floating-waitlist-btn {
 .size-pill--custom {
   letter-spacing: 0.1em;
   padding: 0 18px;
+}
+
+#collection-experience .size-pill.is-sold-out {
+  height: auto;
+  min-height: 42px;
+  flex-direction: column;
+  gap: 2px;
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+#collection-experience .size-pill-status {
+  font-size: 7px;
+  line-height: 1;
+  letter-spacing: 0.08em;
+}
+
+#collection-experience .inventory-quantity-message {
+  max-width: 34rem;
+  margin: 8px 0 0;
+  color: #542b29;
+  font-family: var(--font-body, var(--font-sans));
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.55;
 }
 
 .custom-sizing-note {
@@ -4368,19 +4462,6 @@ body.waitlist-open .floating-waitlist-btn {
   transform: translateY(-1px);
 }
 
-.btn-buy-it-now {
-  background: #6a2a30;
-  color: #FAF6F1;
-  border: 1px solid #6a2a30;
-}
-
-.btn-buy-it-now:hover {
-  background: #541f24;
-  border-color: #541f24;
-  box-shadow: 0 6px 20px rgba(106, 42, 48, 0.32);
-  transform: translateY(-1px);
-}
-
 /* Priority Waitlist Link in Showcase */
 .product-waitlist-row {
   display: flex;
@@ -4479,176 +4560,6 @@ body.waitlist-open .floating-whatsapp-btn {
   visibility: hidden;
 }
 
-/* Campaign Checkout Notice Modal */
-.campaign-checkout-notice {
-  position: fixed;
-  inset: 0;
-  z-index: 100000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 240ms ease;
-}
-
-.campaign-checkout-notice.is-active {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.campaign-notice-backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(14, 16, 20, 0.65);
-  backdrop-filter: blur(6px);
-}
-
-.campaign-notice-card {
-  position: relative;
-  background: #FAF6F1;
-  border: 1px solid rgba(64, 48, 44, 0.18);
-  border-radius: 4px;
-  padding: clamp(24px, 4vw, 36px);
-  max-width: 460px;
-  width: 100%;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
-  z-index: 1;
-  transform: translateY(12px);
-  transition: transform 240ms cubic-bezier(0.2, 0.7, 0.2, 1);
-}
-
-.campaign-checkout-notice.is-active .campaign-notice-card {
-  transform: translateY(0);
-}
-
-.campaign-notice-close {
-  position: absolute;
-  top: 14px;
-  right: 16px;
-  background: none;
-  border: none;
-  font-size: 24px;
-  line-height: 1;
-  color: var(--color-text, #14100e);
-  cursor: pointer;
-  padding: 4px;
-  opacity: 0.6;
-  transition: opacity 180ms ease;
-}
-
-.campaign-notice-close:hover {
-  opacity: 1;
-}
-
-.campaign-notice-eyebrow {
-  font-family: var(--font-sans);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: #773A3C;
-  margin: 0 0 6px;
-}
-
-.campaign-notice-title {
-  font-family: var(--font-sans);
-  font-size: 18px;
-  font-weight: 400;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: #14100e;
-  margin: 0 0 12px;
-}
-
-.campaign-notice-lead {
-  font-family: var(--font-body, var(--font-sans));
-  font-size: 13.5px;
-  line-height: 1.55;
-  color: #4a3b37;
-  margin: 0 0 14px;
-}
-
-.campaign-notice-summary {
-  background: #ffffff;
-  border: 1px solid rgba(64, 48, 44, 0.14);
-  border-radius: 3px;
-  padding: 12px 14px;
-  margin-bottom: 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.summary-line {
-  display: flex;
-  justify-content: space-between;
-  font-family: var(--font-sans);
-  font-size: 12px;
-  letter-spacing: 0.04em;
-}
-
-.summary-label {
-  color: #7c726e;
-}
-
-.summary-val {
-  font-weight: 600;
-  color: #14100e;
-}
-
-.campaign-notice-desc {
-  font-family: var(--font-body, var(--font-sans));
-  font-size: 12.5px;
-  line-height: 1.55;
-  color: #6a5d59;
-  margin: 0 0 18px;
-}
-
-.campaign-notice-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.notice-action-btn {
-  width: 100%;
-  padding: 13px 18px;
-  border-radius: 3px;
-  font-family: var(--font-sans);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: all 200ms ease;
-  text-align: center;
-}
-
-.notice-action-btn--stylist {
-  background: #34483a;
-  color: #FAF6F1;
-  border: 1px solid #34483a;
-}
-
-.notice-action-btn--stylist:hover {
-  background: #27382b;
-  border-color: #27382b;
-  color: #FAF6F1;
-}
-
-.notice-action-btn--waitlist {
-  background: transparent;
-  color: #773A3C;
-  border: 1px solid rgba(119, 58, 60, 0.4);
-}
-
-.notice-action-btn--waitlist:hover {
-  background: rgba(119, 58, 60, 0.08);
-  border-color: #773A3C;
-}
-
 /* Mobile Responsiveness */
 @media (max-width: 640px) {
   .whatsapp-cta-grid {
@@ -4680,9 +4591,6 @@ body.waitlist-open .floating-whatsapp-btn {
   margin: 1.8rem 0 0.8rem;
   width: 100%;
 }
-.btn-buy-it-now--bottom {
-  box-shadow: 0 4px 16px rgba(106, 42, 48, 0.22);
-}
 
 
 /* ============================================================
@@ -4702,47 +4610,6 @@ body.waitlist-open .floating-whatsapp-btn {
 }
 
 
-/* Stylist Editorial Consultation Note */
-.stylist-editorial-note {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 13px 16px;
-  margin-bottom: 14px;
-  background: rgba(119, 58, 60, 0.05);
-  border: 1px solid rgba(119, 58, 60, 0.16);
-  border-radius: 3px;
-  box-sizing: border-box;
-}
-
-.editorial-note-icon {
-  color: var(--color-accent, #773A3C);
-  font-size: 11px;
-  line-height: 1.5;
-  flex-shrink: 0;
-  margin-top: 1px;
-}
-
-.editorial-note-text {
-  font-family: var(--font-sans);
-  font-size: 11.5px;
-  line-height: 1.55;
-  color: #4a3a37;
-  letter-spacing: 0.025em;
-  margin: 0;
-}
-
-@media (max-width: 640px) {
-  .stylist-editorial-note {
-    padding: 11px 13px;
-    margin-bottom: 12px;
-  }
-  .editorial-note-text {
-    font-size: 11px;
-    line-height: 1.5;
-  }
-}
-
 /* ===================================================================
    SIZE GUIDE - BUTTON & MODAL (EKKOMI NOCTURNE LUXURY AESTHETIC)
    =================================================================== */
@@ -4757,7 +4624,7 @@ body.waitlist-open .floating-whatsapp-btn {
   margin: 0;
   font-family: var(--font-sans);
   font-size: 11px;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--color-accent, #773A3C);
@@ -4766,6 +4633,10 @@ body.waitlist-open .floating-whatsapp-btn {
   text-underline-offset: 3px;
   text-decoration-thickness: 1px;
   transition: color 220ms ease, text-underline-offset 220ms ease, opacity 220ms ease;
+}
+
+#collection-experience .product-size-group > .btn-size-guide {
+  align-self: flex-start;
 }
 
 .btn-size-guide:hover {

@@ -34,313 +34,135 @@ if (typeof window !== 'undefined' && typeof window.gsap === 'undefined') {
   };
 }
 
-'use strict';
-
-// Graceful GSAP fallback shim (guarantees accordion works offline, on weak mobile connections, or if CDN blocked)
-if (typeof window !== 'undefined' && typeof window.gsap === 'undefined') {
-  window.gsap = {
-    timeline: function() {
-      return {
-        to: function(targets, vars) {
-          const list = Array.isArray(targets) ? targets : [targets];
-          list.forEach(el => {
-            if (!el || !el.style) return;
-            if (vars.flexGrow !== undefined) el.style.flexGrow = vars.flexGrow;
-            if (vars.opacity !== undefined) el.style.opacity = vars.opacity;
-            if (vars['--ag-gray'] !== undefined) el.style.setProperty('--ag-gray', vars['--ag-gray']);
-            if (vars['--ag-dim'] !== undefined) el.style.setProperty('--ag-dim', vars['--ag-dim']);
-            if (vars.rotateY !== undefined || vars.rotateX !== undefined) {
-              const rx = vars.rotateX || 0;
-              const ry = vars.rotateY || 0;
-              el.style.transform = `perspective(1000px) rotateX(${rx}deg) rotateY(${ry}deg)`;
-            }
-            if (vars.xPercent !== undefined || vars.yPercent !== undefined || vars.x !== undefined || vars.y !== undefined) {
-              const xp = vars.xPercent !== undefined ? vars.xPercent : 0;
-              const yp = vars.yPercent !== undefined ? vars.yPercent : 0;
-              const x = vars.x || 0;
-              const y = vars.y || 0;
-              el.style.transform = `translate(calc(${xp}% + ${x}px), calc(${yp}% + ${y}px))`;
-            }
-          });
-          return this;
-        },
-        kill: function() {}
-      };
-    }
-  };
-}
-
 /* ===================================================================
    EKKOMI — NOCTURNE COLLECTION
    Data & Interaction Logic: Department Tabs + Dynamic Showcase
    =================================================================== */
 
-const IMAGE_BASE = '/collection-assets/collection/nocturne';
-const IMG_V = '?v=curiosity_female_v1';
-const imgPath = (folder, file) => `${IMAGE_BASE}/${folder}/${file}${IMG_V}`;
-
 // Ekkomi WhatsApp Business Configuration
 const EKKOMI_WHATSAPP_NUMBER = (typeof window !== 'undefined' && window.EKKOMI_WHATSAPP_NUMBER) || '447344601474';
 let currentSelectedSize = 'M';
 let currentSelectedQuantity = 1;
+let currentSelectedVariantId = null;
 
 /* -------------------------------------------------------------------
    MEN'S COLLECTION DATA (5 JACKETS — 100% MALE / STILL GARMENT)
    ------------------------------------------------------------------- */
 
-const mensJackets = [
-  {
-    id: "men-curiosity",
-    key: "curiosity",
-    gender: "men",
-    number: "01",
-    impulse: "Curiosity",
-    colour: "Dark Navy",
-    hex: "#1c2838",
-    price: "£785",
-    sku: "EKK-NOC-01-NAV",
-    inStock: false,
-    image: imgPath('curiosity', 'curiosity_lookbook_1.jpg'),
-    label: "01 / CURIOSITY",
-    sublabel: "",
-    headline: "The room was loud. The impulse was quiet. Curiosity doesn’t ask for permission.",
-    narrative: "Midnight impulse given architectural form. Suede and Italian lambskin punctuated by hand-guided tonal needlework—balanced between severe restraint and private appetite.",
-    craft: [
-      { title: "The Material", desc: "Supple suede meeting hand-selected Italian lambskin with a deep matte finish." },
-      { title: "The Embroidery", desc: "Tonal needlework along the chest and collar, visible only to those standing close." },
-      { title: "The Inner World", desc: "Full interior lined with custom illustrated silk—a private artwork worn against the skin." }
-    ],
-    views: [
-      { label: 'Front Silhouette', src: imgPath('curiosity', 'curiosity_lookbook_1.jpg'), alt: "Curiosity Front Silhouette" },
-      { label: 'Profile Silhouette', src: imgPath('curiosity', 'curiosity_lookbook_2.jpg'), alt: "Curiosity Profile Silhouette" },
-      { label: 'Interior Silk', src: '/collection-assets/jackets_original/resized_BEN03202.webp', alt: "Curiosity Interior Silk Lining" },
-      { label: 'Back Tailoring', src: '/collection-assets/jackets_original/resized_BEN03137.webp', alt: "Curiosity Back Tailoring" },
-      { label: 'Embroidery Detail', src: imgPath('curiosity', 'curiosity_detail.jpg'), alt: "Curiosity Embroidery Detail" },
-      { label: 'Evening Perspective', src: imgPath('curiosity', 'curiosity.jpg'), alt: "Curiosity Evening Perspective" }
-    ]
-  },
-  {
-    id: "men-temptation",
-    key: "temptation",
-    gender: "men",
-    number: "02",
-    impulse: "Temptation",
-    colour: "Forest Green",
-    hex: "#27382b",
-    price: "£855",
-    sku: "EKK-NOC-02-GRN",
-    inStock: false,
-    image: imgPath('temptation', 'temptation.jpg'),
-    label: "02 / TEMPTATION",
-    sublabel: "",
-    headline: "You knew where the line was. You stepped across it on purpose.",
-    narrative: "Supple suede tailored into an irresistible impulse. A jacket designed for rooms that reward presence, cut with a relaxed modern drape and intricate foliage-inspired needlework.",
-    craft: [
-      { title: "The Material", desc: "Velvety suede offering exceptional drape and depth under evening light." },
-      { title: "The Embroidery", desc: "Botanical needlework tracing the shoulders—dense, deliberate, and entirely hand-guided." },
-      { title: "The Inner World", desc: "Silk interior carrying the Nocturne motif—a nocturnal garden unseen by the world." }
-    ],
-    views: [
-      { label: 'Front Silhouette', src: imgPath('temptation', 'temptation.jpg'), alt: "Temptation Front Silhouette" },
-      { label: 'Embroidery Detail', src: imgPath('temptation', 'temptation_detail.jpg'), alt: "Temptation Embroidery Detail" },
-      { label: 'Back Tailoring', src: imgPath('temptation', 'temptation_back.jpg'), alt: "Temptation Back Tailoring" },
-      { label: 'Lookbook Perspective', src: imgPath('temptation', 'temptation_lookbook_1.jpg'), alt: "Temptation Lookbook Perspective" },
-      { label: 'Editorial Portrait', src: imgPath('temptation', 'temptation_lookbook_2.jpg'), alt: "Temptation Editorial Portrait" },
-      { label: 'Texture & Finish', src: '/collection-assets/jackets_original/resized_BEN03655.webp', alt: "Temptation Texture and Finish" }
-    ]
-  },
-  {
-    id: "men-desire",
-    key: "desire",
-    gender: "men",
-    number: "03",
-    impulse: "Desire",
-    colour: "Deep Red",
-    hex: "#662225",
-    price: "£855",
-    sku: "EKK-NOC-03-RED",
-    inStock: false,
-    image: imgPath('desire', 'desire.jpg'),
-    label: "03 / DESIRE",
-    sublabel: "",
-    headline: "Wanting more is not greed. Sometimes it is vision.",
-    narrative: "The instinct that refuses to settle. Rich tactile suede meeting shifting tonal needlework—balanced between severe restraint and private appetite.",
-    craft: [
-      { title: "The Material", desc: "Rich tactile suede with a brushed nap that catches and deepens the light." },
-      { title: "The Embroidery", desc: "Shifting needlework across the upper chest—subtle from a distance, magnetic up close." },
-      { title: "The Inner World", desc: "Lined in bespoke Nocturne silk—rich, narrative, and intentionally personal." }
-    ],
-    views: [
-      { label: 'Sitting Silhouette', src: imgPath('desire', 'desire.jpg'), alt: "Desire Sitting Silhouette" },
-      { label: 'Standing Portrait', src: '/collection-assets/jackets_original/resized_BEN03515.webp', alt: "Desire Standing Portrait" },
-      { label: 'Back Embroidery', src: imgPath('desire', 'desire_back.jpg'), alt: "Desire Back Embroidery" },
-      { label: 'Evening Perspective', src: '/collection-assets/jackets_original/resized_BEN03767.webp', alt: "Desire Evening Perspective" },
-      { label: 'Tonal Needlework', src: '/collection-assets/jackets_original/resized_BEN03619.webp', alt: "Desire Tonal Needlework" },
-      { label: 'Suede Nap & Detail', src: imgPath('desire', 'desire_detail.jpg'), alt: "Desire Suede Nap Detail" }
-    ]
-  },
-  {
-    id: "men-audacity",
-    key: "audacity",
-    gender: "men",
-    number: "04",
-    impulse: "Audacity",
-    colour: "Deep Mustard",
-    hex: "#8c6b24",
-    price: "£970",
-    sku: "EKK-NOC-04-MUS",
-    inStock: false,
-    image: imgPath('audacity', 'audacity_lookbook_1.jpg'),
-    label: "04 / AUDACITY",
-    sublabel: "",
-    headline: "Confidence before permission arrives.",
-    narrative: "Confidence before permission arrives. Sculptural suede tailored with authority, balanced by fine tonal needlework that commands attention without raising its voice.",
-    craft: [
-      { title: "The Material", desc: "Sculptural suede with a rich, velvety hand-feel and distinct presence." },
-      { title: "The Embroidery", desc: "High-contrast geometric embroidery across the collar and cuffs." },
-      { title: "The Inner World", desc: "A private flourish of illustrated silk concealed within the garment." }
-    ],
-    views: [
-      { label: 'Standing Silhouette', src: imgPath('audacity', 'audacity_lookbook_1.jpg'), alt: "Audacity Standing Silhouette" },
-      { label: 'Tailoring & Scarf', src: imgPath('audacity', 'audacity_lookbook_2.jpg'), alt: "Audacity Tailoring and Scarf" },
-      { label: 'Lookbook Perspective', src: '/collection-assets/jackets_original/resized_BEN03893.webp', alt: "Audacity Lookbook Perspective" },
-      { label: 'Embroidery Detail', src: imgPath('audacity', 'audacity_detail.jpg'), alt: "Audacity Embroidery Detail" },
-      { label: 'Back Tailoring', src: imgPath('audacity', 'audacity_back.jpg'), alt: "Audacity Back Tailoring" }
-    ]
-  },
-  {
-    id: "men-insolence",
-    key: "insolence",
-    gender: "men",
-    number: "05",
-    impulse: "Insolence",
-    colour: "Black",
-    hex: "#1a1716",
-    price: "£1,050",
-    sku: "EKK-NOC-05-BLK",
-    inStock: false,
-    image: imgPath('insolence', 'insolence.jpg'),
-    label: "05 / INSOLENCE",
-    sublabel: "",
-    headline: "The rules were written by people who wanted you to stay quiet.",
-    narrative: "Velvety suede cut with unapologetic precision. Heavy embroidery tracing the shoulders—designed to speak only when spoken to, with effortless nocturnal gravity.",
-    craft: [
-      { title: "The Material", desc: "Velvety suede with a deep matte nap that absorbs ambient light." },
-      { title: "The Embroidery", desc: "Tonal obsidian threadwork—sculpted into the suede, tactile to the touch." },
-      { title: "The Inner World", desc: "Contrast silk lining with Nocturne illustrated artwork." }
-    ],
-    views: [
-      { label: 'Front Silhouette', src: imgPath('insolence', 'insolence.jpg'), alt: "Insolence Front Silhouette" },
-      { label: 'Standing Perspective', src: '/collection-assets/jackets_original/resized_BEN03307.webp', alt: "Insolence Standing Perspective" },
-      { label: 'Editorial Portrait', src: '/collection-assets/jackets_original/resized_BEN03324.webp', alt: "Insolence Editorial Portrait" },
-      { label: 'Embroidery Detail', src: imgPath('insolence', 'insolence_detail.jpg'), alt: "Insolence Embroidery Detail" },
-      { label: 'Back Tailoring', src: imgPath('insolence', 'insolence_back.jpg'), alt: "Insolence Back Tailoring" }
-    ]
-  }
-];
-
-/* -------------------------------------------------------------------
-   WOMENS COLLECTION DATA
-   ------------------------------------------------------------------- */
-
-const womensJackets = [
-  {
-    id: "women-curiosity",
-    key: "curiosity",
-    gender: "women",
-    number: "01",
-    impulse: "Curiosity",
-    colour: "Dark Navy",
-    hex: "#1c2838",
-    price: "£785",
-    sku: "EKK-NOC-W01-NAV",
-    inStock: false,
-    image: imgPath('curiosity', 'curiosity_women_1.jpg'),
-    label: "01 / CURIOSITY",
-    sublabel: "",
-    headline: "The room was loud. The impulse was quiet. Curiosity doesn’t ask for permission.",
-    narrative: "Midnight impulse given architectural form. Sculptural Italian lambskin and suede tailored to contour the female form with effortless authority.",
-    craft: [
-      { title: "The Material", desc: "Supple suede meeting hand-selected Italian lambskin with a deep matte finish." },
-      { title: "The Embroidery", desc: "Tonal needlework along the chest and collar, visible only to those standing close." },
-      { title: "The Inner World", desc: "Full interior lined with custom illustrated silk—a private artwork worn against the skin." }
-    ],
-    views: [
-      { label: 'Standing Silhouette', src: imgPath('curiosity', 'curiosity_women_1.jpg'), alt: "Curiosity Standing Silhouette" },
-      { label: 'Seated Perspective', src: imgPath('curiosity', 'curiosity_women_2.jpg'), alt: "Curiosity Seated Perspective" },
-      { label: 'Back Tailoring', src: imgPath('curiosity', 'curiosity_women_3.jpg'), alt: "Curiosity Back Tailoring" },
-      { label: 'Tailoring Detail', src: imgPath('curiosity', 'curiosity_women_4.jpg'), alt: "Curiosity Tailoring Detail" },
-      { label: 'Editorial Portrait', src: imgPath('curiosity', 'curiosity_women_5.jpg'), alt: "Curiosity Editorial Portrait" }
-    ]
-  },
-  {
-    id: "women-desire",
-    key: "desire",
-    gender: "women",
-    number: "02",
-    impulse: "Desire",
-    colour: "Deep Red",
-    hex: "#662225",
-    price: "£855",
-    sku: "EKK-NOC-W02-RED",
-    inStock: false,
-    image: imgPath('desire', 'desire_editorial_3.jpg'),
-    label: "02 / DESIRE",
-    sublabel: "",
-    headline: "Wanting more is not greed. Sometimes it is vision.",
-    narrative: "The instinct that refuses to settle. Rich tactile suede meeting shifting tonal needlework—balanced between severe restraint and private appetite.",
-    craft: [
-      { title: "The Material", desc: "Rich tactile suede with a brushed nap that catches and deepens the light." },
-      { title: "The Embroidery", desc: "Shifting needlework across the upper bodice—subtle from a distance, magnetic up close." },
-      { title: "The Inner World", desc: "Lined in bespoke Nocturne silk—rich, narrative, and intentionally personal." }
-    ],
-    views: [
-      { label: 'Standing Silhouette', src: imgPath('desire', 'desire_editorial_3.jpg'), alt: "Desire Standing Silhouette" },
-      { label: 'Seated Perspective', src: imgPath('desire', 'desire_editorial_1.jpg'), alt: "Desire Seated Perspective" },
-      { label: 'Profile Silhouette', src: imgPath('desire', 'desire_editorial_2.jpg'), alt: "Desire Profile Silhouette" },
-      { label: 'Embroidery Detail', src: imgPath('desire', 'desire_detail.jpg'), alt: "Desire Embroidery Detail" }
-    ]
-  },
-  {
-    id: "women-audacity",
-    key: "audacity",
-    gender: "women",
-    number: "03",
-    impulse: "Audacity",
-    colour: "Deep Mustard",
-    hex: "#8c6b24",
-    price: "£970",
-    sku: "EKK-NOC-W03-MUS",
-    inStock: false,
-    image: imgPath('audacity', 'audacity.jpg'),
-    label: "03 / AUDACITY",
-    sublabel: "",
-    headline: "Confidence before permission arrives.",
-    narrative: "Confidence before permission arrives. Sculptural suede tailored with authority, balanced by fine tonal needlework that commands attention without raising its voice.",
-    craft: [
-      { title: "The Material", desc: "Sculptural suede with a rich, velvety hand-feel and distinct structure." },
-      { title: "The Embroidery", desc: "Bodice tonal embroidery contouring the silhouette without excess." },
-      { title: "The Inner World", desc: "A private flourish of illustrated silk concealed within the garment." }
-    ],
-    views: [
-      { label: 'Front Silhouette', src: imgPath('audacity', 'audacity.jpg'), alt: "Audacity Front Silhouette" },
-      { label: 'Seated Portrait', src: imgPath('audacity', 'audacity_editorial_1.jpg'), alt: "Audacity Seated Portrait" },
-      { label: 'Nocturne Scene', src: imgPath('audacity', 'audacity_editorial_2.jpg'), alt: "Audacity Nocturne Scene" },
-      { label: 'Embroidery Detail', src: imgPath('audacity', 'audacity_detail.jpg'), alt: "Audacity Embroidery Detail" }
-    ]
-  }
-];
-
-const allCollectionJackets = [...mensJackets, ...womensJackets];
-
-const getSellingPrice = (jacket) => {
-  const amount = Number.parseFloat(String(jacket?.price ?? '').replace(/[^\d.]/g, ''));
-  return Number.isFinite(amount) ? amount : 0;
+const SHOPIFY_PRODUCT_TAGLINES = {
+  curiosity: "The room was loud. The impulse was quiet. Curiosity doesn’t ask for permission.",
+  temptation: "You knew where the line was. You stepped across it on purpose.",
+  desire: "Wanting more is not greed. Sometimes it is vision.",
+  audacity: "Confidence before permission arrives.",
+  insolence: "The rules were written by people who wanted you to stay quiet."
+};
+const STANDARD_SIZES = ['S', 'M', 'L', 'XL'];
+const MAX_ORDER_QUANTITY = 10;
+const isVariantAvailable = (variant) => Boolean(
+  variant?.availableForSale &&
+  !variant.currentlyNotInStock &&
+  (variant.quantityAvailable == null || variant.quantityAvailable > 0)
+);
+const getVariantQuantityLimit = (variant) => {
+  if (!isVariantAvailable(variant)) return 0;
+  // If Shopify does not grant quantityAvailable access, fail conservatively to one.
+  return variant.quantityAvailable == null
+    ? 1
+    : Math.min(MAX_ORDER_QUANTITY, Math.max(0, variant.quantityAvailable));
+};
+const productHasAvailableStandardSize = (jacket) => STANDARD_SIZES.some((size) =>
+  isVariantAvailable(jacket?.variants?.find((variant) => variant.size === size))
+);
+let refreshActiveProductInventory = null;
+if (!window.ekkomiInventoryRefreshListenersBound) {
+  const revalidateVisibleProduct = () => {
+    if (document.visibilityState === 'visible') refreshActiveProductInventory?.();
+  };
+  window.addEventListener('focus', revalidateVisibleProduct);
+  document.addEventListener('visibilitychange', revalidateVisibleProduct);
+  window.ekkomiInventoryRefreshListenersBound = true;
+}
+const METAFIELD_LABELS = {
+  material: 'The Material',
+  embroidery: 'The Embroidery',
+  inner_world: 'The Inner World',
+  craft: 'Craftsmanship'
 };
 
-const formatGBP = (amount) => new Intl.NumberFormat('en-US', {
+function mapShopifyProduct(product, gender, index) {
+  const key = product.handle.replace(/-women$/, '');
+  const variants = (product.variants || []).map((variant) => ({
+    ...variant,
+    size: variant.selectedOptions.find((option) => option.name.toLowerCase() === 'size')?.value || variant.title
+  }));
+  const sizeOption = (product.options || []).find((option) => option.name.toLowerCase() === 'size');
+  const sizes = [...new Set([...(sizeOption?.values || []), ...variants.map((variant) => variant.size)])]
+    .filter((size) => STANDARD_SIZES.includes(size))
+    .sort((a, b) => STANDARD_SIZES.indexOf(a) - STANDARD_SIZES.indexOf(b));
+  const defaultVariant = variants.find((variant) => variant.size === 'M' && variant.availableForSale)
+    || variants.find((variant) => variant.availableForSale)
+    || variants.find((variant) => STANDARD_SIZES.includes(variant.size));
+  const colourOption = (product.options || []).find((option) => /colou?r/i.test(option.name));
+  const metafields = (product.metafields || []).filter(Boolean);
+  const metafieldColour = metafields.find((field) => ['colour', 'color'].includes(field.key))?.value;
+  const images = [...(product.featuredImage ? [product.featuredImage] : []), ...(product.images || [])]
+    .filter((image, imageIndex, all) => image?.url && all.findIndex((candidate) => candidate?.url === image.url) === imageIndex);
+  const impulse = product.title;
+  const number = String(index + 1).padStart(2, '0');
+
+  return {
+    id: product.id,
+    productId: product.id,
+    handle: product.handle,
+    key,
+    gender,
+    number,
+    impulse,
+    name: impulse,
+    colour: colourOption?.values?.[0] || metafieldColour || '',
+    hex: null,
+    price: defaultVariant?.price?.amount || '0',
+    currencyCode: defaultVariant?.price?.currencyCode || 'GBP',
+    compareAtPrice: defaultVariant?.compareAtPrice?.amount || null,
+    inStock: STANDARD_SIZES.some((size) => isVariantAvailable(variants.find((variant) => variant.size === size))),
+    image: images[0]?.url || '',
+    label: `${number} / ${impulse}`,
+    headline: metafields.find((field) => field.key === 'tagline')?.value || SHOPIFY_PRODUCT_TAGLINES[key] || '',
+    narrative: product.description || '',
+    craft: metafields
+      .filter((field) => METAFIELD_LABELS[field.key])
+      .map((field) => ({ title: METAFIELD_LABELS[field.key], desc: field.value })),
+    sizes,
+    variants,
+    views: images.map((image, imageIndex) => ({
+      label: image.altText || `Perspective ${String(imageIndex + 1).padStart(2, '0')}`,
+      src: image.url,
+      alt: image.altText || `${impulse} — perspective ${imageIndex + 1}`
+    }))
+  };
+}
+
+const shopifyCatalog = window.EKKOMI_SHOPIFY_CATALOG;
+const mensJackets = (shopifyCatalog?.men || []).map((product, index) => mapShopifyProduct(product, 'men', index));
+const womensJackets = (shopifyCatalog?.women || []).map((product, index) => mapShopifyProduct(product, 'women', index));
+const allCollectionJackets = [...mensJackets, ...womensJackets];
+const JACKET_CATALOG = {
+  men: mensJackets.map((jacket) => ({ ...jacket, name: jacket.impulse })),
+  women: womensJackets.map((jacket) => ({ ...jacket, name: jacket.impulse }))
+};
+
+const escapeHTML = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => ({
+  '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+}[char]));
+
+const getSelectedVariant = (jacket, size = currentSelectedSize) =>
+  jacket?.variants?.find((variant) => variant.id === currentSelectedVariantId)
+  || jacket?.variants?.find((variant) => variant.size === size)
+  || null;
+
+const formatGBP = (amount, currencyCode = 'GBP') => new Intl.NumberFormat('en-US', {
   style: 'currency',
-  currency: 'GBP',
+  currency: currencyCode,
   useGrouping: false,
   maximumFractionDigits: Number.isInteger(amount) ? 0 : 2
 }).format(amount);
@@ -351,11 +173,11 @@ const formatGBP = (amount) => new Intl.NumberFormat('en-US', {
 
 const isReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-let selectedJacketId = 'men-desire';
+let selectedJacketId = window.currentSelectedJacket?.id || '';
 let activeDepartment = 'men';
 
 // Expose state for external consumers (e.g. registration modal, telemetry)
-window.currentSelectedJacket = mensJackets[2];
+window.currentSelectedJacket = mensJackets.find((jacket) => jacket.key === 'desire') || mensJackets[0] || null;
 window.currentSelectedDepartment = 'men';
 
 /* -------------------------------------------------------------------
@@ -442,8 +264,9 @@ function switchDepartment(dept, { syncJacket = true, scroll = false } = {}) {
 
   if (syncJacket) {
     // Pick the default/active jacket for this department
-    const targetId = dept === 'men' ? 'men-desire' : 'women-desire';
-    selectJacket(targetId, { scroll, fromDepartmentSwitch: true });
+    const departmentJackets = dept === 'men' ? mensJackets : womensJackets;
+    const target = departmentJackets.find((jacket) => jacket.key === 'desire') || departmentJackets[0];
+    if (target) selectJacket(target.id, { scroll, fromDepartmentSwitch: true });
   }
 
   if (scroll) {
@@ -455,96 +278,6 @@ function switchDepartment(dept, { syncJacket = true, scroll = false } = {}) {
    DYNAMIC PRODUCT SHOWCASE (UPDATES IN-PLACE WITHOUT LONG SCROLLING)
    ------------------------------------------------------------------- */
 
-
-/* -------------------------------------------------------------------
-   CAMPAIGN CHECKOUT NOTICE MODAL (COMMERCE INTEGRATION FALLBACK)
-   ------------------------------------------------------------------- */
-
-function showCampaignCheckoutNotice({ jacket, size, quantity, actionType }) {
-  let modal = document.getElementById('campaignCheckoutNotice');
-  if (!modal) {
-    modal = document.createElement('div');
-    modal.id = 'campaignCheckoutNotice';
-    modal.className = 'campaign-checkout-notice';
-    modal.innerHTML = `
-      <div class="campaign-notice-backdrop" data-close-campaign-notice></div>
-      <div class="campaign-notice-card" role="dialog" aria-modal="true" aria-labelledby="campaignNoticeTitle">
-        <button type="button" class="campaign-notice-close" data-close-campaign-notice aria-label="Close modal">&times;</button>
-        <p class="campaign-notice-eyebrow">NOCTURNE LAUNCH CAMPAIGN</p>
-        <h3 class="campaign-notice-title" id="campaignNoticeTitle">ALLOCATION PREPARATION</h3>
-        <p class="campaign-notice-lead">
-          Direct payment checkout for the Nocturne launch allocation is finalizing for immediate deployment.
-        </p>
-        <div class="campaign-notice-summary">
-          <div class="summary-line">
-            <span class="summary-label">Selected Piece:</span>
-            <span class="summary-val" id="noticeSummaryPiece"></span>
-          </div>
-          <div class="summary-line">
-            <span class="summary-label">Size &amp; Quantity:</span>
-            <span class="summary-val" id="noticeSummarySize"></span>
-          </div>
-        </div>
-        <p class="campaign-notice-desc">
-          To reserve this exact piece immediately before release or explore custom fitting, connect with our private stylist or join priority allocation.
-        </p>
-        <div class="campaign-notice-actions">
-          <button type="button" class="notice-action-btn notice-action-btn--stylist" id="noticeStylistBtn">
-            SPEAK TO STYLIST ON WHATSAPP
-          </button>
-          <button type="button" class="notice-action-btn notice-action-btn--waitlist" id="noticeWaitlistBtn">
-            JOIN PRIORITY ALLOCATION
-          </button>
-        </div>
-      </div>
-    `;
-    document.body.appendChild(modal);
-
-    modal.querySelectorAll('[data-close-campaign-notice]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        modal.classList.remove('is-active');
-      });
-    });
-  }
-
-  const pieceEl = document.getElementById('noticeSummaryPiece');
-  const sizeEl = document.getElementById('noticeSummarySize');
-  if (pieceEl) pieceEl.textContent = `${jacket.impulse} (${jacket.colour})`;
-  if (sizeEl) sizeEl.textContent = `Size ${size} · Qty ${quantity}`;
-
-  const stylistBtn = document.getElementById('noticeStylistBtn');
-  if (stylistBtn) {
-    stylistBtn.onclick = () => {
-      modal.classList.remove('is-active');
-      const productName = `${jacket.impulse} Suede Jacket`;
-      const currentUrl = `${window.location.origin}/collection#${jacket.key}`;
-      const text = `Hello Ekkomi, I would like to reserve the ${productName} in Size ${size} (Quantity: ${quantity}).
-
-Product: ${productName}
-Product URL: ${currentUrl}`;
-      window.open(`https://wa.me/${EKKOMI_WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
-    };
-  }
-
-  const waitlistBtn = document.getElementById('noticeWaitlistBtn');
-  if (waitlistBtn) {
-    waitlistBtn.onclick = () => {
-      modal.classList.remove('is-active');
-      if (window.EkkomiWaitlist && window.EkkomiWaitlist.open) {
-        window.EkkomiWaitlist.open({
-          collection: jacket.gender || 'men',
-          jacketKey: jacket.key,
-          outOfStock: true
-        });
-      } else {
-        const fallbackBtn = document.getElementById('showcaseNotifyBtn') || document.getElementById('floatingWaitlistBtn');
-        if (fallbackBtn) fallbackBtn.click();
-      }
-    };
-  }
-
-  modal.classList.add('is-active');
-}
 
 /* -------------------------------------------------------------------
    SIZE GUIDE MODAL CONTROLLER
@@ -629,7 +362,11 @@ window.openEkkomiSizeGuide = openSizeGuide;
 window.closeEkkomiSizeGuide = closeSizeGuide;
 
 function renderShowcase(jacket) {
-  currentSelectedSize = "M";
+  const initialVariant = jacket.variants.find((variant) => variant.size === 'M' && isVariantAvailable(variant))
+    || jacket.variants.find((variant) => STANDARD_SIZES.includes(variant.size) && isVariantAvailable(variant))
+    || jacket.variants.find((variant) => STANDARD_SIZES.includes(variant.size));
+  currentSelectedSize = initialVariant?.size || null;
+  currentSelectedVariantId = initialVariant?.id || null;
   currentSelectedQuantity = 1;
   const showcase = document.getElementById('productShowcase');
   if (!showcase) return;
@@ -646,32 +383,45 @@ function renderShowcase(jacket) {
     const nextJacket = currentList[nextIndex];
 
     const departmentTitle = jacket.gender === 'men' ? "Men's Collection" : "Women's Collection";
+    const safeTitle = escapeHTML(jacket.impulse);
+    const safeDepartmentTitle = escapeHTML(departmentTitle);
     const carouselId = jacket.gender === 'men' ? 'accordionGalleryMen' : 'accordionGalleryWomen';
 
     const craftHtml = jacket.craft.map(c => `
       <div class="craft-item">
-        <dt>${c.title}</dt>
-        <dd>${c.desc}</dd>
+        <dt>${escapeHTML(c.title)}</dt>
+        <dd>${escapeHTML(c.desc)}</dd>
       </div>
     `).join('');
 
-    const firstView = jacket.views[0] || { src: jacket.image, alt: jacket.impulse, label: 'Front Silhouette' };
+    const firstView = jacket.views[0] || { src: '', alt: jacket.impulse, label: 'Product image unavailable' };
+    const selectedPrice = Number.parseFloat(initialVariant?.price?.amount || '0');
+    const compareAtPrice = selectedPrice > 0 ? Math.round(selectedPrice * 1.2 * 100) / 100 : null;
+    const currencyCode = initialVariant?.price?.currencyCode || jacket.currencyCode || 'GBP';
+    const hasImage = Boolean(firstView.src);
+    const sizeControlsHtml = jacket.sizes.map((size) => {
+      const variant = jacket.variants.find((item) => item.size === size);
+      const available = isVariantAvailable(variant);
+      const selected = size === currentSelectedSize;
+      return `<button type="button" class="size-pill${selected ? ' is-active' : ''}${available ? '' : ' is-sold-out'}" data-size="${escapeHTML(size)}" role="radio" aria-label="${escapeHTML(size)}${available ? '' : ', sold out'}" aria-checked="${selected}" ${available ? '' : 'disabled aria-disabled="true"'}><span class="size-pill-label">${escapeHTML(size)}</span><span class="size-pill-status${available ? ' is-hidden' : ''}">SOLD OUT</span></button>`;
+    }).join('');
+    const hasAvailableStandardSize = productHasAvailableStandardSize(jacket);
 
     const viewsHtml = jacket.views.map((v, i) => `
       <button class="gallery-view-card${i === 0 ? ' is-active' : ''}"
               type="button"
               role="listitem"
-              aria-label="View ${v.label} for ${jacket.impulse}"
+              aria-label="View ${escapeHTML(v.label)} for ${safeTitle}"
               aria-pressed="${i === 0 ? 'true' : 'false'}"
               data-jacket-id="${jacket.id}"
               data-view-index="${i}"
-              data-src="${v.src}"
-              data-alt="${v.alt}"
-              data-label="${v.label}">
+              data-src="${escapeHTML(v.src)}"
+              data-alt="${escapeHTML(v.alt)}"
+              data-label="${escapeHTML(v.label)}">
         <div class="view-card__frame">
           <img class="view-card__img"
-               src="${v.src}"
-               alt="${v.alt}"
+               src="${escapeHTML(v.src)}"
+               alt="${escapeHTML(v.alt)}"
                loading="lazy"
                decoding="async"
                width="400"
@@ -679,7 +429,7 @@ function renderShowcase(jacket) {
           <span class="view-card__overlay" aria-hidden="true"></span>
         </div>
         <div class="view-card__info">
-          <span class="view-card__label">${v.label}</span>
+          <span class="view-card__label">${escapeHTML(v.label)}</span>
         </div>
       </button>
     `).join('');
@@ -691,15 +441,15 @@ function renderShowcase(jacket) {
           <div class="showcase-stage-col">
             <div class="gallery-stage" id="showcaseStage">
               <div class="gallery-stage__frame">
-                <img class="gallery-stage__img"
+                ${hasImage ? `<img class="gallery-stage__img"
                      id="showcaseStageImg"
-                     src="${firstView.src}"
-                     alt="${firstView.alt}"
+                     src="${escapeHTML(firstView.src)}"
+                     alt="${escapeHTML(firstView.alt)}"
                      loading="eager"
                      decoding="async"
                      fetchpriority="high"
                      width="1200"
-                     height="1800" />
+                     height="1800" />` : '<div class="gallery-image-unavailable" role="img" aria-label="Product image unavailable">Product image unavailable</div>'}
                 <div class="gallery-mobile-controls" aria-label="Product image navigation">
                   <button type="button" class="gallery-mobile-arrow gallery-mobile-arrow--prev" aria-label="Previous product image" disabled>
                     <span aria-hidden="true">&larr;</span>
@@ -717,12 +467,13 @@ function renderShowcase(jacket) {
           <div class="showcase-narrative-col">
             <!-- Jacket Title Row -->
             <div class="jacket-title-row">
-              <h3 class="jacket-name" id="showcaseJacketTitle">${jacket.impulse}</h3>
+              <h3 class="jacket-name" id="showcaseJacketTitle">${safeTitle}</h3>
+              <span class="jacket-stock-badge${hasAvailableStandardSize ? ' is-hidden' : ''}" id="productStockStatus" role="status">OUT OF STOCK</span>
               <div class="jacket-meta-tags">
-                <span class="jacket-colour-tag" aria-label="Colour: ${jacket.colour}">
-                  <span class="colour-swatch" style="background-color: ${jacket.hex};" aria-hidden="true"></span>
-                  ${jacket.colour}
-                </span>
+                ${jacket.colour ? `<span class="jacket-colour-tag" aria-label="Colour: ${escapeHTML(jacket.colour)}">
+                  <span class="colour-swatch" style="background-color: ${escapeHTML(jacket.hex)};" aria-hidden="true"></span>
+                  ${escapeHTML(jacket.colour)}
+                </span>` : ''}
               </div>
             </div>
 
@@ -732,13 +483,13 @@ function renderShowcase(jacket) {
 
             <!-- Price & Tax Row -->
             <div class="product-price-row">
-              <span class="product-original-price">${formatGBP(getSellingPrice(jacket) * 1.2)}</span>
-              <span class="product-price">${formatGBP(getSellingPrice(jacket))}</span>
+              <span class="product-original-price${compareAtPrice ? '' : ' is-hidden'}">${compareAtPrice ? formatGBP(Number.parseFloat(compareAtPrice), currencyCode) : ''}</span>
+              <span class="product-price">${formatGBP(selectedPrice, currencyCode)}</span>
               <span class="product-tax-note">Taxes &amp; duties included &middot; Complimentary delivery</span>
             </div>
 
-            <!-- Poetic Script Headline Quote -->
-            <p class="jacket-headline">${jacket.headline}</p>
+            <!-- Product description sits with the price and product details. -->
+            <p class="jacket-narrative jacket-narrative--intro">${escapeHTML(jacket.narrative)}</p>
 
             <!-- Commerce Controls Block (Gargee Functional Adaptation) -->
             <div class="product-commerce-controls" id="productCommerceControls">
@@ -746,13 +497,10 @@ function renderShowcase(jacket) {
               <div class="product-option-group product-size-group">
                 <div class="product-option-header">
                   <span class="product-option-label">Select Size</span>
-                  <button type="button" class="btn-size-guide" id="btnSizeGuide" aria-label="Open Size Guide" aria-haspopup="dialog">SIZE GUIDE</button>
                 </div>
-                <div class="product-size-pills" role="radiogroup" aria-label="Select size for ${jacket.impulse}">
-                  <button type="button" class="size-pill" data-size="S" role="radio" aria-checked="false">S</button>
-                  <button type="button" class="size-pill is-active" data-size="M" role="radio" aria-checked="true">M</button>
-                  <button type="button" class="size-pill" data-size="L" role="radio" aria-checked="false">L</button>
-                  <button type="button" class="size-pill" data-size="XL" role="radio" aria-checked="false">XL</button>
+                <button type="button" class="btn-size-guide" id="btnSizeGuide" aria-label="Open Size Guide" aria-haspopup="dialog">SIZE GUIDE</button>
+                <div class="product-size-pills" role="radiogroup" aria-label="Select size for ${safeTitle}">
+                  ${sizeControlsHtml || '<span class="product-sizes-unavailable">No standard sizes are listed.</span>'}
                   <button type="button" class="size-pill size-pill--custom" data-size="Custom" role="radio" aria-checked="false">Custom</button>
                 </div>
                 <p class="custom-sizing-note is-hidden" id="customSizingNote">
@@ -772,14 +520,7 @@ function renderShowcase(jacket) {
                     <span aria-hidden="true">&plus;</span>
                   </button>
                 </div>
-              </div>
-
-              <!-- Editorial Consultation Note -->
-              <div class="stylist-editorial-note" role="region" aria-label="Ekkomi Stylist Advisory">
-                <span class="editorial-note-icon" aria-hidden="true">&#10022;</span>
-                <p class="editorial-note-text">
-                  We believe every jacket should be as individual as the person wearing it. Whether you&#8217;d like to explore customisation possibilities or consult with our private stylist, we are at your service.
-                </p>
+                <p class="inventory-quantity-message is-hidden" id="inventoryQuantityMessage" role="status" aria-live="polite"></p>
               </div>
 
               <!-- CTA Stack -->
@@ -801,53 +542,45 @@ function renderShowcase(jacket) {
                 </div>
 
                 <!-- Purchase Buttons -->
-                <button type="button" class="btn-purchase btn-add-to-bag" id="btnAddToBag">
+                <button type="button" class="btn-purchase btn-add-to-bag" id="btnAddToBag" ${hasAvailableStandardSize && isVariantAvailable(initialVariant) ? '' : 'disabled'}>
                   ADD TO BAG
-                </button>
-                <button type="button" class="btn-purchase btn-buy-it-now" id="btnBuyItNow">
-                  BUY IT NOW FOR ${formatGBP(getSellingPrice(jacket) * currentSelectedQuantity)}
                 </button>
               </div>
             </div>
 
-            <!-- Narrative Story Paragraph -->
-            <p class="jacket-narrative">${jacket.narrative}</p>
-
             <!-- Photographic Perspectives Gallery -->
-            <div class="jacket-perspectives-block" data-gallery-jacket="${jacket.id}">
+            <div class="jacket-perspectives-block" data-gallery-jacket="${escapeHTML(jacket.id)}">
               <div class="gallery-section-bar">
                 <h4 class="gallery-heading">Photographic Perspectives</h4>
                 <span class="gallery-counter-tag">${jacket.views.length} Perspectives</span>
               </div>
-              <div class="gallery-views-grid" role="list" aria-label="${departmentTitle} ${jacket.impulse} jacket views">
+              <div class="gallery-views-grid" role="list" aria-label="${safeDepartmentTitle} ${safeTitle} product images">
                 ${viewsHtml}
               </div>
             </div>
 
             <!-- Craftsmanship Specifications -->
-            <dl class="jacket-craft-list">
-              ${craftHtml}
-            </dl>
+            ${craftHtml ? `<dl class="jacket-craft-list">${craftHtml}</dl>` : ''}
 
           </div>
         </div>
 
         <!-- Understated Product Navigation Bar -->
         <nav class="showcase-bottom-nav" aria-label="Jacket navigation">
-          <button type="button" class="showcase-nav-btn prev-jacket-btn" id="prevJacketBtn" aria-label="Previous jacket: ${prevJacket.number} ${prevJacket.impulse}">
+          <button type="button" class="showcase-nav-btn prev-jacket-btn" id="prevJacketBtn" aria-label="Previous jacket: ${escapeHTML(prevJacket.number)} ${escapeHTML(prevJacket.impulse)}">
             <span class="nav-arrow" aria-hidden="true">&larr;</span>
             <span class="nav-label-wrap">
-              <span class="nav-jacket-name">${prevJacket.impulse}</span>
+              <span class="nav-jacket-name">${escapeHTML(prevJacket.impulse)}</span>
             </span>
           </button>
 
-          <a class="nav-back-link" id="backToCarouselLink" href="#${carouselId}" aria-label="Return to ${departmentTitle} carousel">
+          <a class="nav-back-link" id="backToCarouselLink" href="#${carouselId}" aria-label="Return to ${safeDepartmentTitle} carousel">
             <span class="arrow-up" aria-hidden="true">&uarr;</span> Back to Carousel
           </a>
 
-          <button type="button" class="showcase-nav-btn next-jacket-btn" id="nextJacketBtn" aria-label="Next jacket: ${nextJacket.number} ${nextJacket.impulse}">
+          <button type="button" class="showcase-nav-btn next-jacket-btn" id="nextJacketBtn" aria-label="Next jacket: ${escapeHTML(nextJacket.number)} ${escapeHTML(nextJacket.impulse)}">
             <span class="nav-label-wrap">
-              <span class="nav-jacket-name">${nextJacket.impulse}</span>
+              <span class="nav-jacket-name">${escapeHTML(nextJacket.impulse)}</span>
             </span>
             <span class="nav-arrow" aria-hidden="true">&rarr;</span>
           </button>
@@ -862,6 +595,112 @@ function renderShowcase(jacket) {
     const mobileCounter = showcase.querySelector('.gallery-mobile-counter');
     const mobilePrev = showcase.querySelector('.gallery-mobile-arrow--prev');
     const mobileNext = showcase.querySelector('.gallery-mobile-arrow--next');
+    const originalPriceEl = showcase.querySelector('.product-original-price');
+    const currentPriceEl = showcase.querySelector('.product-price');
+    const addBagBtn = showcase.querySelector('#btnAddToBag');
+    const stockStatus = showcase.querySelector('#productStockStatus');
+    const quantityMessage = showcase.querySelector('#inventoryQuantityMessage');
+    const minusBtn = document.getElementById('qtyMinusBtn');
+    const plusBtn = document.getElementById('qtyPlusBtn');
+    const qtyDisplay = document.getElementById('productQtyDisplay');
+
+    const setInventoryMessage = (message) => {
+      if (!quantityMessage) return;
+      quantityMessage.textContent = message;
+      quantityMessage.classList.toggle('is-hidden', !message);
+    };
+
+    const applyInventoryToSizeControls = () => {
+      const hasStock = productHasAvailableStandardSize(jacket);
+      jacket.inStock = hasStock;
+      if (stockStatus) stockStatus.classList.toggle('is-hidden', hasStock);
+      sizePills.forEach((pill) => {
+        if (pill.dataset.size === 'Custom') return;
+        const variant = jacket.variants.find((item) => item.size === pill.dataset.size);
+        const available = isVariantAvailable(variant);
+        pill.disabled = !available;
+        pill.classList.toggle('is-sold-out', !available);
+        pill.setAttribute('aria-label', `${pill.dataset.size}${available ? '' : ', sold out'}`);
+        const soldOutLabel = pill.querySelector('.size-pill-status');
+        if (soldOutLabel) {
+          soldOutLabel.textContent = 'SOLD OUT';
+          soldOutLabel.classList.toggle('is-hidden', available);
+        }
+      });
+    };
+
+    const syncSelectedVariant = () => {
+      const variant = getSelectedVariant(jacket);
+      currentSelectedVariantId = variant?.id || null;
+      const amount = Number.parseFloat(variant?.price?.amount || '0');
+      const currency = variant?.price?.currencyCode || jacket.currencyCode || 'GBP';
+      const compareAt = amount > 0 ? Math.round(amount * 1.2 * 100) / 100 : null;
+      if (currentPriceEl) currentPriceEl.textContent = formatGBP(amount, currency);
+      if (originalPriceEl) {
+        originalPriceEl.textContent = compareAt ? formatGBP(Number.parseFloat(compareAt), currency) : '';
+        originalPriceEl.classList.toggle('is-hidden', !compareAt);
+      }
+      const isCustom = currentSelectedSize === 'Custom';
+      const variantAvailable = isVariantAvailable(variant);
+      const maxQuantity = isCustom ? MAX_ORDER_QUANTITY : getVariantQuantityLimit(variant);
+      if (!isCustom && (maxQuantity === 0 || currentSelectedQuantity > maxQuantity)) {
+        currentSelectedQuantity = maxQuantity || 1;
+        if (qtyDisplay) qtyDisplay.textContent = String(currentSelectedQuantity);
+      }
+      const hasStock = productHasAvailableStandardSize(jacket);
+      const canProceed = isCustom || (hasStock && variantAvailable && currentSelectedQuantity <= maxQuantity);
+      if (addBagBtn) addBagBtn.disabled = !canProceed;
+      if (plusBtn) plusBtn.disabled = isCustom ? currentSelectedQuantity >= MAX_ORDER_QUANTITY : !variantAvailable || currentSelectedQuantity >= maxQuantity;
+      if (minusBtn) minusBtn.disabled = currentSelectedQuantity <= 1;
+
+      if (isCustom) {
+        setInventoryMessage('');
+      } else if (!variantAvailable) {
+        setInventoryMessage('This size is sold out. Choose another size, or select Custom to speak with our stylist.');
+      } else if (variant?.quantityAvailable == null) {
+        setInventoryMessage(currentSelectedQuantity >= maxQuantity
+          ? 'Live stock quantity is unavailable, so quantity is temporarily limited to 1.'
+          : '');
+      } else if (currentSelectedQuantity >= maxQuantity) {
+        setInventoryMessage(`Maximum available quantity: ${maxQuantity}.`);
+      } else {
+        setInventoryMessage('');
+      }
+    };
+
+    let inventoryRefreshPromise = null;
+    const refreshInventory = () => {
+      if (!showcase.isConnected || window.currentSelectedJacket?.id !== jacket.id) {
+        return Promise.resolve(false);
+      }
+      if (inventoryRefreshPromise) return inventoryRefreshPromise;
+      const ids = jacket.variants.map((variant) => variant.id);
+      if (!ids.length) return Promise.resolve(false);
+      inventoryRefreshPromise = fetch('/api/shopify/inventory', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        cache: 'no-store',
+        body: JSON.stringify({ variantIds: ids })
+      }).then(async (response) => {
+        if (!response.ok) throw new Error('Shopify inventory could not be refreshed.');
+        const result = await response.json();
+        if (!Array.isArray(result.variants)) throw new Error('Shopify inventory response was invalid.');
+        const updated = new Map(result.variants.map((variant) => [variant.id, variant]));
+        if (ids.some((id) => !updated.has(id))) throw new Error('Shopify returned incomplete inventory.');
+        jacket.variants = jacket.variants.map((variant) => ({
+          ...variant,
+          ...updated.get(variant.id)
+        }));
+        if (window.currentSelectedJacket?.id !== jacket.id) return false;
+        applyInventoryToSizeControls();
+        syncSelectedVariant();
+        return true;
+      }).catch(() => false).finally(() => {
+        inventoryRefreshPromise = null;
+      });
+      return inventoryRefreshPromise;
+    };
+    refreshActiveProductInventory = refreshInventory;
 
     let activeViewIndex = 0;
     const setActiveView = (index) => {
@@ -949,6 +788,14 @@ function renderShowcase(jacket) {
         pill.classList.add('is-active');
         pill.setAttribute('aria-checked', 'true');
         currentSelectedSize = pill.dataset.size;
+        if (currentSelectedSize !== 'Custom') {
+          const variant = jacket.variants.find((item) => item.size === currentSelectedSize);
+          currentSelectedVariantId = variant?.id || null;
+          currentSelectedQuantity = 1;
+          if (qtyDisplay) qtyDisplay.textContent = '1';
+        }
+        syncSelectedVariant();
+        if (currentSelectedSize !== 'Custom') void refreshInventory();
         if (customNote) {
           if (currentSelectedSize === 'Custom') {
             customNote.classList.remove('is-hidden');
@@ -959,16 +806,27 @@ function renderShowcase(jacket) {
       });
     });
 
-    // Quantity selector
-    const minusBtn = document.getElementById('qtyMinusBtn');
-    const plusBtn = document.getElementById('qtyPlusBtn');
-    const qtyDisplay = document.getElementById('productQtyDisplay');
+    applyInventoryToSizeControls();
+    syncSelectedVariant();
+    void refreshInventory();
 
+    // Quantity selector
     const updateQty = (newQty) => {
-      currentSelectedQuantity = Math.max(1, Math.min(10, newQty));
+      const isCustom = currentSelectedSize === 'Custom';
+      const variant = getSelectedVariant(jacket);
+      const maximum = isCustom ? MAX_ORDER_QUANTITY : getVariantQuantityLimit(variant);
+      if (newQty > maximum) {
+        if (!isCustom && variant?.quantityAvailable == null && isVariantAvailable(variant)) {
+          setInventoryMessage('Live stock quantity is unavailable, so quantity is temporarily limited to 1.');
+        } else if (maximum > 0) {
+          setInventoryMessage(`Maximum available quantity: ${maximum}.`);
+        }
+        return;
+      }
+      currentSelectedQuantity = Math.max(1, Math.min(maximum, newQty));
       if (qtyDisplay) qtyDisplay.textContent = String(currentSelectedQuantity);
       if (minusBtn) minusBtn.disabled = currentSelectedQuantity <= 1;
-      if (buyNowBtn) buyNowBtn.textContent = `BUY IT NOW FOR ${formatGBP(getSellingPrice(jacket) * currentSelectedQuantity)}`;
+      syncSelectedVariant();
     };
 
     if (minusBtn) minusBtn.addEventListener('click', () => updateQty(currentSelectedQuantity - 1));
@@ -978,7 +836,7 @@ function renderShowcase(jacket) {
     const stylistBtn = document.getElementById('btnWhatsappStylist');
     if (stylistBtn) {
       stylistBtn.addEventListener('click', () => {
-        const productName = `${jacket.impulse} Suede Jacket`;
+        const productName = jacket.impulse;
         const currentUrl = `${window.location.origin}/collection#${jacket.key}`;
         const message = `Hello Ekkomi, I'm interested in the ${productName} and would love to speak with your stylist. Could you please assist me?\n\nProduct: ${productName}\nProduct URL: ${currentUrl}`;
         const waUrl = `https://wa.me/${EKKOMI_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
@@ -990,7 +848,7 @@ function renderShowcase(jacket) {
     const customBtn = document.getElementById('btnWhatsappCustom');
     if (customBtn) {
       customBtn.addEventListener('click', () => {
-        const productName = `${jacket.impulse} Suede Jacket`;
+        const productName = jacket.impulse;
         const currentUrl = `${window.location.origin}/collection#${jacket.key}`;
         const message = `Hello Ekkomi, I'm interested in the ${productName} and would like to explore customisation possibilities. Could you please guide me?\n\nProduct: ${productName}\nProduct URL: ${currentUrl}`;
         const waUrl = `https://wa.me/${EKKOMI_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
@@ -1007,63 +865,70 @@ function renderShowcase(jacket) {
       });
     }
 
-    // Add to Bag & Buy It Now Handlers
-    const handlePurchase = (actionType) => {
+    // Add to Bag. Standard variants use Shopify Cart API; CUSTOM remains a stylist WhatsApp enquiry.
+    let addToBagPending = false;
+    const handleAddToBag = async () => {
+      if (addToBagPending) return;
       if (currentSelectedSize === 'Custom') {
-        const productName = `${jacket.impulse} Suede Jacket`;
+        const productName = jacket.impulse;
         const currentUrl = `${window.location.origin}/collection#${jacket.key}`;
-        const customMessage = `Hello Ekkomi, I'm interested in a bespoke custom-fitted ${productName} in ${jacket.colour} (Quantity: ${currentSelectedQuantity}) and would like to explore customisation possibilities with your stylist.\n\nProduct: ${productName}\nColour: ${jacket.colour}\nQuantity: ${currentSelectedQuantity}\nProduct URL: ${currentUrl}`;
+        const colourLine = jacket.colour ? `\nColour: ${jacket.colour}` : '';
+        const customMessage = `Hello Ekkomi, I'm interested in a bespoke custom-fitted ${productName} (Quantity: ${currentSelectedQuantity}) and would like to explore customisation possibilities with your stylist.${colourLine}\n\nProduct: ${productName}\nQuantity: ${currentSelectedQuantity}\nProduct URL: ${currentUrl}`;
         const customWaUrl = `https://wa.me/${EKKOMI_WHATSAPP_NUMBER}?text=${encodeURIComponent(customMessage)}`;
         window.open(customWaUrl, '_blank', 'noopener,noreferrer');
         return;
       }
 
-      const department = jacket.gender || 'men';
-      const jacketKey = jacket.key;
-      const variantId = (typeof SHOPIFY_CONFIG !== 'undefined' && SHOPIFY_CONFIG.products?.[department]?.[jacketKey]?.variants?.[currentSelectedSize]) || null;
-      const isLiveVariant = variantId && !String(variantId).startsWith('var_');
-
-      if (typeof SHOPIFY_CONFIG !== 'undefined' && SHOPIFY_CONFIG.enabled && isLiveVariant) {
-        const store = SHOPIFY_CONFIG.storeDomain || 'shop.ekkomi.co.uk';
-        if (actionType === 'buy_it_now') {
-          window.location.href = `https://${store}/cart/${variantId}:${currentSelectedQuantity}?checkout=true`;
-        } else {
-          window.location.href = `https://${store}/cart/add?id=${variantId}&quantity=${currentSelectedQuantity}&return_to=/checkout`;
-        }
+      const requestedQuantity = currentSelectedQuantity;
+      const inventoryVerified = await refreshInventory();
+      if (!inventoryVerified) {
+        setInventoryMessage('We could not verify live availability. Please try again shortly.');
         return;
       }
 
-      console.info('[EKKOMI COMMERCE INTEGRATION NOTICE]', {
-        action: actionType,
-        product: jacket.impulse,
-        department: department,
-        size: currentSelectedSize,
-        quantity: currentSelectedQuantity,
-        sku: jacket.sku,
-        price: jacket.price,
-        configuredVariant: variantId,
-        shopifyEnabled: typeof SHOPIFY_CONFIG !== 'undefined' ? SHOPIFY_CONFIG.enabled : false,
-        storeDomain: typeof SHOPIFY_CONFIG !== 'undefined' ? SHOPIFY_CONFIG.storeDomain : 'shop.ekkomi.co.uk',
-        note: 'To activate live Shopify checkout, configure live numerical variant IDs in SHOPIFY_CONFIG and set enabled: true.'
-      });
+      const selectedVariant = getSelectedVariant(jacket);
+      const maximum = getVariantQuantityLimit(selectedVariant);
+      if (!isVariantAvailable(selectedVariant)) {
+        setInventoryMessage('This size is sold out. Choose another size.');
+        return;
+      }
+      if (requestedQuantity > maximum) {
+        setInventoryMessage(`Stock changed. The maximum available quantity is now ${maximum}.`);
+        return;
+      }
 
-      showCampaignCheckoutNotice({
-        jacket: jacket,
-        size: currentSelectedSize,
-        quantity: currentSelectedQuantity,
-        actionType: actionType
-      });
+      const variantId = selectedVariant?.id;
+      if (!variantId) {
+        setInventoryMessage('This size is not available for online purchase. Choose another size.');
+        return;
+      }
+      addToBagPending = true;
+      if (addBagBtn) { addBagBtn.disabled = true; addBagBtn.textContent = 'ADDING TO BAG…'; }
+      try {
+        const response = await fetch('/api/shopify/cart', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          cache: 'no-store',
+          body: JSON.stringify({ variantId, quantity: requestedQuantity })
+        });
+        const result = await response.json();
+        if (!response.ok || !result.cart) throw new Error(result.error || 'This item could not be added.');
+        setInventoryMessage('');
+        window.dispatchEvent(new CustomEvent('ekkomi:cart-updated', { detail: { cart: result.cart, open: true } }));
+      } catch (error) {
+        setInventoryMessage(error && error.message ? error.message : 'This item could not be added. Please try again.');
+      } finally {
+        addToBagPending = false;
+        if (addBagBtn) { addBagBtn.textContent = 'ADD TO BAG'; syncSelectedVariant(); }
+      }
     };
 
-    const addBagBtn = document.getElementById('btnAddToBag');
-    const buyNowBtn = document.getElementById('btnBuyItNow');
-    if (addBagBtn) addBagBtn.addEventListener('click', () => handlePurchase('add_to_bag'));
-    if (buyNowBtn) buyNowBtn.addEventListener('click', () => handlePurchase('buy_it_now'));
+    if (addBagBtn) addBagBtn.addEventListener('click', handleAddToBag);
 
     // Dynamic Floating WhatsApp update
     const floatingWa = document.getElementById('floatingWhatsappBtn');
     if (floatingWa) {
-      const productName = `${jacket.impulse} Suede Jacket`;
+      const productName = jacket.impulse;
       const currentUrl = `${window.location.origin}/collection#${jacket.key}`;
       const waText = `Hello Ekkomi, I'm interested in the ${productName} and would love to speak with your stylist. Could you please assist me?\n\nProduct: ${productName}\nProduct URL: ${currentUrl}`;
       floatingWa.href = `https://wa.me/${EKKOMI_WHATSAPP_NUMBER}?text=${encodeURIComponent(waText)}`;
@@ -1187,7 +1052,12 @@ function createAccordionGallery({
     img.draggable = false;
     img.loading = 'lazy';
 
-    media.appendChild(img);
+    if (item.image) {
+      media.appendChild(img);
+    } else {
+      media.classList.add('ag-panel__media--empty');
+      media.textContent = 'Image unavailable';
+    }
     frame.appendChild(media);
 
     const overlay = document.createElement('span');
@@ -1208,7 +1078,7 @@ function createAccordionGallery({
     const text = document.createElement('span');
     text.className = 'ag-panel__text';
     const jacketName = item.label.replace(/^\d+\s*\/\s*/, '');
-    text.innerHTML = `<span class="ag-label-title">${jacketName}</span>`;
+    text.innerHTML = `<span class="ag-label-title">${escapeHTML(jacketName)}</span>`;
     textEls[i] = text;
 
     label.appendChild(bar);
@@ -1364,58 +1234,11 @@ function createAccordionGallery({
    3D PERSPECTIVE DRIFT WALL (HERO)
    ------------------------------------------------------------------- */
 
-const wallTiles = [
-  // Curiosity
-  { image: '/collection-assets/jackets_original/resized_BEN03137.webp', title: 'Curiosity · Back Silhouette', jacket: 'men-curiosity' },
-  { image: '/collection-assets/jackets_original/resized_BEN03166.webp', title: 'Curiosity · Profile Silhouette', jacket: 'men-curiosity' },
-  { image: '/collection-assets/jackets_original/resized_BEN03202.webp', title: 'Curiosity · Editorial Perspective', jacket: 'men-curiosity' },
-  { image: '/collection-assets/collection/nocturne/curiosity/curiosity.jpg', title: 'Curiosity · Standing Front', jacket: 'men-curiosity' },
-  { image: '/collection-assets/collection/nocturne/curiosity/curiosity_lookbook_1.jpg', title: 'Curiosity · Lookbook Silhouette', jacket: 'men-curiosity' },
-  { image: '/collection-assets/collection/nocturne/curiosity/curiosity_women_1.jpg', title: 'Curiosity · Women Front Stance', jacket: 'women-curiosity' },
-  { image: '/collection-assets/collection/nocturne/curiosity/curiosity_women_2.jpg', title: 'Curiosity · Women Seated Portrait', jacket: 'women-curiosity' },
-  { image: '/collection-assets/collection/nocturne/curiosity/curiosity_women_3.jpg', title: 'Curiosity · Women Three-Quarter', jacket: 'women-curiosity' },
-
-  // Temptation
-  { image: '/collection-assets/jackets_original/resized_BEN03655.webp', title: 'Temptation · Suede Tailoring', jacket: 'men-temptation' },
-  { image: '/collection-assets/collection/nocturne/temptation/temptation.jpg', title: 'Temptation · Front Silhouette', jacket: 'men-temptation' },
-  { image: '/collection-assets/collection/nocturne/temptation/temptation_lookbook_1.jpg', title: 'Temptation · Lookbook Perspective', jacket: 'men-temptation' },
-  { image: '/collection-assets/collection/nocturne/temptation/temptation_lookbook_2.jpg', title: 'Temptation · Tailored Stance', jacket: 'men-temptation' },
-  { image: '/collection-assets/collection/nocturne/temptation/temptation_detail.jpg', title: 'Temptation · Collar Embroidery Detail', jacket: 'men-temptation' },
-  { image: '/collection-assets/collection/nocturne/temptation/temptation_back.jpg', title: 'Temptation · Back Architectural Cut', jacket: 'men-temptation' },
-  { image: '/collection-assets/collection/nocturne/curiosity/curiosity_lining.jpg', title: 'Curiosity · Bespoke Silk Lining', jacket: 'men-curiosity' },
-  { image: '/collection-assets/collection/nocturne/desire/desire_lining.jpg', title: 'Desire · Concealed Silk Artwork', jacket: 'men-desire' },
-
-  // Desire
-  { image: '/collection-assets/jackets_original/resized_BEN03806.webp', title: 'Desire · Suede Tailoring', jacket: 'men-desire' },
-  { image: '/collection-assets/jackets_original/resized_BEN03515.webp', title: 'Desire · Standing Silhouette', jacket: 'men-desire' },
-  { image: '/collection-assets/jackets_original/resized_BEN03619.webp', title: 'Desire · Tonal Embroidery', jacket: 'men-desire' },
-  { image: '/collection-assets/jackets_original/resized_BEN03767.webp', title: 'Desire · Portrait Perspective', jacket: 'men-desire' },
-  { image: '/collection-assets/collection/nocturne/desire/desire.jpg', title: 'Desire · Front Portrait', jacket: 'men-desire' },
-  { image: '/collection-assets/collection/nocturne/desire/desire_editorial_1.jpg', title: 'Desire · Editorial Profile', jacket: 'men-desire' },
-  { image: '/collection-assets/collection/nocturne/desire/desire_editorial_2.jpg', title: 'Desire · Atelier Perspective', jacket: 'men-desire' },
-  { image: '/collection-assets/collection/nocturne/desire/desire_editorial_3.jpg', title: 'Desire · Women Standing Portrait', jacket: 'women-desire' },
-
-  // Audacity
-  { image: '/collection-assets/jackets_original/resized_BEN03893.webp', title: 'Audacity · Lookbook Styling', jacket: 'men-audacity' },
-  { image: '/collection-assets/collection/nocturne/audacity/audacity.jpg', title: 'Audacity · Front Silhouette', jacket: 'men-audacity' },
-  { image: '/collection-assets/collection/nocturne/audacity/audacity_lookbook_1.jpg', title: 'Audacity · Suede Tailoring', jacket: 'men-audacity' },
-  { image: '/collection-assets/collection/nocturne/audacity/audacity_lookbook_2.jpg', title: 'Audacity · Standing Full', jacket: 'men-audacity' },
-  { image: '/collection-assets/collection/nocturne/audacity/audacity_editorial_1.jpg', title: 'Audacity · Women Seated Portrait', jacket: 'women-audacity' },
-  { image: '/collection-assets/collection/nocturne/audacity/audacity_editorial_2.jpg', title: 'Audacity · Editorial Profile', jacket: 'women-audacity' },
-  { image: '/collection-assets/collection/nocturne/audacity/audacity_detail.jpg', title: 'Audacity · Embroidery Craft', jacket: 'men-audacity' },
-  { image: '/collection-assets/collection/nocturne/desire/desire_lookbook_1.jpg', title: 'Desire · Editorial Motion', jacket: 'men-desire' },
-
-  // Insolence
-  { image: '/collection-assets/jackets_original/resized_BEN03307.webp', title: 'Insolence · Suede Tailoring', jacket: 'men-insolence' },
-  { image: '/collection-assets/jackets_original/resized_BEN03324.webp', title: 'Insolence · Male Model Seated', jacket: 'men-insolence' },
-  { image: '/collection-assets/collection/nocturne/insolence/insolence.jpg', title: 'Insolence · Front Silhouette', jacket: 'men-insolence' },
-  { image: '/collection-assets/collection/nocturne/insolence/insolence_editorial_1.jpg', title: 'Insolence · Editorial Seated Stance', jacket: 'men-insolence' },
-  { image: '/collection-assets/collection/nocturne/insolence/insolence_editorial_2.jpg', title: 'Insolence · Dramatic Lighting', jacket: 'men-insolence' },
-  { image: '/collection-assets/collection/nocturne/insolence/insolence_editorial_3.jpg', title: 'Insolence · Profile Tailoring', jacket: 'men-insolence' },
-  { image: '/collection-assets/collection/nocturne/insolence/insolence_editorial_4.jpg', title: 'Insolence · Editorial Look', jacket: 'men-insolence' },
-  { image: '/collection-assets/collection/nocturne/insolence/insolence_detail.jpg', title: 'Insolence · Back Embroidery View', jacket: 'men-insolence' }
-];
-
+const wallTiles = allCollectionJackets.flatMap((jacket) => jacket.views.map((view) => ({
+  image: view.src,
+  title: `${jacket.impulse} · ${view.label}`,
+  jacket: jacket.id
+})));
 function initDriftWall() {
   const container = document.getElementById('heroDriftWall');
   if (!container) return;
@@ -1634,7 +1457,7 @@ function init() {
   window.accordionMenAPI = createAccordionGallery({
     rootId: 'accordionGalleryMen',
     items: mensJackets,
-    defaultIndex: 2, // Desire
+    defaultIndex: Math.max(0, mensJackets.findIndex((jacket) => jacket.key === 'desire')),
     onSelectJacket: (id) => {
       selectJacket(id, { scroll: true, fromAccordion: true, userInitiated: true });
     }
@@ -1644,7 +1467,7 @@ function init() {
   window.accordionWomenAPI = createAccordionGallery({
     rootId: 'accordionGalleryWomen',
     items: womensJackets,
-    defaultIndex: 1, // Desire
+    defaultIndex: Math.max(0, womensJackets.findIndex((jacket) => jacket.key === 'desire')),
     onSelectJacket: (id) => {
       selectJacket(id, { scroll: true, fromAccordion: true, userInitiated: true });
     }
@@ -1671,13 +1494,15 @@ function init() {
   initSizeGuide();
 
   // Pre-render the default active jacket (Men's Desire) in showcase
-  const defaultJacket = mensJackets[2];
-  renderShowcase(defaultJacket);
+  const defaultJacket = mensJackets.find((jacket) => jacket.key === 'desire') || mensJackets[0];
+  if (defaultJacket) renderShowcase(defaultJacket);
 
   // Preload primary assets
   allCollectionJackets.forEach(j => {
-    const img = new Image();
-    img.src = j.image;
+    if (j.image) {
+      const img = new Image();
+      img.src = j.image;
+    }
     if (j.views && j.views[0]) {
       const vImg = new Image();
       vImg.src = j.views[0].src;
@@ -1770,48 +1595,6 @@ if (document.readyState === 'loading') {
     getEndpoint: function () {
       return this.supabaseEndpoint;
     }
-  };
-
-  // Future Shopify Configuration & Variant Mapping
-  const SHOPIFY_CONFIG = {
-    enabled: false, // Set to true when Shopify store and payments are live
-    storeDomain: 'ekkomi.myshopify.com',
-    products: {
-      men: {
-        curiosity: { title: 'Curiosity - Dark Navy', productId: 'gid://shopify/Product/101', variants: { XS: 'var_m_cur_xs', S: 'var_m_cur_s', M: 'var_m_cur_m', L: 'var_m_cur_l', XL: 'var_m_cur_xl', XXL: 'var_m_cur_xxl' } },
-        temptation: { title: 'Temptation - Forest Green', productId: 'gid://shopify/Product/102', variants: { XS: 'var_m_tem_xs', S: 'var_m_tem_s', M: 'var_m_tem_m', L: 'var_m_tem_l', XL: 'var_m_tem_xl', XXL: 'var_m_tem_xxl' } },
-        desire: { title: 'Desire - Deep Red', productId: 'gid://shopify/Product/103', variants: { XS: 'var_m_des_xs', S: 'var_m_des_s', M: 'var_m_des_m', L: 'var_m_des_l', XL: 'var_m_des_xl', XXL: 'var_m_des_xxl' } },
-        audacity: { title: 'Audacity - Deep Mustard', productId: 'gid://shopify/Product/104', variants: { XS: 'var_m_aud_xs', S: 'var_m_aud_s', M: 'var_m_aud_m', L: 'var_m_aud_l', XL: 'var_m_aud_xl', XXL: 'var_m_aud_xxl' } },
-        insolence: { title: 'Insolence - Black', productId: 'gid://shopify/Product/105', variants: { XS: 'var_m_ins_xs', S: 'var_m_ins_s', M: 'var_m_ins_m', L: 'var_m_ins_l', XL: 'var_m_ins_xl', XXL: 'var_m_ins_xxl' } }
-      },
-      women: {
-        curiosity: { title: 'Curiosity - Dark Navy', productId: 'gid://shopify/Product/201', variants: { XS: 'var_w_cur_xs', S: 'var_w_cur_s', M: 'var_w_cur_m', L: 'var_w_cur_l', XL: 'var_w_cur_xl', XXL: 'var_w_cur_xxl' } },
-        desire: { title: 'Desire - Deep Red', productId: 'gid://shopify/Product/202', variants: { XS: 'var_w_des_xs', S: 'var_w_des_s', M: 'var_w_des_m', L: 'var_w_des_l', XL: 'var_w_des_xl', XXL: 'var_w_des_xxl' } },
-        audacity: { title: 'Audacity - Deep Mustard', productId: 'gid://shopify/Product/203', variants: { XS: 'var_w_aud_xs', S: 'var_w_aud_s', M: 'var_w_aud_m', L: 'var_w_aud_l', XL: 'var_w_aud_xl', XXL: 'var_w_aud_xxl' } }
-      }
-    },
-    // Hook for checking real inventory once Shopify integration is connected
-    checkInventory: async function (collection, jacketKey, size) {
-      if (!this.enabled) return { available: null, checked: false };
-      // Future Shopify Storefront GraphQL query goes here
-      return { available: true, variantId: this.products[collection]?.[jacketKey]?.variants[size] };
-    }
-  };
-
-  // Jacket Definitions by Collection with Editorial Images
-  const JACKET_CATALOG = {
-    men: [
-      { key: 'curiosity', price: '£785', id: 'men-curiosity', number: '01', name: 'CURIOSITY', colour: 'Dark Navy', hex: '#1c2838', inStock: false, image: '/collection-assets/collection/nocturne/curiosity/curiosity.jpg' },
-      { key: 'temptation', price: '£855', id: 'men-temptation', number: '02', name: 'TEMPTATION', colour: 'Forest Green', hex: '#27382b', inStock: false, image: '/collection-assets/collection/nocturne/temptation/temptation_lookbook_1.jpg' },
-      { key: 'desire', id: 'men-desire', number: '03', name: 'DESIRE', colour: 'Deep Red', hex: '#662225', inStock: false, image: '/collection-assets/collection/nocturne/desire/desire.jpg' },
-      { key: 'audacity', price: '£970', id: 'men-audacity', number: '04', name: 'AUDACITY', colour: 'Deep Mustard', hex: '#8c6b24', inStock: false, image: '/collection-assets/collection/nocturne/audacity/audacity_lookbook_2.jpg' },
-      { key: 'insolence', price: '£1,050', id: 'men-insolence', number: '05', name: 'INSOLENCE', colour: 'Black', hex: '#1a1716', inStock: false, image: '/collection-assets/collection/nocturne/insolence/insolence_detail.jpg' }
-    ],
-    women: [
-      { key: 'curiosity', price: '£785', id: 'women-curiosity', number: '01', name: 'CURIOSITY', colour: 'Dark Navy', hex: '#1c2838', inStock: false, image: '/collection-assets/collection/nocturne/curiosity/curiosity_women_2.jpg' },
-      { key: 'desire', id: 'women-desire', number: '02', name: 'DESIRE', colour: 'Deep Red', hex: '#662225', inStock: false, image: '/collection-assets/collection/nocturne/desire/desire_editorial_3.jpg' },
-      { key: 'audacity', price: '£970', id: 'women-audacity', number: '03', name: 'AUDACITY', colour: 'Deep Mustard', hex: '#8c6b24', inStock: false, image: '/collection-assets/collection/nocturne/audacity/audacity.jpg' }
-    ]
   };
 
   // State
@@ -2166,18 +1949,18 @@ if (document.readyState === 'loading') {
       return `
         <button type="button"
                 class="waitlist-jacket-card${isSelected ? ' is-selected' : ''}"
-                data-jacket-key="${j.key}"
+                data-jacket-key="${escapeHTML(j.key)}"
                 role="radio"
                 aria-checked="${isSelected ? 'true' : 'false'}">
           <div class="jacket-card-left">
             ${j.image ? `
               <div class="jacket-thumb-wrapper">
-                <img src="${j.image}" alt="${j.name} jacket" class="jacket-thumb-img" loading="eager" decoding="async">
+                <img src="${escapeHTML(j.image)}" alt="${escapeHTML(j.name)} jacket" class="jacket-thumb-img" loading="eager" decoding="async">
               </div>
             ` : ''}
-            <span class="jacket-swatch" style="background-color: ${j.hex};" aria-hidden="true"></span>
+            ${j.hex ? `<span class="jacket-swatch" style="background-color: ${escapeHTML(j.hex)};" aria-hidden="true"></span>` : ''}
             <div class="jacket-meta">
-              <span class="jacket-name">${j.name}</span>
+              <span class="jacket-name">${escapeHTML(j.name)}</span>
             </div>
           </div>
           <span class="jacket-select-radio" aria-hidden="true"></span>
@@ -2463,8 +2246,7 @@ if (document.readyState === 'loading') {
     close: closeWaitlist,
     goToStep: goToStep,
     getState: () => ({ ...state }),
-    init: init,
-    shopify: SHOPIFY_CONFIG
+    init: init
   };
 
 })();

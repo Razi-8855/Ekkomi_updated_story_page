@@ -1,26 +1,17 @@
-
 import type { Metadata } from "next";
 import CollectionExperience from "@/components/collection/CollectionExperience";
+import { getShopifyCatalog, type ShopifyCatalog } from "@/lib/shopify-storefront";
 import markup from "./markup";
 import "./collection.css";
 
-const collectionTitle =
-  "Nocturne Collection | Luxury Suede Jackets – Ekkomi";
-
+const collectionTitle = "Nocturne Collection | Luxury Suede Jackets – Ekkomi";
 const collectionDescription =
-  "Discover Nocturne by Ekkomi, a collection of five distinctive suede jackets inspired by individuality, intricate embroidery and understated luxury.";
+  "Discover Nocturne by Ekkomi, a collection of distinctive suede jackets inspired by individuality and understated luxury.";
 
 export const metadata: Metadata = {
-  title: {
-    absolute: collectionTitle,
-  },
-
+  title: { absolute: collectionTitle },
   description: collectionDescription,
-
-  alternates: {
-    canonical: "/collection",
-  },
-
+  alternates: { canonical: "/collection" },
   openGraph: {
     title: collectionTitle,
     description: collectionDescription,
@@ -28,215 +19,122 @@ export const metadata: Metadata = {
     type: "website",
     siteName: "Ekkomi",
     locale: "en_GB",
-    images: [
-      {
-        url: "/collection-assets/collection/nocturne/temptation/temptation.jpg",
-        width: 1200,
-        height: 1800,
-        alt: "Ekkomi Nocturne Collection - Five Luxury Suede Jackets",
-      },
-    ],
   },
-
   twitter: {
     card: "summary_large_image",
     title: collectionTitle,
     description: collectionDescription,
-    images: [
-      "/collection-assets/collection/nocturne/temptation/temptation.jpg",
-    ],
   },
 };
 
-const collectionJsonLd = {
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "CollectionPage",
-      "@id": "https://www.ekkomi.co.uk/collection#webpage",
-      "url": "https://www.ekkomi.co.uk/collection",
-      "name": collectionTitle,
-      "description": collectionDescription,
-      "breadcrumb": {
-        "@id": "https://www.ekkomi.co.uk/collection#breadcrumb",
-      },
-      "isPartOf": {
-        "@id": "https://www.ekkomi.co.uk/#website",
-      },
-      "publisher": {
-        "@id": "https://www.ekkomi.co.uk/#organization",
-      },
-    },
-    {
-      "@type": "BreadcrumbList",
-      "@id": "https://www.ekkomi.co.uk/collection#breadcrumb",
-      "itemListElement": [
-        {
-          "@type": "ListItem",
-          "position": 1,
-          "name": "Home",
-          "item": "https://www.ekkomi.co.uk/",
-        },
-        {
-          "@type": "ListItem",
-          "position": 2,
-          "name": "Nocturne Collection",
-          "item": "https://www.ekkomi.co.uk/collection",
-        },
-      ],
-    },
-    {
-      "@type": "ItemList",
-      "@id": "https://www.ekkomi.co.uk/collection#itemlist",
-      "name": "Nocturne Collection",
-      "description": collectionDescription,
-      "numberOfItems": 5,
-      "itemListElement": [
-        {
-          "@type": "ListItem",
-          "position": 1,
-          "item": {
-            "@type": "Product",
-            "@id": "https://www.ekkomi.co.uk/collection#curiosity",
-            "name": "Curiosity Suede Jacket",
-            "description":
-              "Navy luxury suede jacket with tonal needlework, brushed nap, and bespoke Nocturne silk lining.",
-            "image":
-              "https://www.ekkomi.co.uk/collection-assets/collection/nocturne/curiosity/curiosity.jpg",
-            "color": "Navy",
-            "material": "Luxury Suede",
-            "brand": {
-              "@type": "Brand",
-              "name": "Ekkomi",
-            },
-            "offers": {
-              "@type": "Offer",
-              "price": "785.00",
-              "priceCurrency": "GBP",
-              "availability": "https://schema.org/PreOrder",
-              "url": "https://www.ekkomi.co.uk/collection#curiosity",
-            },
-          },
-        },
-        {
-          "@type": "ListItem",
-          "position": 2,
-          "item": {
-            "@type": "Product",
-            "@id": "https://www.ekkomi.co.uk/collection#temptation",
-            "name": "Temptation Suede Jacket",
-            "description":
-              "Forest Green luxury suede jacket with shifting needlework across the upper chest and bespoke Nocturne silk lining.",
-            "image":
-              "https://www.ekkomi.co.uk/collection-assets/collection/nocturne/temptation/temptation.jpg",
-            "color": "Forest Green",
-            "material": "Luxury Suede",
-            "brand": {
-              "@type": "Brand",
-              "name": "Ekkomi",
-            },
-            "offers": {
-              "@type": "Offer",
-              "price": "855.00",
-              "priceCurrency": "GBP",
-              "availability": "https://schema.org/PreOrder",
-              "url": "https://www.ekkomi.co.uk/collection#temptation",
-            },
-          },
-        },
-        {
-          "@type": "ListItem",
-          "position": 3,
-          "item": {
-            "@type": "Product",
-            "@id": "https://www.ekkomi.co.uk/collection#desire",
-            "name": "Desire Suede Jacket",
-            "description":
-              "Deep Red luxury suede jacket with shifting embroidery and bespoke Nocturne silk lining.",
-            "image":
-              "https://www.ekkomi.co.uk/collection-assets/collection/nocturne/desire/desire.jpg",
-            "color": "Deep Red",
-            "material": "Luxury Suede",
-            "brand": {
-              "@type": "Brand",
-              "name": "Ekkomi",
-            },
-            "offers": {
-              "@type": "Offer",
-              "price": "855.00",
-              "priceCurrency": "GBP",
-              "availability": "https://schema.org/PreOrder",
-              "url": "https://www.ekkomi.co.uk/collection#desire",
-            },
-          },
-        },
-        {
-          "@type": "ListItem",
-          "position": 4,
-          "item": {
-            "@type": "Product",
-            "@id": "https://www.ekkomi.co.uk/collection#audacity",
-            "name": "Audacity Suede Jacket",
-            "description":
-              "Mustard yellow luxury suede jacket with tonal needlework, brushed nap, and bespoke Nocturne silk lining.",
-            "image":
-              "https://www.ekkomi.co.uk/collection-assets/collection/nocturne/audacity/audacity.jpg",
-            "color": "Mustard yellow",
-            "material": "Luxury Suede",
-            "brand": {
-              "@type": "Brand",
-              "name": "Ekkomi",
-            },
-            "offers": {
-              "@type": "Offer",
-              "price": "970.00",
-              "priceCurrency": "GBP",
-              "availability": "https://schema.org/PreOrder",
-              "url": "https://www.ekkomi.co.uk/collection#audacity",
-            },
-          },
-        },
-        {
-          "@type": "ListItem",
-          "position": 5,
-          "item": {
-            "@type": "Product",
-            "@id": "https://www.ekkomi.co.uk/collection#insolence",
-            "name": "Insolence Suede Jacket",
-            "description":
-              "Jet black luxury suede jacket with tonal needlework across the upper chest and bespoke Nocturne silk lining.",
-            "image":
-              "https://www.ekkomi.co.uk/collection-assets/collection/nocturne/insolence/insolence.jpg",
-            "color": "Jet black",
-            "material": "Luxury Suede",
-            "brand": {
-              "@type": "Brand",
-              "name": "Ekkomi",
-            },
-            "offers": {
-              "@type": "Offer",
-              "price": "1050.00",
-              "priceCurrency": "GBP",
-              "availability": "https://schema.org/PreOrder",
-              "url": "https://www.ekkomi.co.uk/collection#insolence",
-            },
-          },
-        },
-      ],
-    },
-  ],
-};
+export const revalidate = 300;
 
-export default function CollectionPage() {
+function buildCollectionJsonLd(catalog: ShopifyCatalog) {
+  const products = [...catalog.men, ...catalog.women];
+
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "CollectionPage",
+        "@id": "https://www.ekkomi.co.uk/collection#webpage",
+        url: "https://www.ekkomi.co.uk/collection",
+        name: collectionTitle,
+        description: collectionDescription,
+        isPartOf: { "@id": "https://www.ekkomi.co.uk/#website" },
+        publisher: { "@id": "https://www.ekkomi.co.uk/#organization" },
+      },
+      {
+        "@type": "ItemList",
+        name: "Nocturne Collection",
+        numberOfItems: products.length,
+        itemListElement: products.map((product, index) => {
+          const standardVariants = product.variants.filter((item) => {
+            const size = item.selectedOptions.find((option) => option.name.toLowerCase() === "size")?.value;
+            return ["S", "M", "L", "XL"].includes(size ?? "");
+          });
+          const isPurchasable = (item: (typeof product.variants)[number]) =>
+            item.availableForSale && (item.quantityAvailable == null || item.quantityAvailable > 0);
+          const variant =
+            standardVariants.find(isPurchasable) ??
+            standardVariants[0] ??
+            product.variants[0];
+          const material = product.metafields.find(
+            (item) => item?.key === "material",
+          )?.value;
+          const color = product.options.find((option) =>
+            /colou?r/i.test(option.name),
+          )?.values[0];
+
+          return {
+            "@type": "ListItem",
+            position: index + 1,
+            item: {
+              "@type": "Product",
+              "@id": `https://www.ekkomi.co.uk/collection#${product.handle}`,
+              name: product.title,
+              description: product.description,
+              image: product.featuredImage?.url ?? product.images[0]?.url,
+              ...(color ? { color } : {}),
+              ...(material ? { material } : {}),
+              brand: { "@type": "Brand", name: "Ekkomi" },
+              ...(variant
+                ? {
+                    offers: {
+                      "@type": "Offer",
+                      price: variant.price.amount,
+                      priceCurrency: variant.price.currencyCode,
+                      availability: standardVariants.some(isPurchasable)
+                        ? "https://schema.org/InStock"
+                        : "https://schema.org/OutOfStock",
+                      url: `https://www.ekkomi.co.uk/collection#${product.handle}`,
+                    },
+                  }
+                : {}),
+            },
+          };
+        }),
+      },
+    ],
+  };
+}
+
+export default async function CollectionPage() {
+  let catalog: ShopifyCatalog | null = null;
+  let loadError = false;
+
+  try {
+    catalog = await getShopifyCatalog();
+  } catch (error) {
+    loadError = true;
+    console.error(
+      "[Shopify catalog]",
+      error instanceof Error
+        ? error.message
+        : "Unable to load Shopify products.",
+    );
+  }
+
+  const pageMarkup = markup
+    .replace("{{MEN_COUNT}}", String(catalog?.men.length ?? 0).padStart(2, "0"))
+    .replace("{{WOMEN_COUNT}}", String(catalog?.women.length ?? 0).padStart(2, "0"));
+  const structuredData = catalog ? buildCollectionJsonLd(catalog) : null;
+
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(collectionJsonLd).replace(/</g, "\\u003c"),
-        }}
+      {structuredData ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(structuredData).replace(/</g, "\\u003c"),
+          }}
+        />
+      ) : null}
+      <CollectionExperience
+        markup={pageMarkup}
+        catalog={catalog}
+        loadError={loadError}
       />
-      <CollectionExperience markup={markup} />
     </>
   );
 }
