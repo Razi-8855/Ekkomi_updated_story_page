@@ -1075,6 +1075,7 @@ function renderShowcase(jacket) {
     const stageImg = document.getElementById('showcaseStageImg');
     const cards = showcase.querySelectorAll('.gallery-view-card');
     const frame = showcase.querySelector('.gallery-stage__frame');
+    const zoomBtn = showcase.querySelector('#stageZoomTriggerBtn');
     const mobileCounter = showcase.querySelector('.gallery-mobile-counter');
     const mobilePrev = showcase.querySelector('.gallery-mobile-arrow--prev');
     const mobileNext = showcase.querySelector('.gallery-mobile-arrow--next');
