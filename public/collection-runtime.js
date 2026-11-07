@@ -361,6 +361,476 @@ function initSizeGuide() {
 window.openEkkomiSizeGuide = openSizeGuide;
 window.closeEkkomiSizeGuide = closeSizeGuide;
 
+/* -------------------------------------------------------------------
+   PRODUCT IMAGE ZOOM & LIGHTBOX MODAL CONTROLLER
+   ------------------------------------------------------------------- */
+let zoomModalState = {
+  isOpen: false,
+  jacket: null,
+  viewIndex: 0,
+  scale: 1.0,
+  panX: 0,
+  panY: 0,
+  isPanning: false,
+  panStartX: 0,
+  panStartY: 0,
+  panInitialX: 0,
+  panInitialY: 0,
+  prevActiveElement: null
+};
+
+function updateZoomModalView() {
+  const modal = document.getElementById('productZoomModal');
+  if (!modal || !zoomModalState.jacket) return;
+  const jacket = zoomModalState.jacket;
+  const views = jacket.views || [];
+  const view = views[zoomModalState.viewIndex] || views[0];
+  if (!view) return;
+
+  const img = document.getElementById('zoomModalImg');
+  const jacketName = document.getElementById('zoomModalJacketName');
+  const viewLabel = document.getElementById('zoomModalViewLabel');
+  const counter = document.getElementById('zoomModalCounter');
+  const prevBtn = document.getElementById('zoomPrevBtn');
+  const nextBtn = document.getElementById('zoomNextBtn');
+  const thumbWrap = document.getElementById('zoomModalThumbnails');
+
+  if (img) {
+    img.style.opacity = '0.4';
+    const temp = new Image();
+    temp.onload = () => {
+      img.src = view.src;
+      img.alt = view.alt || jacket.impulse;
+      img.style.opacity = '1';
+    };
+    temp.src = view.src;
+  }
+
+  if (jacketName) {
+    jacketName.textContent = `${jacket.impulse} Suede Jacket`;
+  }
+  if (viewLabel) {
+    viewLabel.textContent = view.label || `Perspective ${String(zoomModalState.viewIndex + 1).padStart(2, '0')}`;
+  }
+  if (counter) {
+    counter.textContent = `${String(zoomModalState.viewIndex + 1).padStart(2, '0')} / ${String(views.length).padStart(2, '0')}`;
+  }
+  if (prevBtn) prevBtn.disabled = zoomModalState.viewIndex === 0;
+  if (nextBtn) nextBtn.disabled = zoomModalState.viewIndex === views.length - 1;
+
+  // Update active thumbnail
+  if (thumbWrap) {
+    const thumbs = thumbWrap.querySelectorAll('.zoom-thumbnail');
+    thumbs.forEach((thumb, idx) => {
+      const isActive = idx === zoomModalState.viewIndex;
+      thumb.classList.toggle('is-active', isActive);
+      thumb.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      if (isActive) {
+        thumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }
+    });
+  }
+
+  // Reset zoom scale & pan on view switch
+  resetZoomTransform(true);
+
+  // Synchronise with main page gallery
+  if (typeof window.setCollectionActiveView === 'function') {
+    window.setCollectionActiveView(zoomModalState.viewIndex);
+  }
+}
+
+function resetZoomTransform(animate = true) {
+  zoomModalState.scale = 1.0;
+  zoomModalState.panX = 0;
+  zoomModalState.panY = 0;
+  applyZoomTransform(animate);
+}
+
+function applyZoomTransform(animate = true) {
+  const stage = document.getElementById('zoomModalStage');
+  const indicator = document.getElementById('zoomLevelIndicator');
+  const viewport = document.getElementById('zoomModalViewport');
+  const panHint = document.getElementById('zoomPanHint');
+  if (!stage) return;
+
+  if (animate) {
+    stage.style.transition = 'transform 260ms cubic-bezier(0.16, 1, 0.3, 1)';
+  } else {
+    stage.style.transition = 'none';
+  }
+
+  stage.style.transform = `translate3d(${zoomModalState.panX}px, ${zoomModalState.panY}px, 0) scale(${zoomModalState.scale})`;
+
+  if (indicator) {
+    indicator.textContent = `${Math.round(zoomModalState.scale * 100)}%`;
+  }
+
+  if (viewport) {
+    viewport.classList.toggle('is-zoomed', zoomModalState.scale > 1.05);
+    viewport.classList.toggle('is-dragging', zoomModalState.isPanning);
+  }
+
+  if (panHint) {
+    panHint.classList.toggle('is-hidden', zoomModalState.scale > 1.05);
+  }
+}
+
+function clampZoomPan() {
+  if (zoomModalState.scale <= 1.0) {
+    zoomModalState.panX = 0;
+    zoomModalState.panY = 0;
+    return;
+  }
+  const viewport = document.getElementById('zoomModalViewport');
+  const img = document.getElementById('zoomModalImg');
+  if (!viewport || !img) return;
+
+  const vpRect = viewport.getBoundingClientRect();
+  const scaledW = (img.offsetWidth || vpRect.width) * zoomModalState.scale;
+  const scaledH = (img.offsetHeight || vpRect.height) * zoomModalState.scale;
+
+  const maxPanX = Math.max(0, (scaledW - vpRect.width) / 2);
+  const maxPanY = Math.max(0, (scaledH - vpRect.height) / 2);
+
+  zoomModalState.panX = Math.max(-maxPanX, Math.min(maxPanX, zoomModalState.panX));
+  zoomModalState.panY = Math.max(-maxPanY, Math.min(maxPanY, zoomModalState.panY));
+}
+
+function openProductZoomModal(jacket, viewIndex = 0, autoZoom = false, normX = 0.5, normY = 0.5) {
+  const modal = document.getElementById('productZoomModal');
+  if (!modal || !jacket) return;
+
+  zoomModalState.isOpen = true;
+  zoomModalState.jacket = jacket;
+  zoomModalState.viewIndex = Math.max(0, Math.min(viewIndex, (jacket.views || []).length - 1));
+  zoomModalState.prevActiveElement = document.activeElement;
+
+  try {
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    if (scrollbarWidth > 0) {
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+    }
+  } catch (e) {}
+
+  document.body.classList.add('zoom-modal-open');
+  modal.classList.add('is-active');
+  modal.setAttribute('aria-hidden', 'false');
+
+  // Build thumbnails
+  const thumbWrap = document.getElementById('zoomModalThumbnails');
+  if (thumbWrap) {
+    thumbWrap.innerHTML = (jacket.views || []).map((v, i) => `
+      <button type="button" class="zoom-thumbnail${i === zoomModalState.viewIndex ? ' is-active' : ''}" data-index="${i}" role="tab" aria-label="${v.label}">
+        <img src="${v.src}" alt="${v.alt || v.label}" loading="lazy" />
+      </button>
+    `).join('');
+
+    thumbWrap.querySelectorAll('.zoom-thumbnail').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        zoomModalState.viewIndex = Number(btn.dataset.index);
+        updateZoomModalView();
+      });
+    });
+  }
+
+  updateZoomModalView();
+
+  if (autoZoom) {
+    setTimeout(() => {
+      const viewport = document.getElementById('zoomModalViewport');
+      if (viewport) {
+        const vpRect = viewport.getBoundingClientRect();
+        const offsetX = (normX - 0.5) * vpRect.width;
+        const offsetY = (normY - 0.5) * vpRect.height;
+        zoomModalState.scale = 2.2;
+        zoomModalState.panX = -offsetX * (zoomModalState.scale - 1);
+        zoomModalState.panY = -offsetY * (zoomModalState.scale - 1);
+        clampZoomPan();
+        applyZoomTransform(true);
+      }
+    }, 60);
+  } else {
+    resetZoomTransform(false);
+  }
+
+  const closeBtn = document.getElementById('zoomModalCloseBtn');
+  if (closeBtn) {
+    setTimeout(() => closeBtn.focus(), 60);
+  }
+}
+
+function closeProductZoomModal() {
+  const modal = document.getElementById('productZoomModal');
+  if (!modal) return;
+
+  zoomModalState.isOpen = false;
+  modal.classList.remove('is-active');
+  modal.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('zoom-modal-open');
+  document.body.style.paddingRight = '';
+
+  resetZoomTransform(false);
+
+  if (zoomModalState.prevActiveElement && typeof zoomModalState.prevActiveElement.focus === 'function') {
+    try { zoomModalState.prevActiveElement.focus(); } catch (e) {}
+  }
+}
+
+function initProductZoomModal() {
+  const modal = document.getElementById('productZoomModal');
+  if (!modal || modal._zoomBound) return;
+  modal._zoomBound = true;
+
+  const closeBtn = document.getElementById('zoomModalCloseBtn');
+  const zoomInBtn = document.getElementById('zoomInBtn');
+  const zoomOutBtn = document.getElementById('zoomOutBtn');
+  const zoomResetBtn = document.getElementById('zoomResetBtn');
+  const prevBtn = document.getElementById('zoomPrevBtn');
+  const nextBtn = document.getElementById('zoomNextBtn');
+  const viewport = document.getElementById('zoomModalViewport');
+
+  if (closeBtn) closeBtn.addEventListener('click', (e) => { e.preventDefault(); closeProductZoomModal(); });
+
+  if (zoomInBtn) {
+    zoomInBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      zoomModalState.scale = Math.min(4.0, Number((zoomModalState.scale + 0.5).toFixed(1)));
+      clampZoomPan();
+      applyZoomTransform(true);
+    });
+  }
+
+  if (zoomOutBtn) {
+    zoomOutBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      zoomModalState.scale = Math.max(1.0, Number((zoomModalState.scale - 0.5).toFixed(1)));
+      clampZoomPan();
+      applyZoomTransform(true);
+    });
+  }
+
+  if (zoomResetBtn) {
+    zoomResetBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      resetZoomTransform(true);
+    });
+  }
+
+  if (prevBtn) {
+    prevBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (zoomModalState.viewIndex > 0) {
+        zoomModalState.viewIndex--;
+        updateZoomModalView();
+      }
+    });
+  }
+
+  if (nextBtn) {
+    nextBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const max = (zoomModalState.jacket?.views || []).length - 1;
+      if (zoomModalState.viewIndex < max) {
+        zoomModalState.viewIndex++;
+        updateZoomModalView();
+      }
+    });
+  }
+
+  // Wheel zoom inside viewport
+  if (viewport) {
+    viewport.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const delta = e.deltaY < 0 ? 0.35 : -0.35;
+      zoomModalState.scale = Math.max(1.0, Math.min(4.0, Number((zoomModalState.scale + delta).toFixed(2))));
+      clampZoomPan();
+      applyZoomTransform(true);
+    }, { passive: false });
+
+    // One-tap zoom toggle & Double-click toggle
+    let lastClickTime = 0;
+    viewport.addEventListener('click', (e) => {
+      if (e.target.closest('button')) return;
+      const now = Date.now();
+      if (now - lastClickTime < 320) {
+        // Double click: toggle zoom
+        if (zoomModalState.scale > 1.05) {
+          resetZoomTransform(true);
+        } else {
+          zoomModalState.scale = 2.5;
+          clampZoomPan();
+          applyZoomTransform(true);
+        }
+      } else if (zoomModalState.scale <= 1.05) {
+        // One-tap zoom: smoothly magnify directly at tap/click point
+        const vpRect = viewport.getBoundingClientRect();
+        const clickX = e.clientX - vpRect.left - vpRect.width / 2;
+        const clickY = e.clientY - vpRect.top - vpRect.height / 2;
+        zoomModalState.scale = 2.2;
+        zoomModalState.panX = -clickX * (zoomModalState.scale - 1);
+        zoomModalState.panY = -clickY * (zoomModalState.scale - 1);
+        clampZoomPan();
+        applyZoomTransform(true);
+      } else {
+        // One-tap reset: when already zoomed in, tapping resets to normal
+        resetZoomTransform(true);
+      }
+      lastClickTime = now;
+    });
+
+    // Mouse drag to pan when zoomed
+    viewport.addEventListener('mousedown', (e) => {
+      if (zoomModalState.scale <= 1.05 || e.target.closest('button')) return;
+      zoomModalState.isPanning = true;
+      zoomModalState.panStartX = e.clientX;
+      zoomModalState.panStartY = e.clientY;
+      zoomModalState.panInitialX = zoomModalState.panX;
+      zoomModalState.panInitialY = zoomModalState.panY;
+      viewport.classList.add('is-dragging');
+      e.preventDefault();
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!zoomModalState.isOpen || !zoomModalState.isPanning) return;
+      const dx = e.clientX - zoomModalState.panStartX;
+      const dy = e.clientY - zoomModalState.panStartY;
+      zoomModalState.panX = zoomModalState.panInitialX + dx;
+      zoomModalState.panY = zoomModalState.panInitialY + dy;
+      clampZoomPan();
+      applyZoomTransform(false);
+    });
+
+    window.addEventListener('mouseup', () => {
+      if (!zoomModalState.isOpen || !zoomModalState.isPanning) return;
+      zoomModalState.isPanning = false;
+      if (viewport) viewport.classList.remove('is-dragging');
+      applyZoomTransform(true);
+    });
+
+    // Touch events: pinch-to-zoom, pan, swipe
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let initialPanX = 0;
+    let initialPanY = 0;
+    let initialPinchDist = 0;
+    let initialPinchScale = 1.0;
+    let isPinching = false;
+    let isTouchPanning = false;
+
+    viewport.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 2) {
+        isPinching = true;
+        isTouchPanning = false;
+        initialPinchDist = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+        initialPinchScale = zoomModalState.scale;
+      } else if (e.touches.length === 1) {
+        isPinching = false;
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+        initialPanX = zoomModalState.panX;
+        initialPanY = zoomModalState.panY;
+        if (zoomModalState.scale > 1.05) {
+          isTouchPanning = true;
+        }
+      }
+    }, { passive: true });
+
+    viewport.addEventListener('touchmove', (e) => {
+      if (isPinching && e.touches.length === 2) {
+        e.preventDefault();
+        const currentDist = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+        if (initialPinchDist > 0) {
+          const factor = currentDist / initialPinchDist;
+          zoomModalState.scale = Math.max(1.0, Math.min(4.0, initialPinchScale * factor));
+          clampZoomPan();
+          applyZoomTransform(false);
+        }
+      } else if (isTouchPanning && e.touches.length === 1 && zoomModalState.scale > 1.05) {
+        e.preventDefault();
+        const dx = e.touches[0].clientX - touchStartX;
+        const dy = e.touches[0].clientY - touchStartY;
+        zoomModalState.panX = initialPanX + dx;
+        zoomModalState.panY = initialPanY + dy;
+        clampZoomPan();
+        applyZoomTransform(false);
+      }
+    }, { passive: false });
+
+    viewport.addEventListener('touchend', (e) => {
+      if (isPinching && e.touches.length < 2) {
+        isPinching = false;
+        applyZoomTransform(true);
+      }
+      if (isTouchPanning && e.touches.length === 0) {
+        isTouchPanning = false;
+        applyZoomTransform(true);
+      }
+      if (e.touches.length === 0 && !isPinching && zoomModalState.scale <= 1.05) {
+        const dx = (e.changedTouches[0]?.clientX || 0) - touchStartX;
+        const dy = (e.changedTouches[0]?.clientY || 0) - touchStartY;
+        if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.3) {
+          const max = (zoomModalState.jacket?.views || []).length - 1;
+          if (dx < 0 && zoomModalState.viewIndex < max) {
+            zoomModalState.viewIndex++;
+            updateZoomModalView();
+          } else if (dx > 0 && zoomModalState.viewIndex > 0) {
+            zoomModalState.viewIndex--;
+            updateZoomModalView();
+          }
+        }
+      }
+    }, { passive: true });
+  }
+
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    if (!zoomModalState.isOpen) return;
+    if (e.key === 'Escape') {
+      closeProductZoomModal();
+    } else if (e.key === 'ArrowLeft') {
+      if (zoomModalState.viewIndex > 0) {
+        zoomModalState.viewIndex--;
+        updateZoomModalView();
+      }
+    } else if (e.key === 'ArrowRight') {
+      const max = (zoomModalState.jacket?.views || []).length - 1;
+      if (zoomModalState.viewIndex < max) {
+        zoomModalState.viewIndex++;
+        updateZoomModalView();
+      }
+    } else if (e.key === '+' || e.key === '=') {
+      zoomModalState.scale = Math.min(4.0, Number((zoomModalState.scale + 0.5).toFixed(1)));
+      clampZoomPan();
+      applyZoomTransform(true);
+    } else if (e.key === '-' || e.key === '_') {
+      zoomModalState.scale = Math.max(1.0, Number((zoomModalState.scale - 0.5).toFixed(1)));
+      clampZoomPan();
+      applyZoomTransform(true);
+    } else if (e.key === '0') {
+      resetZoomTransform(true);
+    }
+  });
+
+  // Backdrop click closes when not zoomed
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      closeProductZoomModal();
+    }
+  });
+}
+
+window.openEkkomiZoomModal = openProductZoomModal;
+window.closeEkkomiZoomModal = closeProductZoomModal;
+
+
 function renderShowcase(jacket) {
   const initialVariant = jacket.variants.find((variant) => variant.size === 'M' && isVariantAvailable(variant))
     || jacket.variants.find((variant) => STANDARD_SIZES.includes(variant.size) && isVariantAvailable(variant))
@@ -437,7 +907,7 @@ function renderShowcase(jacket) {
           <!-- Left Column: Sticky Hero Stage Gallery -->
           <div class="showcase-stage-col">
             <div class="gallery-stage" id="showcaseStage">
-              <div class="gallery-stage__frame">
+              <div class="gallery-stage__frame" role="button" tabindex="0" aria-label="Open full-screen image viewer: ${firstView.label}">
                 ${hasImage ? `<img class="gallery-stage__img"
                      id="showcaseStageImg"
                      src="${escapeHTML(firstView.src)}"
@@ -446,7 +916,24 @@ function renderShowcase(jacket) {
                      decoding="async"
                      fetchpriority="high"
                      width="1200"
-                     height="1800" />` : '<div class="gallery-image-unavailable" role="img" aria-label="Product image unavailable">Product image unavailable</div>'}
+                     height="1800" />
+                <button type="button" class="gallery-stage__zoom-btn" id="stageZoomTriggerBtn" aria-label="Click to zoom photograph">
+                  <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="11" cy="11" r="7"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                  <span class="zoom-btn-tooltip" role="tooltip">Click to zoom</span>
+                </button>
+                <button type="button" class="gallery-nav-arrow gallery-nav-arrow--prev" id="stagePrevArrow" aria-label="Previous perspective" disabled>
+                  <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                  </svg>
+                </button>
+                <button type="button" class="gallery-nav-arrow gallery-nav-arrow--next" id="stageNextArrow" aria-label="Next perspective" ${jacket.views.length <= 1 ? 'disabled' : ''}>
+                  <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                  </svg>
+                </button>` : '<div class="gallery-image-unavailable" role="img" aria-label="Product image unavailable">Product image unavailable</div>'}
                 <div class="gallery-mobile-controls" aria-label="Product image navigation">
                   <button type="button" class="gallery-mobile-arrow gallery-mobile-arrow--prev" aria-label="Previous product image" disabled>
                     <span aria-hidden="true">&larr;</span>
@@ -588,6 +1075,7 @@ function renderShowcase(jacket) {
     const stageImg = document.getElementById('showcaseStageImg');
     const cards = showcase.querySelectorAll('.gallery-view-card');
     const frame = showcase.querySelector('.gallery-stage__frame');
+    const mobileCounter = showcase.querySelector('.gallery-mobile-counter');
     const mobilePrev = showcase.querySelector('.gallery-mobile-arrow--prev');
     const mobileNext = showcase.querySelector('.gallery-mobile-arrow--next');
     const originalPriceEl = showcase.querySelector('.product-original-price');
@@ -717,28 +1205,81 @@ function renderShowcase(jacket) {
           stage.classList.remove('is-switching');
         }, 140);
       }
+      if (mobileCounter) mobileCounter.textContent = `${String(activeViewIndex + 1).padStart(2, '0')} / ${String(cards.length).padStart(2, '0')}`;
       if (mobilePrev) mobilePrev.disabled = activeViewIndex === 0;
       if (mobileNext) mobileNext.disabled = activeViewIndex === cards.length - 1;
     };
 
+    if (stagePrevArrow) {
+      stagePrevArrow.addEventListener('click', (e) => {
+        e.stopPropagation();
+        setActiveView(activeViewIndex - 1);
+      });
+    }
+    if (stageNextArrow) {
+      stageNextArrow.addEventListener('click', (e) => {
+        e.stopPropagation();
+        setActiveView(activeViewIndex + 1);
+      });
+    }
+    if (zoomBtn) {
+      zoomBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openProductZoomModal(jacket, activeViewIndex);
+      });
+    }
     if (mobilePrev) mobilePrev.addEventListener('click', () => setActiveView(activeViewIndex - 1));
     if (mobileNext) mobileNext.addEventListener('click', () => setActiveView(activeViewIndex + 1));
 
-    // Pointer events cover touch swipes without adding global listeners; the frame is replaced on jacket changes.
+    // Expose setActiveView globally for Zoom Lightbox synchronisation
+    window.setCollectionActiveView = setActiveView;
+
+    // One-Tap Zoom / Manual Zoom Interaction (No intrusive automatic hover magnifying glass)
     if (frame) {
+      // One-tap zoom on photograph
+      frame.addEventListener('click', (e) => {
+        if (e.target.closest('.gallery-nav-arrow') || e.target.closest('.gallery-mobile-arrow')) return;
+        const isTriggerBtn = !!e.target.closest('.gallery-stage__zoom-btn');
+        const rect = frame.getBoundingClientRect();
+        const normX = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+        const normY = Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height));
+        // If clicking photo directly, open and zoom in at tapped spot (one-tap zoom). If clicking button, open fit view.
+        openProductZoomModal(jacket, activeViewIndex, !isTriggerBtn, normX, normY);
+      });
+
+      // Touch events for mobile: swipe to navigate vs clean tap to open lightbox
       let pointerStart = null;
+      let pointerMoved = false;
       frame.addEventListener('pointerdown', (event) => {
         if (event.target.closest('.gallery-mobile-arrow')) return;
-        pointerStart = { x: event.clientX, y: event.clientY };
+        pointerStart = { x: event.clientX, y: event.clientY, time: Date.now() };
+        pointerMoved = false;
       }, { passive: true });
+
+      frame.addEventListener('pointermove', (event) => {
+        if (!pointerStart) return;
+        if (Math.abs(event.clientX - pointerStart.x) > 10 || Math.abs(event.clientY - pointerStart.y) > 10) {
+          pointerMoved = true;
+        }
+      }, { passive: true });
+
       frame.addEventListener('pointerup', (event) => {
         if (!pointerStart) return;
         const deltaX = event.clientX - pointerStart.x;
         const deltaY = event.clientY - pointerStart.y;
+        const duration = Date.now() - pointerStart.time;
         pointerStart = null;
-        if (Math.abs(deltaX) < 42 || Math.abs(deltaX) < Math.abs(deltaY) * 1.2) return;
-        setActiveView(activeViewIndex + (deltaX < 0 ? 1 : -1));
+
+        if (Math.abs(deltaX) >= 42 && Math.abs(deltaX) >= Math.abs(deltaY) * 1.2) {
+          setActiveView(activeViewIndex + (deltaX < 0 ? 1 : -1));
+          return;
+        }
+
+        if (event.pointerType === 'touch' && !pointerMoved && duration < 500 && !event.target.closest('.gallery-mobile-arrow')) {
+          openProductZoomModal(jacket, activeViewIndex);
+        }
       }, { passive: true });
+
       frame.addEventListener('pointercancel', () => { pointerStart = null; }, { passive: true });
     }
 
@@ -1488,6 +2029,7 @@ function init() {
   }
 
   initSizeGuide();
+  initProductZoomModal();
 
   // Pre-render the default active jacket (Men's Desire) in showcase
   const defaultJacket = mensJackets.find((jacket) => jacket.key === 'desire') || mensJackets[0];
