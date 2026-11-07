@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type MouseEvent } from "react";
+import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -315,12 +316,14 @@ export default function StoryExperience() {
             <a className="story-footer__link" href="https://shop.ekkomi.co.uk/policies/privacy-policy">Privacy Policy</a>
             <a className="story-footer__link" href="https://shop.ekkomi.co.uk/policies/terms-of-service">Terms of Service</a>
             <a className="story-footer__link" href="https://shop.ekkomi.co.uk/pages/contact">Contact Us</a>
+            <Link className="story-footer__link" href="/faq">FAQ</Link>
           </nav>
 
           <nav className="story-footer__group" aria-label="About us">
             <h3 className="story-footer__heading">About Us</h3>
             <a className="story-footer__link" href="https://www.ekkomi.co.uk/">Our Story</a>
             <a className="story-footer__link" href="https://www.ekkomi.co.uk/collection">Our Crafts</a>
+            <a className="story-footer__link" href="https://www.ekkomi.co.uk/journal">Our Journal</a>
           </nav>
 
           <nav className="story-footer__group" aria-label="Connect">

@@ -1,0 +1,58 @@
+.aux-collection-footer {
+  padding: clamp(3.25rem, 6vw, 5rem) clamp(1.5rem, 6vw, 5.5rem) 1.75rem;
+  color: #faf6f1;
+  background: #14100e;
+  font-family: Arial, Helvetica, sans-serif;
+}
+.aux-collection-footer a { color: inherit; text-decoration: none; }
+.aux-collection-footer__inner {
+  width: min(100%, 1320px);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(2rem, 6vw, 6rem);
+  align-items: start;
+}
+.aux-collection-footer__column { display: flex; flex-direction: column; align-items: flex-start; gap: .85rem; }
+.aux-collection-footer__column h2 {
+  margin: 0 0 7px;
+  color: rgba(238, 232, 232, .58);
+  font: 500 9px/1.5 Arial, Helvetica, sans-serif;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+}
+.aux-collection-footer__column > a {
+  color: #eee8e8;
+  font: 400 12px/1.5 Arial, Helvetica, sans-serif;
+  letter-spacing: .04em;
+  transition: color 180ms ease;
+}
+.aux-collection-footer__column > a:hover { color: #c5a77a; }
+.aux-collection-footer__social { display: inline-flex; align-items: center; gap: .65rem; }
+.aux-collection-footer__social svg { width: 15px; height: 15px; flex: 0 0 15px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.aux-collection-footer__social svg .aux-collection-footer__icon-dot { fill: currentColor; stroke: none; }
+.aux-collection-footer__bottom {
+  width: min(100%, 1320px);
+  margin: clamp(2.5rem, 5vw, 4rem) auto 0;
+  padding: 1.25rem 0 5rem;
+  border-top: 1px solid rgba(250, 246, 241, .1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.aux-collection-footer__bottom p, .aux-collection-footer__settings {
+  margin: 0;
+  color: rgba(238, 232, 232, .68);
+  font: 400 11px/1.5 Arial, Helvetica, sans-serif;
+  letter-spacing: .04em;
+}
+.aux-collection-footer__settings { padding: 0; border: 0; background: transparent; text-decoration: underline; text-underline-offset: 4px; cursor: pointer; transition: color 180ms ease; }
+.aux-collection-footer__settings:hover { color: #fff; }
+@media (max-width: 700px) {
+  .aux-collection-footer { padding: 3rem 1.4rem 1.4rem; }
+  .aux-collection-footer__inner { grid-template-columns: 1fr; gap: 2.25rem; }
+  .aux-collection-footer__column { gap: .75rem; }
+  .aux-collection-footer__bottom { align-items: flex-start; flex-direction: column; margin-top: 2.5rem; padding-bottom: 5.5rem; }
+}
+@media (prefers-reduced-motion: reduce) { .aux-collection-footer__column > a, .aux-collection-footer__settings { transition: none; } }

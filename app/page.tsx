@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import OrganizationSchema from "@/components/OrganizationSchema";
 import StoryExperience from "@/components/StoryExperience";
 
 export const metadata: Metadata = {
@@ -39,5 +40,10 @@ export const metadata: Metadata = {
 };
 
 export default function HomePage() {
-    return <StoryExperience />;
+    return (
+        <>
+            <OrganizationSchema />
+            <StoryExperience />
+        </>
+    );
 }

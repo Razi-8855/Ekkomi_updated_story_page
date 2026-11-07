@@ -4,7 +4,7 @@ const collectionMarkup = `
   <header class="site-header">
     <a class="header-contact-link" href="#contact">Contact</a>
     <a class="wordmark" href="#top" aria-label="Ekkomi home">
-      <img class="wordmark-logo" src="/collection-assets/Ekkomi_logo_1.png" alt="Ekkomi" width="200" height="120" decoding="async" fetchpriority="high" />
+      <img class="wordmark-logo" src="/logo/Ekkomi_logo_final.svg" alt="Ekkomi" width="600" height="450" decoding="async" fetchpriority="high" />
       <span class="wordmark-text">EKKOMI</span>
     </a>
     <div class="header-actions">
@@ -405,11 +405,13 @@ const collectionFooter = `<footer class="collection-footer" id="contact" role="c
       <a class="collection-footer__link" href="https://shop.ekkomi.co.uk/pages/contact">Contact Us</a>
       <a class="collection-footer__link" href="https://shop.ekkomi.co.uk/policies/shipping-policy">Shipping</a>
       <a class="collection-footer__link" href="https://shop.ekkomi.co.uk/policies/refund-policy">Returns</a>
+      <a class="collection-footer__link" href="/faq">FAQ</a>
     </nav>
     <nav class="collection-footer__column" aria-label="About us">
       <h3 class="collection-footer__heading">About Us</h3>
       <a class="collection-footer__link" href="https://www.ekkomi.co.uk/">Our Story</a>
       <a class="collection-footer__link" href="https://www.ekkomi.co.uk/collection">Our Crafts</a>
+      <a class="collection-footer__link" href="https://www.ekkomi.co.uk/journal">Our Journal</a>
     </nav>
     <nav class="collection-footer__column" aria-label="Connect">
       <h3 class="collection-footer__heading">Connect</h3>

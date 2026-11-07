@@ -3619,7 +3619,16 @@ body.waitlist-open {
     grid-column: 2;
     justify-self: center;
   }
-  .header-contact-link { grid-column: 1; font-size: 9px; letter-spacing: .1em; }
+  .header-contact-link {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    grid-column: auto;
+    justify-self: start;
+    transform: translateY(-50%);
+    font-size: 9px;
+    letter-spacing: .1em;
+  }
   .wordmark-logo {
     height: 38px;
     width: auto;
@@ -4843,6 +4852,30 @@ body.size-guide-open {
   text-align: right;
   white-space: nowrap;
 }
+
+/* Editorial return control, presented as a quiet pill button. */
+.showcase-bottom-nav .nav-back-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0 20px;
+  border: 1px solid rgba(64, 48, 44, .28);
+  border-radius: 999px;
+  background: rgba(250, 246, 241, .7);
+  color: var(--color-text-secondary);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-decoration: none;
+  transition: color var(--motion-fast), border-color var(--motion-fast), background var(--motion-fast);
+}
+.showcase-bottom-nav .nav-back-link:hover {
+  color: #faf6f1;
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+}
+.showcase-bottom-nav .nav-back-link:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; }
 
 /* Responsive Breakpoints */
 @media (max-width: 640px) {

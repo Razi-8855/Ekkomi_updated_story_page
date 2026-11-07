@@ -428,9 +428,6 @@ function renderShowcase(jacket) {
                height="600" />
           <span class="view-card__overlay" aria-hidden="true"></span>
         </div>
-        <div class="view-card__info">
-          <span class="view-card__label">${escapeHTML(v.label)}</span>
-        </div>
       </button>
     `).join('');
 
@@ -454,7 +451,6 @@ function renderShowcase(jacket) {
                   <button type="button" class="gallery-mobile-arrow gallery-mobile-arrow--prev" aria-label="Previous product image" disabled>
                     <span aria-hidden="true">&larr;</span>
                   </button>
-                  <span class="gallery-mobile-counter" aria-live="polite">${String(1).padStart(2, '0')} / ${String(jacket.views.length).padStart(2, '0')}</span>
                   <button type="button" class="gallery-mobile-arrow gallery-mobile-arrow--next" aria-label="Next product image" ${jacket.views.length <= 1 ? 'disabled' : ''}>
                     <span aria-hidden="true">&rarr;</span>
                   </button>
@@ -575,7 +571,7 @@ function renderShowcase(jacket) {
           </button>
 
           <a class="nav-back-link" id="backToCarouselLink" href="#${carouselId}" aria-label="Return to ${safeDepartmentTitle} carousel">
-            <span class="arrow-up" aria-hidden="true">&uarr;</span> Back to Carousel
+            Back to Carousel
           </a>
 
           <button type="button" class="showcase-nav-btn next-jacket-btn" id="nextJacketBtn" aria-label="Next jacket: ${escapeHTML(nextJacket.number)} ${escapeHTML(nextJacket.impulse)}">
@@ -592,7 +588,6 @@ function renderShowcase(jacket) {
     const stageImg = document.getElementById('showcaseStageImg');
     const cards = showcase.querySelectorAll('.gallery-view-card');
     const frame = showcase.querySelector('.gallery-stage__frame');
-    const mobileCounter = showcase.querySelector('.gallery-mobile-counter');
     const mobilePrev = showcase.querySelector('.gallery-mobile-arrow--prev');
     const mobileNext = showcase.querySelector('.gallery-mobile-arrow--next');
     const originalPriceEl = showcase.querySelector('.product-original-price');
@@ -722,7 +717,6 @@ function renderShowcase(jacket) {
           stage.classList.remove('is-switching');
         }, 140);
       }
-      if (mobileCounter) mobileCounter.textContent = `${String(activeViewIndex + 1).padStart(2, '0')} / ${String(cards.length).padStart(2, '0')}`;
       if (mobilePrev) mobilePrev.disabled = activeViewIndex === 0;
       if (mobileNext) mobileNext.disabled = activeViewIndex === cards.length - 1;
     };
@@ -1236,7 +1230,9 @@ function createAccordionGallery({
 
 const wallTiles = allCollectionJackets.flatMap((jacket) => jacket.views.map((view) => ({
   image: view.src,
-  title: `${jacket.impulse} · ${view.label}`,
+  // Keep the drift wall's accessible label concise; avoid repeating Shopify's
+  // descriptive product suffixes and perspective numbering in the visual fallback.
+  title: jacket.key.toUpperCase(),
   jacket: jacket.id
 })));
 function initDriftWall() {

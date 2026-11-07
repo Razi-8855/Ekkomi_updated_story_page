@@ -71,18 +71,6 @@ export default function RootLayout({
     "@context": "https://schema.org",
     "@graph": [
       {
-        "@type": "Organization",
-        "@id": "https://www.ekkomi.co.uk/#organization",
-        name: "Ekkomi",
-        url: "https://www.ekkomi.co.uk/",
-        description:
-          "Ekkomi is a contemporary British luxury fashion house specialising in distinctive leather and suede jackets.",
-        logo: {
-          "@type": "ImageObject",
-          url: "https://www.ekkomi.co.uk/icon.png",
-        },
-      },
-      {
         "@type": "WebSite",
         "@id": "https://www.ekkomi.co.uk/#website",
         url: "https://www.ekkomi.co.uk/",
