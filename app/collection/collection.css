@@ -5388,6 +5388,11 @@ body.zoom-modal-open {
 
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
+  /* Use the single mobile carousel arrow set; desktop stage arrows otherwise overlap it. */
+  .showcase-stage-col .gallery-nav-arrow {
+    display: none;
+  }
+
   .gallery-stage__zoom-btn {
     top: 10px;
     right: 10px;

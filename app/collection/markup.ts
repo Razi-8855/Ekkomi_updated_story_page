@@ -399,29 +399,10 @@ const collectionMarkup = `
       </svg>
     </button>
 
-    <!-- Top Bar: Image details & zoom controls -->
+    <!-- Image details -->
     <header class="zoom-modal__top-bar">
       <div class="zoom-modal__meta">
         <span class="zoom-modal__jacket-name" id="zoomModalJacketName">Ekkomi Nocturne</span>
-        <span class="zoom-modal__meta-sep" aria-hidden="true">&middot;</span>
-        <span class="zoom-modal__view-label" id="zoomModalViewLabel">Perspective</span>
-      </div>
-      <div class="zoom-modal__controls" role="toolbar" aria-label="Zoom controls">
-        <button type="button" class="zoom-control-btn" id="zoomOutBtn" aria-label="Zoom out" title="Zoom out">
-          <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-          </svg>
-        </button>
-        <span class="zoom-level-indicator" id="zoomLevelIndicator" aria-live="polite">100%</span>
-        <button type="button" class="zoom-control-btn" id="zoomInBtn" aria-label="Zoom in" title="Zoom in">
-          <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <line x1="12" y1="5" x2="12" y2="19"></line>
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-          </svg>
-        </button>
-        <button type="button" class="zoom-control-btn zoom-control-btn--text" id="zoomResetBtn" aria-label="Reset zoom" title="Reset zoom">
-          Reset
-        </button>
       </div>
     </header>
 
@@ -443,10 +424,6 @@ const collectionMarkup = `
         </svg>
       </button>
 
-      <!-- Desktop interactive pan hint -->
-      <div class="zoom-pan-hint" id="zoomPanHint" aria-hidden="true">
-        <span>Click to zoom &middot; Drag to pan</span>
-      </div>
     </div>
 
     <!-- Bottom Thumbnail Strip & Counter -->

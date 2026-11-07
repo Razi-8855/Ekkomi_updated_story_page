@@ -407,7 +407,7 @@ function updateZoomModalView() {
   }
 
   if (jacketName) {
-    jacketName.textContent = `${jacket.impulse} Suede Jacket`;
+    jacketName.textContent = `${jacket.impulse} - ${jacket.gender === 'men' ? 'MEN' : 'WOMEN'}`;
   }
   if (viewLabel) {
     viewLabel.textContent = view.label || `Perspective ${String(zoomModalState.viewIndex + 1).padStart(2, '0')}`;
