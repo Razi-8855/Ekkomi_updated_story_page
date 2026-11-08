@@ -58,11 +58,14 @@ const SHOPIFY_PRODUCT_TAGLINES = {
 };
 const STANDARD_SIZES = ['S', 'M', 'L', 'XL'];
 const MAX_ORDER_QUANTITY = 10;
-const isVariantAvailable = (variant) => Boolean(
-  variant?.availableForSale &&
-  !variant.currentlyNotInStock &&
-  (variant.quantityAvailable == null || variant.quantityAvailable > 0)
-);
+const getVariantAvailability = (variant) => {
+  if (!variant) return null;
+  if (variant.availableForSale === false || variant.currentlyNotInStock === true || variant.quantityAvailable === 0) return false;
+  if (variant.availableForSale === true && (variant.quantityAvailable == null || variant.quantityAvailable > 0)) return true;
+  return null;
+};
+const isVariantAvailable = (variant) => getVariantAvailability(variant) === true;
+const isVariantSoldOut = (variant) => getVariantAvailability(variant) === false;
 const getVariantQuantityLimit = (variant) => {
   if (!isVariantAvailable(variant)) return 0;
   // If Shopify does not grant quantityAvailable access, fail conservatively to one.
@@ -73,6 +76,10 @@ const getVariantQuantityLimit = (variant) => {
 const productHasAvailableStandardSize = (jacket) => STANDARD_SIZES.some((size) =>
   isVariantAvailable(jacket?.variants?.find((variant) => variant.size === size))
 );
+const productIsConfirmedSoldOut = (jacket) => {
+  const standardVariants = STANDARD_SIZES.map((size) => jacket?.variants?.find((variant) => variant.size === size));
+  return standardVariants.every(Boolean) && standardVariants.every(isVariantSoldOut);
+};
 let refreshActiveProductInventory = null;
 if (!window.ekkomiInventoryRefreshListenersBound) {
   const revalidateVisibleProduct = () => {
@@ -870,13 +877,9 @@ function renderShowcase(jacket) {
     const currencyCode = initialVariant?.price?.currencyCode || jacket.currencyCode || 'GBP';
     const hasImage = Boolean(firstView.src);
     const sizeControlsHtml = jacket.sizes.map((size) => {
-      const variant = jacket.variants.find((item) => item.size === size);
-      const available = isVariantAvailable(variant);
       const selected = size === currentSelectedSize;
-      return `<button type="button" class="size-pill${selected ? ' is-active' : ''}${available ? '' : ' is-sold-out'}" data-size="${escapeHTML(size)}" role="radio" aria-label="${escapeHTML(size)}${available ? '' : ', sold out'}" aria-checked="${selected}" ${available ? '' : 'disabled aria-disabled="true"'}><span class="size-pill-label">${escapeHTML(size)}</span><span class="size-pill-status${available ? ' is-hidden' : ''}">SOLD OUT</span></button>`;
+      return `<button type="button" class="size-pill${selected ? ' is-active' : ''}" data-size="${escapeHTML(size)}" role="radio" aria-label="${escapeHTML(size)}" aria-checked="${selected}"><span class="size-pill-label">${escapeHTML(size)}</span><span class="size-pill-status is-hidden">SOLD OUT</span></button>`;
     }).join('');
-    const hasAvailableStandardSize = productHasAvailableStandardSize(jacket);
-
     const viewsHtml = jacket.views.map((v, i) => `
       <button class="gallery-view-card${i === 0 ? ' is-active' : ''}"
               type="button"
@@ -951,7 +954,7 @@ function renderShowcase(jacket) {
             <!-- Jacket Title Row -->
             <div class="jacket-title-row">
               <h3 class="jacket-name" id="showcaseJacketTitle">${safeTitle}</h3>
-              <span class="jacket-stock-badge${hasAvailableStandardSize ? ' is-hidden' : ''}" id="productStockStatus" role="status">OUT OF STOCK</span>
+              <span class="jacket-stock-badge is-hidden" id="productStockStatus" role="status">OUT OF STOCK</span>
               <div class="jacket-meta-tags">
                 ${jacket.colour ? `<span class="jacket-colour-tag" aria-label="Colour: ${escapeHTML(jacket.colour)}">
                   <span class="colour-swatch" style="background-color: ${escapeHTML(jacket.hex)};" aria-hidden="true"></span>
@@ -986,6 +989,7 @@ function renderShowcase(jacket) {
                   ${sizeControlsHtml || '<span class="product-sizes-unavailable">No standard sizes are listed.</span>'}
                   <button type="button" class="size-pill size-pill--custom" data-size="Custom" role="radio" aria-checked="false">Custom</button>
                 </div>
+                <div class="product-waitlist-row is-hidden" id="productWaitlistRow" aria-label="Waitlist for unavailable sizes"></div>
                 <p class="custom-sizing-note is-hidden" id="customSizingNote">
                   Bespoke sizing selected &mdash; please contact our stylist to arrange your made-to-measure specifications.
                 </p>
@@ -1004,6 +1008,7 @@ function renderShowcase(jacket) {
                   </button>
                 </div>
                 <p class="inventory-quantity-message is-hidden" id="inventoryQuantityMessage" role="status" aria-live="polite"></p>
+                <button type="button" class="inventory-retry-btn is-hidden" id="inventoryRetryBtn">Check availability again</button>
               </div>
 
               <!-- CTA Stack -->
@@ -1025,7 +1030,7 @@ function renderShowcase(jacket) {
                 </div>
 
                 <!-- Purchase Buttons -->
-                <button type="button" class="btn-purchase btn-add-to-bag" id="btnAddToBag" ${hasAvailableStandardSize && isVariantAvailable(initialVariant) ? '' : 'disabled'}>
+                <button type="button" class="btn-purchase btn-add-to-bag" id="btnAddToBag" disabled>
                   ADD TO BAG
                 </button>
               </div>
@@ -1083,7 +1088,9 @@ function renderShowcase(jacket) {
     const currentPriceEl = showcase.querySelector('.product-price');
     const addBagBtn = showcase.querySelector('#btnAddToBag');
     const stockStatus = showcase.querySelector('#productStockStatus');
+    const waitlistRow = showcase.querySelector('#productWaitlistRow');
     const quantityMessage = showcase.querySelector('#inventoryQuantityMessage');
+    const inventoryRetryBtn = showcase.querySelector('#inventoryRetryBtn');
     const minusBtn = document.getElementById('qtyMinusBtn');
     const plusBtn = document.getElementById('qtyPlusBtn');
     const qtyDisplay = document.getElementById('productQtyDisplay');
@@ -1094,21 +1101,35 @@ function renderShowcase(jacket) {
       quantityMessage.classList.toggle('is-hidden', !message);
     };
 
+    let inventoryRefreshVerified = false;
+    let inventoryVerificationFailed = false;
     const applyInventoryToSizeControls = () => {
-      const hasStock = productHasAvailableStandardSize(jacket);
-      jacket.inStock = hasStock;
-      if (stockStatus) stockStatus.classList.toggle('is-hidden', hasStock);
+      const hasStock = inventoryRefreshVerified && productHasAvailableStandardSize(jacket);
+      const confirmedSoldOut = inventoryRefreshVerified && productIsConfirmedSoldOut(jacket);
+      jacket.inStock = inventoryRefreshVerified ? hasStock : null;
+      if (stockStatus) stockStatus.classList.toggle('is-hidden', !confirmedSoldOut);
+      if (waitlistRow) {
+        const soldOutSizes = inventoryRefreshVerified
+          ? STANDARD_SIZES.filter((size) => isVariantSoldOut(jacket.variants.find((variant) => variant.size === size)))
+          : [];
+        waitlistRow.innerHTML = soldOutSizes.length
+          ? `<span class="waitlist-row-text">Unavailable sizes:</span>${soldOutSizes.map((size) => `<button type="button" class="btn-link-waitlist btn-notify-when-available" data-notify-jacket data-size="${size}" aria-label="Join the waitlist for size ${size}">Join waitlist · ${size}</button>`).join('')}`
+          : '';
+        waitlistRow.classList.toggle('is-hidden', soldOutSizes.length === 0);
+      }
       sizePills.forEach((pill) => {
         if (pill.dataset.size === 'Custom') return;
         const variant = jacket.variants.find((item) => item.size === pill.dataset.size);
-        const available = isVariantAvailable(variant);
-        pill.disabled = !available;
-        pill.classList.toggle('is-sold-out', !available);
-        pill.setAttribute('aria-label', `${pill.dataset.size}${available ? '' : ', sold out'}`);
+        const availability = getVariantAvailability(variant);
+        const soldOut = inventoryRefreshVerified && availability === false;
+        pill.disabled = soldOut;
+        pill.classList.toggle('is-sold-out', soldOut);
+        const availabilityNotConfirmed = !inventoryRefreshVerified || availability === null;
+        pill.setAttribute('aria-label', `${pill.dataset.size}${soldOut ? ', sold out' : availabilityNotConfirmed ? ', availability not confirmed' : ''}`);
         const soldOutLabel = pill.querySelector('.size-pill-status');
         if (soldOutLabel) {
           soldOutLabel.textContent = 'SOLD OUT';
-          soldOutLabel.classList.toggle('is-hidden', available);
+          soldOutLabel.classList.toggle('is-hidden', !soldOut);
         }
       });
     };
@@ -1125,13 +1146,13 @@ function renderShowcase(jacket) {
         originalPriceEl.classList.toggle('is-hidden', !(compareAt > amount));
       }
       const isCustom = currentSelectedSize === 'Custom';
-      const variantAvailable = isVariantAvailable(variant);
+      const variantAvailable = inventoryRefreshVerified && isVariantAvailable(variant);
       const maxQuantity = isCustom ? MAX_ORDER_QUANTITY : getVariantQuantityLimit(variant);
       if (!isCustom && (maxQuantity === 0 || currentSelectedQuantity > maxQuantity)) {
         currentSelectedQuantity = maxQuantity || 1;
         if (qtyDisplay) qtyDisplay.textContent = String(currentSelectedQuantity);
       }
-      const hasStock = productHasAvailableStandardSize(jacket);
+      const hasStock = inventoryRefreshVerified && productHasAvailableStandardSize(jacket);
       const canProceed = isCustom || (hasStock && variantAvailable && currentSelectedQuantity <= maxQuantity);
       if (addBagBtn) addBagBtn.disabled = !canProceed;
       if (plusBtn) plusBtn.disabled = isCustom ? currentSelectedQuantity >= MAX_ORDER_QUANTITY : !variantAvailable || currentSelectedQuantity >= maxQuantity;
@@ -1139,16 +1160,28 @@ function renderShowcase(jacket) {
 
       if (isCustom) {
         setInventoryMessage('');
+        if (inventoryRetryBtn) inventoryRetryBtn.classList.add('is-hidden');
+      } else if (!inventoryRefreshVerified) {
+        setInventoryMessage(inventoryVerificationFailed
+          ? 'Live stock could not be verified. Please check again before purchasing.'
+          : 'Checking current availability…');
+        if (inventoryRetryBtn) inventoryRetryBtn.classList.toggle('is-hidden', !inventoryVerificationFailed);
       } else if (!variantAvailable) {
-        setInventoryMessage('This size is sold out. Choose another size, or select Custom to speak with our stylist.');
+        setInventoryMessage(isVariantSoldOut(variant)
+          ? 'This size is sold out. Join the waitlist or choose another size.'
+          : 'Availability for this size could not be confirmed. Please try again shortly.');
+        if (inventoryRetryBtn) inventoryRetryBtn.classList.add('is-hidden');
       } else if (variant?.quantityAvailable == null) {
         setInventoryMessage(currentSelectedQuantity >= maxQuantity
           ? 'Live stock quantity is unavailable, so quantity is temporarily limited to 1.'
           : '');
+        if (inventoryRetryBtn) inventoryRetryBtn.classList.add('is-hidden');
       } else if (currentSelectedQuantity >= maxQuantity) {
         setInventoryMessage(`Maximum available quantity: ${maxQuantity}.`);
+        if (inventoryRetryBtn) inventoryRetryBtn.classList.add('is-hidden');
       } else {
         setInventoryMessage('');
+        if (inventoryRetryBtn) inventoryRetryBtn.classList.add('is-hidden');
       }
     };
 
@@ -1176,15 +1209,24 @@ function renderShowcase(jacket) {
           ...updated.get(variant.id)
         }));
         if (window.currentSelectedJacket?.id !== jacket.id) return false;
+        inventoryRefreshVerified = true;
+        inventoryVerificationFailed = false;
         applyInventoryToSizeControls();
         syncSelectedVariant();
         return true;
-      }).catch(() => false).finally(() => {
+      }).catch(() => {
+        inventoryRefreshVerified = false;
+        inventoryVerificationFailed = true;
+        applyInventoryToSizeControls();
+        syncSelectedVariant();
+        return false;
+      }).finally(() => {
         inventoryRefreshPromise = null;
       });
       return inventoryRefreshPromise;
     };
     refreshActiveProductInventory = refreshInventory;
+    if (inventoryRetryBtn) inventoryRetryBtn.addEventListener('click', () => { void refreshInventory(); });
 
     let activeViewIndex = 0;
     const setActiveView = (index) => {
@@ -2309,6 +2351,7 @@ if (document.readyState === 'loading') {
           jacketNumber: jacketObj ? jacketObj.number : null,
           jacketHex: jacketObj ? jacketObj.hex : null,
           jacketColour: jacketObj ? jacketObj.colour : null,
+          size: notifyBtn.dataset.size || null,
           outOfStock: true
         });
         return;
@@ -2358,8 +2401,15 @@ if (document.readyState === 'loading') {
     // If a specific jacket is preselected (e.g. from NOTIFY WHEN AVAILABLE button):
     // Jump straight to Step 4: Size Selection with jacket preselected
     if (preselects.jacketKey && preselects.collection) {
-      state.history = [1, 2, 3];
-      goToStep(4, false);
+      if (STANDARD_SIZES.includes(preselects.size)) {
+        state.size = preselects.size;
+        state.history = [1, 2, 3, 4];
+        goToStep(5, false);
+      } else {
+        state.size = null;
+        state.history = [1, 2, 3];
+        goToStep(4, false);
+      }
     } else {
       // Automatic popup on page load, or general header/floating CTA:
       // Always start at Step 1: SOLD OUT intro screen
@@ -2721,13 +2771,12 @@ if (document.readyState === 'loading') {
         if (response.ok && resData.success) {
           isSuccess = true;
           state.registrationId = resData.registrationId;
-          console.log('[WAITLIST] Confirmed by backend:', resData);
         } else {
           errorMessage = resData.error || 'Registration could not be completed at this time. Please verify your details.';
-          console.warn('[WAITLIST] Backend returned error:', resData);
+          console.warn('[WAITLIST] Backend rejected the registration.', response.status);
         }
       } catch (netErr) {
-        console.warn('[WAITLIST] Network connection error:', netErr);
+        console.warn('[WAITLIST] Network connection error.');
         errorMessage = 'Unable to reach the server. Please check your connection and retry.';
       }
 

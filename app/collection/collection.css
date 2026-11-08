@@ -4324,6 +4324,20 @@ body.waitlist-open .floating-waitlist-btn {
   line-height: 1.55;
 }
 
+#collection-experience .inventory-retry-btn {
+  width: fit-content;
+  margin: 8px 0 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #542b29;
+  font: inherit;
+  font-size: 12px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
 .custom-sizing-note {
   font-family: var(--font-body, var(--font-sans));
   font-size: 12.5px;
@@ -4480,6 +4494,11 @@ body.waitlist-open .floating-waitlist-btn {
   gap: 8px;
   flex-wrap: wrap;
   padding-top: 6px;
+}
+
+#collection-experience .product-waitlist-row {
+  justify-content: flex-start;
+  min-height: 0;
 }
 
 .waitlist-row-text {

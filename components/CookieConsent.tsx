@@ -13,6 +13,7 @@ export interface CookiePreferences {
 
 const STORAGE_KEY = "ekkomi_consent_v1";
 const COOKIE_NAME = "ekkomi_consent";
+const WAITLIST_DRAFT_KEY = "ekkomi_waitlist_draft";
 const CURRENT_VERSION = 1;
 const CONSENT_LIFETIME_MS = 365 * 24 * 60 * 60 * 1000;
 const GTM_ID = "GTM-KDDXFFNS";
@@ -172,8 +173,10 @@ export default function CookieConsent() {
 
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
+      if (!functional) localStorage.removeItem(WAITLIST_DRAFT_KEY);
       const serialized = encodeURIComponent(JSON.stringify(prefs));
-      document.cookie = `${COOKIE_NAME}=${serialized}; path=/; max-age=${CONSENT_LIFETIME_MS / 1000}; SameSite=Lax`;
+      const secure = window.location.protocol === "https:" ? "; Secure" : "";
+      document.cookie = `${COOKIE_NAME}=${serialized}; path=/; max-age=${CONSENT_LIFETIME_MS / 1000}; SameSite=Lax${secure}`;
     } catch {
       // Storage might be restricted
     }
@@ -213,6 +216,9 @@ export default function CookieConsent() {
   useEffect(() => {
     setMounted(true);
     const stored = readStoredConsent();
+    if (!stored?.functional) {
+      try { localStorage.removeItem(WAITLIST_DRAFT_KEY); } catch { /* Storage can be unavailable. */ }
+    }
 
     if (stored) {
       setAnalyticsEnabled(stored.analytics);
