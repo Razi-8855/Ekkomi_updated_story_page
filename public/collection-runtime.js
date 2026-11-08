@@ -373,6 +373,13 @@ function initSizeGuide() {
         closeSizeGuide();
       }
     });
+    // Ensure smooth scrolling inside modal without rubber-banding background
+    modal.addEventListener('touchmove', (e) => {
+      const scrollable = e.target.closest('.size-guide-table-wrap');
+      if (!scrollable) {
+        e.preventDefault();
+      }
+    }, { passive: false });
   }
 
   if (!document._sizeGuideKeyBound) {
