@@ -26,7 +26,12 @@ export default function SmoothScroll() {
       return () => window.removeEventListener("ekkomi:story-intro", navigateToStoryIntro);
     }
 
-    lenis = new Lenis({ lerp: 0.09, smoothWheel: true });
+    lenis = new Lenis({
+      lerp: 0.12,
+      smoothWheel: true,
+      syncTouch: true,
+      syncTouchLerp: 0.12,
+    });
     const activeLenis = lenis;
     const tick = (time: number) => activeLenis.raf(time * 1000);
     lenis.on("scroll", ScrollTrigger.update);

@@ -8,7 +8,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 type Scene = { directory: string; count: number; focalX: number; caption: string };
 
 const sceneDefinitions = [
-  { desktop: "/video-sequences/scene1", mobile: "/video-sequences_mobile-view/scene1-mobile", mobileCount: 190, caption: ".story-caption--intro", focalX: 0.58 },
+  { desktop: "/video-sequences/scene1", mobile: "/video-sequences_mobile-view/scene1-mobile", mobileCount: 98, caption: ".story-caption--intro", focalX: 0.58 },
   { desktop: "/video-sequences/scene2", mobile: "/video-sequences_mobile-view/scene2-mobile", mobileCount: 192, caption: ".story-caption--detail", focalX: 0.5 },
   { desktop: "/video-sequences/scene3", mobile: "/video-sequences_mobile-view/scene3-mobile", mobileCount: 192, caption: ".story-caption--full-look", focalX: 0.5 },
 ] as const;
@@ -171,7 +171,7 @@ export default function StoryExperience() {
           const scrollScale = targetSceneVh / sceneTimelineUnits;
           return `+=${Math.round(screen.clientHeight * totalScrollUnits * scrollScale)}`;
         },
-        scrub: 0.4,
+        scrub: 0.18,
         invalidateOnRefresh: true,
         onUpdate: syncHeaderState,
         onRefresh: syncHeaderState,
