@@ -40,7 +40,7 @@ if (typeof window !== 'undefined' && typeof window.gsap === 'undefined') {
    =================================================================== */
 
 // Ekkomi WhatsApp Business Configuration
-const EKKOMI_WHATSAPP_NUMBER = (typeof window !== 'undefined' && window.EKKOMI_WHATSAPP_NUMBER) || '447344601474';
+const EKKOMI_WHATSAPP_NUMBER = (typeof window !== 'undefined' && (window.EKKOMI_WHATSAPP_NUMBER || document.documentElement.dataset.ekkomiWhatsapp)) || '';
 let currentSelectedSize = 'M';
 let currentSelectedQuantity = 1;
 let currentSelectedVariantId = null;
@@ -866,7 +866,7 @@ function renderShowcase(jacket) {
 
     const firstView = jacket.views[0] || { src: '', alt: jacket.impulse, label: 'Product image unavailable' };
     const selectedPrice = Number.parseFloat(initialVariant?.price?.amount || '0');
-    const compareAtPrice = selectedPrice > 0 ? Math.round(selectedPrice * 1.2 * 100) / 100 : null;
+    const compareAtPrice = Number.parseFloat(initialVariant?.compareAtPrice?.amount || '0');
     const currencyCode = initialVariant?.price?.currencyCode || jacket.currencyCode || 'GBP';
     const hasImage = Boolean(firstView.src);
     const sizeControlsHtml = jacket.sizes.map((size) => {
@@ -966,7 +966,7 @@ function renderShowcase(jacket) {
 
             <!-- Price & Tax Row -->
             <div class="product-price-row">
-              <span class="product-original-price${compareAtPrice ? '' : ' is-hidden'}">${compareAtPrice ? formatGBP(Number.parseFloat(compareAtPrice), currencyCode) : ''}</span>
+              <span class="product-original-price${compareAtPrice > selectedPrice ? '' : ' is-hidden'}">${compareAtPrice > selectedPrice ? formatGBP(compareAtPrice, currencyCode) : ''}</span>
               <span class="product-price">${formatGBP(selectedPrice, currencyCode)}</span>
               <span class="product-tax-note">Taxes &amp; duties included &middot; Complimentary delivery</span>
             </div>
@@ -1118,11 +1118,11 @@ function renderShowcase(jacket) {
       currentSelectedVariantId = variant?.id || null;
       const amount = Number.parseFloat(variant?.price?.amount || '0');
       const currency = variant?.price?.currencyCode || jacket.currencyCode || 'GBP';
-      const compareAt = amount > 0 ? Math.round(amount * 1.2 * 100) / 100 : null;
+      const compareAt = Number.parseFloat(variant?.compareAtPrice?.amount || '0');
       if (currentPriceEl) currentPriceEl.textContent = formatGBP(amount, currency);
       if (originalPriceEl) {
-        originalPriceEl.textContent = compareAt ? formatGBP(Number.parseFloat(compareAt), currency) : '';
-        originalPriceEl.classList.toggle('is-hidden', !compareAt);
+        originalPriceEl.textContent = compareAt > amount ? formatGBP(compareAt, currency) : '';
+        originalPriceEl.classList.toggle('is-hidden', !(compareAt > amount));
       }
       const isCustom = currentSelectedSize === 'Custom';
       const variantAvailable = isVariantAvailable(variant);
@@ -2081,18 +2081,34 @@ if (document.readyState === 'loading') {
   // Configurable available sizes (centralised for future adjustment)
   const AVAILABLE_SIZES = ['S', 'M', 'L', 'XL'];
 
-  const CONSENT_STORAGE_KEY = 'ekkomi_cookie_consent';
+  const CONSENT_STORAGE_KEY = 'ekkomi_consent_v1';
+  const LEGACY_CONSENT_STORAGE_KEY = 'ekkomi_cookie_consent';
   const DRAFT_STORAGE_KEY = 'ekkomi_waitlist_draft';
-  const CONSENT_POLICY_VERSION = '2026-10-v1';
+  const CONSENT_VERSION = 1;
+  const CONSENT_LIFETIME_MS = 365 * 24 * 60 * 60 * 1000;
   const DRAFT_LIFETIME_MS = 7 * 24 * 60 * 60 * 1000;
 
   function hasFunctionalStorageConsent() {
     try {
-      const value = JSON.parse(localStorage.getItem(CONSENT_STORAGE_KEY) || 'null');
-      return value?.necessary === true &&
-        value?.functional === true &&
-        value?.policyVersion === CONSENT_POLICY_VERSION &&
-        Number(value?.expiresAt) > Date.now();
+      const currentRaw = localStorage.getItem(CONSENT_STORAGE_KEY);
+      if (currentRaw) {
+        const value = JSON.parse(currentRaw);
+        const timestamp = Date.parse(value?.timestamp);
+        const age = Date.now() - timestamp;
+        return value?.necessary === true &&
+          value?.functional === true &&
+          value?.version === CONSENT_VERSION &&
+          Number.isFinite(timestamp) &&
+          age >= 0 &&
+          age < CONSENT_LIFETIME_MS;
+      }
+
+      // Support a previously used Collection-only consent record until it expires.
+      const legacy = JSON.parse(localStorage.getItem(LEGACY_CONSENT_STORAGE_KEY) || 'null');
+      return legacy?.necessary === true &&
+        legacy?.functional === true &&
+        typeof legacy?.policyVersion === 'string' &&
+        Number(legacy?.expiresAt) > Date.now();
     } catch {
       return false;
     }

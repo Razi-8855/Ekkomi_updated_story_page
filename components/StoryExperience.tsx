@@ -6,11 +6,17 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 type Scene = { directory: string; count: number; focalX: number; caption: string };
+type FrameEntry = {
+  image?: HTMLImageElement;
+  status: "queued" | "loading" | "ready" | "failed";
+  priority: number;
+};
+type FrameRequest = { sceneIndex: number; frameIndex: number; priority: number };
 
 const sceneDefinitions = [
-  { desktop: "/video-sequences/scene1", mobile: "/video-sequences_mobile-view/scene1-mobile", mobileCount: 98, caption: ".story-caption--intro", focalX: 0.58 },
-  { desktop: "/video-sequences/scene2", mobile: "/video-sequences_mobile-view/scene2-mobile", mobileCount: 192, caption: ".story-caption--detail", focalX: 0.5 },
-  { desktop: "/video-sequences/scene3", mobile: "/video-sequences_mobile-view/scene3-mobile", mobileCount: 192, caption: ".story-caption--full-look", focalX: 0.5 },
+  { desktop: "/video-sequences/scene1", desktopCount: 192, mobile: "/video-sequences_mobile-view/scene1-mobile", mobileCount: 98, caption: ".story-caption--intro", focalX: 0.58 },
+  { desktop: "/video-sequences/scene2", desktopCount: 192, mobile: "/video-sequences_mobile-view/scene2-mobile", mobileCount: 192, caption: ".story-caption--detail", focalX: 0.5 },
+  { desktop: "/video-sequences/scene3", desktopCount: 190, mobile: "/video-sequences_mobile-view/scene3-mobile", mobileCount: 190, caption: ".story-caption--full-look", focalX: 0.5 },
 ] as const;
 
 const timelineFramesPerScene = 192;
@@ -28,7 +34,7 @@ const totalScrollUnits = introDuration +
 function getSceneSet(isMobile: boolean): Scene[] {
   return sceneDefinitions.map((scene) => ({
     directory: isMobile ? scene.mobile : scene.desktop,
-    count: isMobile ? scene.mobileCount : timelineFramesPerScene,
+    count: isMobile ? scene.mobileCount : scene.desktopCount,
     focalX: isMobile ? scene.focalX : 0.5,
     caption: scene.caption,
   }));
@@ -55,72 +61,213 @@ export default function StoryExperience() {
     const mobileQuery = window.matchMedia("(max-width: 767px), (max-width: 1023px) and (orientation: portrait), (pointer: coarse)");
     let isMobile = mobileQuery.matches;
     let activeScenes = getSceneSet(isMobile);
-    let loaded = activeScenes.map(() => new Map<number, HTMLImageElement>());
+    let loaded = activeScenes.map(() => new Map<number, FrameEntry>());
     const playhead = { frame: 0 };
     let active = true;
+    let pendingQueue: FrameRequest[] = [];
+    let activeLoads = 0;
+    let renderFrameId = 0;
+    let lastDrawnScene = -1;
+    let lastDrawnFrame = -1;
+    let lastCanvasWidth = 0;
+    let lastCanvasHeight = 0;
+    let seedRepresentativeFrames = true;
+    let maxConcurrentLoads = isMobile ? 2 : 3;
+    let maxCachedFrames = isMobile ? 14 : 18;
 
     const releaseScene = (sceneIndex: number) => {
-      loaded[sceneIndex]?.forEach((image) => {
-        image.onload = null;
-        image.onerror = null;
-        image.src = "";
+      loaded[sceneIndex]?.forEach((entry) => {
+        if (!entry.image) return;
+        entry.image.onload = null;
+        entry.image.onerror = null;
+        entry.image.src = "";
       });
       loaded[sceneIndex]?.clear();
     };
 
-    const loadFrame = (sceneIndex: number, frameIndex: number) => {
-      const scene = activeScenes[sceneIndex];
-      if (!scene || frameIndex < 0 || frameIndex >= scene.count || loaded[sceneIndex].has(frameIndex)) return;
-      const image = new Image();
-      loaded[sceneIndex].set(frameIndex, image);
-      image.onload = render;
-      image.onerror = () => loaded[sceneIndex].delete(frameIndex);
-      image.decoding = "async";
-      image.src = `${scene.directory}/frame_${String(frameIndex + 1).padStart(4, "0")}.webp`;
+    const virtualFrameFor = (sceneIndex: number, frameIndex: number) => {
+      const count = activeScenes[sceneIndex]?.count ?? 1;
+      return sceneStarts[sceneIndex] + (count <= 1 ? 0 : frameIndex / (count - 1)) * (timelineFramesPerScene - 1);
     };
 
-    const preloadAround = (sceneIndex: number, frameIndex: number, radius: number) => {
+    const trimDecodedFrames = () => {
+      const currentScene = getSceneIndex(playhead.frame);
+      const scene = activeScenes[currentScene];
+      if (!scene) return;
+      const virtualFrame = Math.min(timelineFramesPerScene - 1, Math.max(0, playhead.frame - sceneStarts[currentScene]));
+      const currentFrame = Math.min(scene.count - 1, Math.round(virtualFrame / (timelineFramesPerScene - 1) * (scene.count - 1)));
+      const entries: Array<{ sceneIndex: number; frameIndex: number; distance: number }> = [];
+      loaded.forEach((frames, sceneIndex) => frames.forEach((entry, frameIndex) => {
+        if (entry.status === "ready") {
+          entries.push({ sceneIndex, frameIndex, distance: Math.abs(virtualFrameFor(sceneIndex, frameIndex) - playhead.frame) });
+        }
+      }));
+      if (entries.length <= maxCachedFrames) return;
+      entries.sort((a, b) => b.distance - a.distance);
+      let remaining = entries.length - maxCachedFrames;
+      for (const entry of entries) {
+        if (!remaining) break;
+        if (entry.sceneIndex === currentScene && entry.frameIndex === currentFrame) continue;
+        const frame = loaded[entry.sceneIndex].get(entry.frameIndex);
+        if (frame?.image) {
+          frame.image.onload = null;
+          frame.image.onerror = null;
+          frame.image.src = "";
+        }
+        loaded[entry.sceneIndex].delete(entry.frameIndex);
+        remaining -= 1;
+      }
+    };
+
+    const pumpQueue = () => {
+      while (active && activeLoads < maxConcurrentLoads && pendingQueue.length) {
+        const request = pendingQueue.shift()!;
+        const scene = activeScenes[request.sceneIndex];
+        const entry = loaded[request.sceneIndex]?.get(request.frameIndex);
+        if (!scene || !entry || entry.status !== "queued") continue;
+
+        entry.status = "loading";
+        activeLoads += 1;
+        const image = new Image();
+        image.decoding = "async";
+        if ("fetchPriority" in image) image.fetchPriority = request.priority === 0 ? "high" : "auto";
+        entry.image = image;
+
+        void (async () => {
+          try {
+            const loadedEvent = new Promise<void>((resolve, reject) => {
+              image.onload = () => resolve();
+              image.onerror = () => reject(new Error("Frame request failed."));
+            });
+            image.src = `${scene.directory}/frame_${String(request.frameIndex + 1).padStart(4, "0")}.webp`;
+            if (typeof image.decode === "function") {
+              try {
+                await image.decode();
+              } catch {
+                await loadedEvent;
+              }
+            } else {
+              await loadedEvent;
+            }
+            if (!active || loaded[request.sceneIndex]?.get(request.frameIndex) !== entry) return;
+            if (!image.naturalWidth) throw new Error("Decoded frame has no image dimensions.");
+            entry.status = "ready";
+            trimDecodedFrames();
+            render();
+          } catch {
+            if (loaded[request.sceneIndex]?.get(request.frameIndex) === entry) {
+              entry.status = "failed";
+              if (entry.image) {
+                entry.image.onload = null;
+                entry.image.onerror = null;
+              }
+            }
+            // A failed frame is skipped; render() uses the closest decoded frame.
+            render();
+          } finally {
+            activeLoads -= 1;
+            pumpQueue();
+          }
+        })();
+      }
+    };
+
+    const scheduleLoads = (sceneIndex: number, frameIndex: number) => {
       const scene = activeScenes[sceneIndex];
       if (!scene) return;
-      const start = Math.max(0, frameIndex - Math.min(2, radius));
-      const end = Math.min(scene.count - 1, frameIndex + radius);
-      for (let index = start; index <= end; index++) loadFrame(sceneIndex, index);
+      const wanted: FrameRequest[] = [];
+      const add = (targetScene: number, targetFrame: number, priority: number) => {
+        const targetSceneDefinition = activeScenes[targetScene];
+        if (!targetSceneDefinition || targetFrame < 0 || targetFrame >= targetSceneDefinition.count) return;
+        wanted.push({ sceneIndex: targetScene, frameIndex: targetFrame, priority });
+      };
+
+      add(sceneIndex, frameIndex, 0);
+      for (let offset = -2; offset <= (isMobile ? 6 : 8); offset += 1) {
+        if (offset !== 0) add(sceneIndex, frameIndex + offset, Math.abs(offset) + 1);
+      }
+
+      const virtualFrame = Math.max(0, playhead.frame - sceneStarts[sceneIndex]);
+      const sceneProgress = virtualFrame / (timelineFramesPerScene - 1);
+      if (sceneIndex < activeScenes.length - 1 && sceneProgress > 0.72) {
+        for (let index = 0; index < (isMobile ? 3 : 5); index += 1) add(sceneIndex + 1, index, 20 + index);
+      }
+
+      if (seedRepresentativeFrames) {
+        activeScenes.forEach((sampledScene, sampledSceneIndex) => {
+          [0.25, 0.5, 0.75, 1].forEach((fraction, sampleIndex) => {
+            add(sampledSceneIndex, Math.round((sampledScene.count - 1) * fraction), 80 + sampleIndex);
+          });
+        });
+        seedRepresentativeFrames = false;
+      }
+
+      const keys = new Set(wanted.map(({ sceneIndex: si, frameIndex: fi }) => `${si}:${fi}`));
+      const priorities = new Map(wanted.map(({ sceneIndex: si, frameIndex: fi, priority }) => [`${si}:${fi}`, priority]));
+      pendingQueue = pendingQueue
+        .filter((request) => keys.has(`${request.sceneIndex}:${request.frameIndex}`) || request.priority >= 80)
+        .map((request) => ({
+          ...request,
+          priority: Math.min(request.priority, priorities.get(`${request.sceneIndex}:${request.frameIndex}`) ?? request.priority),
+        }));
+      loaded.forEach((frames, si) => frames.forEach((entry, fi) => {
+        if (entry.status === "queued" && entry.priority < 80 && !keys.has(`${si}:${fi}`)) frames.delete(fi);
+      }));
+
+      wanted.sort((a, b) => a.priority - b.priority);
+      wanted.forEach((request) => {
+        const existing = loaded[request.sceneIndex].get(request.frameIndex);
+        if (existing) {
+          if (existing.status === "queued") existing.priority = Math.min(existing.priority, request.priority);
+          return;
+        }
+        loaded[request.sceneIndex].set(request.frameIndex, { status: "queued", priority: request.priority });
+        pendingQueue.push(request);
+      });
+      pendingQueue.sort((a, b) => a.priority - b.priority);
+      pumpQueue();
     };
 
-    const render = () => {
+    const drawCurrentFrame = () => {
+      renderFrameId = 0;
       if (!active) return;
       const sceneIndex = getSceneIndex(playhead.frame);
       const scene = activeScenes[sceneIndex];
       const virtualFrame = Math.min(timelineFramesPerScene - 1, Math.max(0, playhead.frame - sceneStarts[sceneIndex]));
       const sceneFrame = Math.min(scene.count - 1, Math.round(virtualFrame / (timelineFramesPerScene - 1) * (scene.count - 1)));
-      preloadAround(sceneIndex, sceneFrame, isMobile ? 5 : 8);
-      preloadAround(sceneIndex + 1, 0, isMobile ? 2 : 4);
-
-      // Keep only the active scene and its immediate neighbours in memory.
-      loaded.forEach((_, index) => {
-        if (index < sceneIndex - 1 || index > sceneIndex + 1) releaseScene(index);
-      });
+      scheduleLoads(sceneIndex, sceneFrame);
 
       const images = loaded[sceneIndex];
-      let image = images.get(sceneFrame);
-      if (!image?.complete || !image.naturalWidth) {
+      let entry = images.get(sceneFrame);
+      if (entry?.status !== "ready" || !entry.image?.naturalWidth) {
         let closestDistance = Infinity;
         images.forEach((candidate, index) => {
-          if (candidate.complete && candidate.naturalWidth && Math.abs(index - sceneFrame) < closestDistance) {
-            image = candidate;
+          if (candidate.status === "ready" && candidate.image?.naturalWidth && Math.abs(index - sceneFrame) < closestDistance) {
+            entry = candidate;
             closestDistance = Math.abs(index - sceneFrame);
           }
         });
       }
-      if (!image?.complete || !image.naturalWidth) return;
+      const image = entry?.status === "ready" ? entry.image : undefined;
+      if (!image?.naturalWidth) return;
 
       const ratio = Math.min(window.devicePixelRatio || 1, isMobile ? 1.35 : 1.6);
       const width = screen.clientWidth;
       const height = screen.clientHeight;
-      if (target.width !== Math.round(width * ratio) || target.height !== Math.round(height * ratio)) {
-        target.width = Math.round(width * ratio);
-        target.height = Math.round(height * ratio);
+      const canvasWidth = Math.round(width * ratio);
+      const canvasHeight = Math.round(height * ratio);
+      if (target.width !== canvasWidth || target.height !== canvasHeight) {
+        target.width = canvasWidth;
+        target.height = canvasHeight;
       }
+      const actualFrame = entry === images.get(sceneFrame)
+        ? sceneFrame
+        : [...images.entries()].find(([, candidate]) => candidate === entry)?.[0] ?? sceneFrame;
+      if (lastDrawnScene === sceneIndex && lastDrawnFrame === actualFrame && lastCanvasWidth === canvasWidth && lastCanvasHeight === canvasHeight) return;
+      lastDrawnScene = sceneIndex;
+      lastDrawnFrame = actualFrame;
+      lastCanvasWidth = canvasWidth;
+      lastCanvasHeight = canvasHeight;
       context.setTransform(ratio, 0, 0, ratio, 0, 0);
       context.fillStyle = "#171715";
       context.fillRect(0, 0, width, height);
@@ -137,18 +284,33 @@ export default function StoryExperience() {
       context.drawImage(image, x, (height - drawHeight) / 2, drawWidth, drawHeight);
     };
 
+    const render = () => {
+      if (!active || renderFrameId) return;
+      renderFrameId = window.requestAnimationFrame(drawCurrentFrame);
+    };
+
     const resetForViewport = () => {
       const nextIsMobile = mobileQuery.matches;
       if (nextIsMobile !== isMobile) {
         loaded.forEach((_, index) => releaseScene(index));
+        pendingQueue = [];
         isMobile = nextIsMobile;
+        maxConcurrentLoads = isMobile ? 2 : 3;
+        maxCachedFrames = isMobile ? 14 : 18;
         activeScenes = getSceneSet(isMobile);
-        loaded = activeScenes.map(() => new Map<number, HTMLImageElement>());
+        loaded = activeScenes.map(() => new Map<number, FrameEntry>());
+        seedRepresentativeFrames = true;
       }
+      lastDrawnScene = -1;
       render();
     };
 
-    loadFrame(0, 0);
+    // The first decoded frame is the on-canvas poster; remaining frames load
+    // progressively around the playhead and through a small bounded queue.
+    loaded[0].set(0, { status: "queued", priority: 0 });
+    pendingQueue.push({ sceneIndex: 0, frameIndex: 0, priority: 0 });
+    pumpQueue();
+    render();
     const syncHeaderState = (trigger: ScrollTrigger) => {
       host.querySelector(".site-header")?.classList.toggle(
         "is-scrolled",
@@ -321,9 +483,10 @@ export default function StoryExperience() {
 
           <nav className="story-footer__group" aria-label="About us">
             <h3 className="story-footer__heading">About Us</h3>
-            <a className="story-footer__link" href="https://www.ekkomi.co.uk/">Our Story</a>
-            <a className="story-footer__link" href="https://www.ekkomi.co.uk/collection">Our Crafts</a>
-            <a className="story-footer__link" href="https://www.ekkomi.co.uk/journal">Our Journal</a>
+            <a className="story-footer__link" href="https://www.ekkomi.co.uk/">Story</a>
+            <a className="story-footer__link" href="https://www.ekkomi.co.uk/collection">Collection</a>
+            <Link className="story-footer__link" href="/products">Products</Link>
+            <a className="story-footer__link" href="https://www.ekkomi.co.uk/journal">Journal</a>
           </nav>
 
           <nav className="story-footer__group" aria-label="Connect">
@@ -335,6 +498,10 @@ export default function StoryExperience() {
             <a className="story-footer__link story-footer__social-link" href="mailto:info@ekkomi.co.uk">
               <svg className="story-footer__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="14" rx="1.5" /><path d="m4 7 8 6 8-6" /></svg>
               <span>Email</span>
+            </a>
+            <a className="story-footer__link story-footer__social-link" href="https://www.facebook.com/ekkomi" target="_blank" rel="noopener noreferrer">
+              <svg className="story-footer__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14.1 21v-8h2.7l.4-3h-3.1V8.1c0-.9.3-1.5 1.6-1.5h1.7V3.9c-.8-.1-1.7-.2-2.6-.2-2.6 0-4.4 1.6-4.4 4.6V10H8v3h2.4v8" /></svg>
+              <span>Facebook</span>
             </a>
           </nav>
         </div>

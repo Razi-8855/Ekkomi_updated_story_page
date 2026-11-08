@@ -1,14 +1,14 @@
 const organizationSchema = {
   "@context": "https://schema.org",
-  "@type": "OnlineStore",
+  "@type": ["Organization", "OnlineStore"],
   "@id": "https://www.ekkomi.co.uk/#organization",
   name: "EKKOMI",
   url: "https://www.ekkomi.co.uk",
   description:
-    "EKKOMI is a luxury fashion brand specialising in premium suede leather jackets with distinctive embroidered details.",
+    "EKKOMI is a fashion brand specialising in suede leather jackets with distinctive embroidered details.",
   logo: {
     "@type": "ImageObject",
-    url: "https://www.ekkomi.co.uk/logo/logo-2.png",
+    url: "https://www.ekkomi.co.uk/logo/Ekkomi_logo_final.svg",
   },
   brand: {
     "@type": "Brand",

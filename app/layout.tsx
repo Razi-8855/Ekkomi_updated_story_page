@@ -3,18 +3,20 @@ import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 import CookieConsent from "@/components/CookieConsent";
 import ShopifyCartUI from "@/components/ShopifyCartUI";
+import OrganizationSchema from "@/components/OrganizationSchema";
+import { EKKOMI_WHATSAPP_NUMBER } from "@/lib/brand-config";
 import "./shopify-cart.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.ekkomi.co.uk"),
 
   title: {
-    default: "Ekkomi | British Luxury Leather & Suede Jackets",
+    default: "EKKOMI | Embroidered Suede Jackets",
     template: "%s | Ekkomi",
   },
 
   description:
-    "Discover Ekkomi, a contemporary British luxury fashion house. Explore distinctive leather and suede jackets defined by craftsmanship, individuality and timeless design.",
+    "Discover EKKOMI, a fashion brand creating distinctive suede leather jackets with embroidered details and contemporary design.",
 
   applicationName: "Ekkomi",
 
@@ -32,25 +34,25 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_GB",
     siteName: "Ekkomi",
-    title: "Ekkomi | British Luxury Leather & Suede Jackets",
+    title: "EKKOMI | Embroidered Suede Jackets",
     description:
-      "Discover Ekkomi, a contemporary British luxury fashion house. Explore distinctive leather and suede jackets defined by craftsmanship, individuality and timeless design.",
+      "Discover EKKOMI, a fashion brand creating distinctive suede leather jackets with embroidered details and contemporary design.",
     url: "https://www.ekkomi.co.uk/",
     images: [
       {
         url: "/collection-assets/collection/nocturne/temptation/temptation.jpg",
         width: 1200,
         height: 1800,
-        alt: "Ekkomi luxury suede and leather jackets",
+        alt: "EKKOMI embroidered suede jackets",
       },
     ],
   },
 
   twitter: {
     card: "summary_large_image",
-    title: "Ekkomi | British Luxury Leather & Suede Jackets",
+    title: "EKKOMI | Embroidered Suede Jackets",
     description:
-      "Discover Ekkomi, a contemporary British luxury fashion house. Explore distinctive leather and suede jackets defined by craftsmanship, individuality and timeless design.",
+      "Discover EKKOMI, a fashion brand creating distinctive suede leather jackets with embroidered details and contemporary design.",
     images: ["/collection-assets/collection/nocturne/temptation/temptation.jpg"],
   },
 
@@ -84,7 +86,7 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en-GB">
+    <html lang="en-GB" data-ekkomi-whatsapp={EKKOMI_WHATSAPP_NUMBER}>
       <head>
         <script
           type="application/ld+json"
@@ -92,29 +94,8 @@ export default function RootLayout({
             __html: JSON.stringify(structuredData).replace(/</g, "\\u003c"),
           }}
         />
+        <OrganizationSchema />
 
-        {/* Google Tag Manager - Consent Mode v2 Default Setup */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('consent', 'default', {
-  'analytics_storage': 'denied',
-  'ad_storage': 'denied',
-  'ad_user_data': 'denied',
-  'ad_personalization': 'denied',
-  'functionality_storage': 'denied',
-  'wait_for_update': 500
-});
-gtag('js', new Date());`,
-          }}
-        />
-
-        {/* Google Tag Manager */}
-        <script
-          async
-          src="https://www.googletagmanager.com/gtm.js?id=GTM-KDDXFFNS"
-        />
       </head>
 
       <body>

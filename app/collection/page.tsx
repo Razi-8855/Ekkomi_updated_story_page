@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import CollectionExperience from "@/components/collection/CollectionExperience";
+import { flattenCatalog } from "@/lib/products";
 import { getShopifyCatalog, type ShopifyCatalog } from "@/lib/shopify-storefront";
 import markup from "./markup";
 import "./collection.css";
 
-const collectionTitle = "Nocturne Collection | Luxury Suede Jackets – Ekkomi";
+const collectionTitle = "Nocturne Collection | Embroidered Suede Jackets – EKKOMI";
 const collectionDescription =
-  "Discover Nocturne by Ekkomi, a collection of distinctive suede jackets inspired by individuality and understated luxury.";
+  "Discover Nocturne by EKKOMI, a collection of distinctive embroidered suede jackets inspired by individuality and considered design.";
 
 export const metadata: Metadata = {
   title: { absolute: collectionTitle },
@@ -19,18 +20,20 @@ export const metadata: Metadata = {
     type: "website",
     siteName: "Ekkomi",
     locale: "en_GB",
+    images: [{ url: "/collection-assets/collection/nocturne/temptation/temptation.jpg", alt: "EKKOMI Nocturne embroidered suede jacket" }],
   },
   twitter: {
     card: "summary_large_image",
     title: collectionTitle,
     description: collectionDescription,
+    images: ["/collection-assets/collection/nocturne/temptation/temptation.jpg"],
   },
 };
 
-export const revalidate = 300;
+export const revalidate = 60;
 
 function buildCollectionJsonLd(catalog: ShopifyCatalog) {
-  const products = [...catalog.men, ...catalog.women];
+  const products = flattenCatalog(catalog);
 
   return {
     "@context": "https://schema.org",
@@ -49,48 +52,30 @@ function buildCollectionJsonLd(catalog: ShopifyCatalog) {
         name: "Nocturne Collection",
         numberOfItems: products.length,
         itemListElement: products.map((product, index) => {
-          const standardVariants = product.variants.filter((item) => {
-            const size = item.selectedOptions.find((option) => option.name.toLowerCase() === "size")?.value;
-            return ["S", "M", "L", "XL"].includes(size ?? "");
-          });
-          const isPurchasable = (item: (typeof product.variants)[number]) =>
-            item.availableForSale && (item.quantityAvailable == null || item.quantityAvailable > 0);
-          const variant =
-            standardVariants.find(isPurchasable) ??
-            standardVariants[0] ??
-            product.variants[0];
-          const material = product.metafields.find(
-            (item) => item?.key === "material",
-          )?.value;
-          const color = product.options.find((option) =>
-            /colou?r/i.test(option.name),
-          )?.values[0];
-
           return {
             "@type": "ListItem",
             position: index + 1,
             item: {
               "@type": "Product",
-              "@id": `https://www.ekkomi.co.uk/collection#${product.handle}`,
+              "@id": product.id,
               name: product.title,
               description: product.description,
-              image: product.featuredImage?.url ?? product.images[0]?.url,
-              ...(color ? { color } : {}),
-              ...(material ? { material } : {}),
-              brand: { "@type": "Brand", name: "Ekkomi" },
-              ...(variant
-                ? {
-                    offers: {
-                      "@type": "Offer",
-                      price: variant.price.amount,
-                      priceCurrency: variant.price.currencyCode,
-                      availability: standardVariants.some(isPurchasable)
-                        ? "https://schema.org/InStock"
-                        : "https://schema.org/OutOfStock",
-                      url: `https://www.ekkomi.co.uk/collection#${product.handle}`,
-                    },
-                  }
+              ...(product.featuredImage?.url || product.images[0]?.url
+                ? { image: product.featuredImage?.url ?? product.images[0]?.url }
                 : {}),
+              brand: { "@type": "Brand", name: "EKKOMI" },
+              url: "https://www.ekkomi.co.uk/collection",
+              offers: product.variants.map((variant) => {
+                const available = variant.availableForSale && !variant.currentlyNotInStock &&
+                  (variant.quantityAvailable === null || variant.quantityAvailable > 0);
+                return {
+                  "@type": "Offer",
+                  url: "https://www.ekkomi.co.uk/collection",
+                  price: variant.price.amount,
+                  priceCurrency: variant.price.currencyCode,
+                  availability: available ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+                };
+              }),
             },
           };
         }),

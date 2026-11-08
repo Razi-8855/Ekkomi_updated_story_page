@@ -1,3 +1,5 @@
+import "server-only";
+
 export type ShopifyImage = {
   url: string;
   altText: string | null;
@@ -8,6 +10,7 @@ export type ShopifyImage = {
 export type ShopifyVariant = {
   id: string;
   title: string;
+  sku: string | null;
   availableForSale: boolean;
   currentlyNotInStock: boolean;
   quantityAvailable: number | null;
@@ -68,6 +71,7 @@ const COLLECTION_QUERY = `
             nodes {
               id
               title
+              sku
               availableForSale
               currentlyNotInStock
               quantityAvailable
@@ -104,6 +108,7 @@ const COLLECTION_QUERY = `
             nodes {
               id
               title
+              sku
               availableForSale
               currentlyNotInStock
               quantityAvailable
@@ -263,7 +268,7 @@ export async function getShopifyCatalog(): Promise<ShopifyCatalog> {
   const result = await runWithInventoryFallback<{
     men?: ShopifyCollectionResponse | null;
     women?: ShopifyCollectionResponse | null;
-  }>(COLLECTION_QUERY, { menHandle: "men", womenHandle: "women" }, 300);
+  }>(COLLECTION_QUERY, { menHandle: "men", womenHandle: "women" }, 60);
 
   if (result.errors?.length) {
     throw new Error("Shopify returned an error while loading the collections.");

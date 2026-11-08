@@ -19,12 +19,14 @@ export const metadata: Metadata = {
     type: "website",
     siteName: "EKKOMI",
     locale: "en_GB",
+    images: [{ url: "/collection-assets/collection/nocturne/curiosity/curiosity.jpg", alt: "EKKOMI embroidered suede jacket" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "EKKOMI FAQs | Suede Jackets, Sizing and Orders",
     description:
       "Find answers about EKKOMI suede leather jackets, embroidered details, sizing, orders, shipping, returns and customer support.",
+    images: ["/collection-assets/collection/nocturne/curiosity/curiosity.jpg"],
   },
 };
 

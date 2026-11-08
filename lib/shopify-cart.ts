@@ -1,3 +1,5 @@
+import "server-only";
+
 import { getLiveVariantAvailability, runShopifyQuery } from "@/lib/shopify-storefront";
 
 const CART_FIELDS = `

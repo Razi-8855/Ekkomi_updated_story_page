@@ -23,9 +23,10 @@ export default function CollectionStyleFooter() {
         </nav>
         <nav className="aux-collection-footer__column" aria-label="About us">
           <h2>About Us</h2>
-          <a href="https://www.ekkomi.co.uk/">Our Story</a>
-          <a href="https://www.ekkomi.co.uk/collection">Our Crafts</a>
-          <Link href="/journal">Our Journal</Link>
+          <a href="https://www.ekkomi.co.uk/">Story</a>
+          <a href="https://www.ekkomi.co.uk/collection">Collection</a>
+          <Link href="/products">Products</Link>
+          <Link href="/journal">Journal</Link>
         </nav>
         <nav className="aux-collection-footer__column" aria-label="Connect">
           <h2>Connect</h2>
@@ -36,6 +37,10 @@ export default function CollectionStyleFooter() {
           <a className="aux-collection-footer__social" href="mailto:info@ekkomi.co.uk">
             <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="14" rx="1.5" /><path d="m4 7 8 6 8-6" /></svg>
             <span>Email</span>
+          </a>
+          <a className="aux-collection-footer__social" href="https://www.facebook.com/ekkomi" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14.1 21v-8h2.7l.4-3h-3.1V8.1c0-.9.3-1.5 1.6-1.5h1.7V3.9c-.8-.1-1.7-.2-2.6-.2-2.6 0-4.4 1.6-4.4 4.6V10H8v3h2.4v8" /></svg>
+            <span>Facebook</span>
           </a>
         </nav>
       </div>

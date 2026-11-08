@@ -36,7 +36,6 @@ export default function SmoothScroll() {
     const tick = (time: number) => activeLenis.raf(time * 1000);
     lenis.on("scroll", ScrollTrigger.update);
     gsap.ticker.add(tick);
-    gsap.ticker.lagSmoothing(0);
     const refresh = () => ScrollTrigger.refresh();
     const visualViewport = window.visualViewport;
     let refreshTimer: number | undefined;

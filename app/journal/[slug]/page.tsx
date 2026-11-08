@@ -43,11 +43,12 @@ function articleSchema(article: NonNullable<ReturnType<typeof getJournalArticle>
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     headline: article.title,
+    articleSection: article.category,
+    inLanguage: "en-GB",
     description: article.description,
     image: [`https://www.ekkomi.co.uk${article.image}`],
     author: { "@type": "Organization", name: article.author, url: "https://www.ekkomi.co.uk/" },
     publisher: { "@id": "https://www.ekkomi.co.uk/#organization" },
-    articleSection: article.category,
     mainEntityOfPage: `https://www.ekkomi.co.uk/journal/${article.slug}`,
   };
 }

@@ -14,6 +14,23 @@ export interface CookiePreferences {
 const STORAGE_KEY = "ekkomi_consent_v1";
 const COOKIE_NAME = "ekkomi_consent";
 const CURRENT_VERSION = 1;
+const CONSENT_LIFETIME_MS = 365 * 24 * 60 * 60 * 1000;
+const GTM_ID = "GTM-KDDXFFNS";
+
+function isCurrentConsent(value: unknown): value is CookiePreferences {
+  if (!value || typeof value !== "object") return false;
+  const prefs = value as Partial<CookiePreferences>;
+  const timestamp = typeof prefs.timestamp === "string" ? Date.parse(prefs.timestamp) : Number.NaN;
+  const age = Date.now() - timestamp;
+  return prefs.necessary === true &&
+    typeof prefs.analytics === "boolean" &&
+    typeof prefs.marketing === "boolean" &&
+    typeof prefs.functional === "boolean" &&
+    prefs.version === CURRENT_VERSION &&
+    Number.isFinite(timestamp) &&
+    age >= 0 &&
+    age < CONSENT_LIFETIME_MS;
+}
 
 declare global {
   interface Window {
@@ -50,18 +67,14 @@ export default function CookieConsent() {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
-        const parsed = JSON.parse(stored) as CookiePreferences;
-        if (parsed && parsed.version === CURRENT_VERSION && parsed.timestamp) {
-          return parsed;
-        }
+        const parsed: unknown = JSON.parse(stored);
+        if (isCurrentConsent(parsed)) return parsed;
       }
       // Fallback check in document.cookie
       const match = document.cookie.match(new RegExp(`(^|;\\s*)${COOKIE_NAME}=([^;]+)`));
       if (match) {
-        const parsed = JSON.parse(decodeURIComponent(match[2])) as CookiePreferences;
-        if (parsed && parsed.version === CURRENT_VERSION && parsed.timestamp) {
-          return parsed;
-        }
+        const parsed: unknown = JSON.parse(decodeURIComponent(match[2]));
+        if (isCurrentConsent(parsed)) return parsed;
       }
     } catch {
       // Ignore parse errors
@@ -73,22 +86,54 @@ export default function CookieConsent() {
   const updateGtmConsent = useCallback((prefs: CookiePreferences) => {
     if (typeof window === "undefined") return;
 
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push({
-      event: "consent_update",
-      cookie_consent_analytics: prefs.analytics,
-      cookie_consent_marketing: prefs.marketing,
-      cookie_consent_functional: prefs.functional,
-      cookie_consent_timestamp: prefs.timestamp,
-    });
+    const consentState = {
+      analytics_storage: prefs.analytics ? "granted" : "denied",
+      ad_storage: prefs.marketing ? "granted" : "denied",
+      ad_user_data: prefs.marketing ? "granted" : "denied",
+      ad_personalization: prefs.marketing ? "granted" : "denied",
+      functionality_storage: prefs.functional ? "granted" : "denied",
+    };
+    const shouldLoadGtm = prefs.analytics || prefs.marketing;
 
-    if (typeof window.gtag === "function") {
-      window.gtag("consent", "update", {
-        analytics_storage: prefs.analytics ? "granted" : "denied",
-        ad_storage: prefs.marketing ? "granted" : "denied",
-        ad_user_data: prefs.marketing ? "granted" : "denied",
-        ad_personalization: prefs.marketing ? "granted" : "denied",
-        functionality_storage: prefs.functional ? "granted" : "denied",
+    // Do not contact Google before an optional category has been accepted.
+    // Consent defaults and the visitor's grant are queued before GTM executes.
+    if (shouldLoadGtm) {
+      window.dataLayer = window.dataLayer || [];
+      if (typeof window.gtag !== "function") {
+        window.gtag = (...args: any[]) => window.dataLayer?.push(args);
+        window.gtag("consent", "default", {
+          analytics_storage: "denied",
+          ad_storage: "denied",
+          ad_user_data: "denied",
+          ad_personalization: "denied",
+          functionality_storage: "denied",
+        });
+        window.dataLayer.push({ "gtm.start": Date.now(), event: "gtm.js" });
+      }
+      window.gtag("consent", "update", consentState);
+      window.dataLayer.push({
+        event: "consent_update",
+        cookie_consent_analytics: prefs.analytics,
+        cookie_consent_marketing: prefs.marketing,
+        cookie_consent_functional: prefs.functional,
+        cookie_consent_timestamp: prefs.timestamp,
+      });
+      if (!document.getElementById("ekkomi-gtm-script")) {
+        const script = document.createElement("script");
+        script.id = "ekkomi-gtm-script";
+        script.async = true;
+        script.src = `https://www.googletagmanager.com/gtm.js?id=${GTM_ID}`;
+        document.head.appendChild(script);
+      }
+    } else if (typeof window.gtag === "function") {
+      // If consent is withdrawn after GTM loads, revoke future storage grants.
+      window.gtag("consent", "update", consentState);
+      window.dataLayer?.push({
+        event: "consent_update",
+        cookie_consent_analytics: false,
+        cookie_consent_marketing: false,
+        cookie_consent_functional: prefs.functional,
+        cookie_consent_timestamp: prefs.timestamp,
       });
     }
 
@@ -128,8 +173,7 @@ export default function CookieConsent() {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
       const serialized = encodeURIComponent(JSON.stringify(prefs));
-      // Expire in 1 year (365 days)
-      document.cookie = `${COOKIE_NAME}=${serialized}; path=/; max-age=31536000; SameSite=Lax`;
+      document.cookie = `${COOKIE_NAME}=${serialized}; path=/; max-age=${CONSENT_LIFETIME_MS / 1000}; SameSite=Lax`;
     } catch {
       // Storage might be restricted
     }

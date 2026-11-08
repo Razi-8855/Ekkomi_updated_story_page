@@ -1,23 +1,22 @@
 import type { Metadata } from "next";
-import OrganizationSchema from "@/components/OrganizationSchema";
 import StoryExperience from "@/components/StoryExperience";
 
 export const metadata: Metadata = {
     title: {
-        absolute: "Ekkomi | British Luxury Leather & Suede Jackets",
+        absolute: "EKKOMI | Embroidered Suede Jackets",
     },
 
     description:
-        "Discover Ekkomi, a contemporary British luxury fashion house. Explore distinctive leather and suede jackets defined by craftsmanship, individuality and timeless design.",
+        "Discover EKKOMI, a fashion brand creating distinctive suede leather jackets with embroidered details and contemporary design.",
 
     alternates: {
         canonical: "/",
     },
 
     openGraph: {
-        title: "Ekkomi | British Luxury Leather & Suede Jackets",
+        title: "EKKOMI | Embroidered Suede Jackets",
         description:
-            "Discover Ekkomi, a contemporary British luxury fashion house. Explore distinctive leather and suede jackets defined by craftsmanship, individuality and timeless design.",
+            "Discover EKKOMI, a fashion brand creating distinctive suede leather jackets with embroidered details and contemporary design.",
         url: "/",
         type: "website",
         images: [
@@ -25,25 +24,22 @@ export const metadata: Metadata = {
                 url: "/collection-assets/collection/nocturne/temptation/temptation.jpg",
                 width: 1200,
                 height: 1800,
-                alt: "Ekkomi | British Luxury Leather & Suede Jackets",
+                alt: "EKKOMI embroidered suede jackets",
             },
         ],
     },
 
     twitter: {
         card: "summary_large_image",
-        title: "Ekkomi | British Luxury Leather & Suede Jackets",
+        title: "EKKOMI | Embroidered Suede Jackets",
         description:
-            "Discover Ekkomi, a contemporary British luxury fashion house. Explore distinctive leather and suede jackets defined by craftsmanship, individuality and timeless design.",
+            "Discover EKKOMI, a fashion brand creating distinctive suede leather jackets with embroidered details and contemporary design.",
         images: ["/collection-assets/collection/nocturne/temptation/temptation.jpg"],
     },
 };
 
 export default function HomePage() {
     return (
-        <>
-            <OrganizationSchema />
-            <StoryExperience />
-        </>
+        <StoryExperience />
     );
 }

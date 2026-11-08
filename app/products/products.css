@@ -1,0 +1,124 @@
+.products-page,
+.product-detail-page {
+  --products-paper: #faf4f0;
+  --products-ink: #382d29;
+  --products-muted: #65534d;
+  --products-accent: #713d3c;
+  --products-line: rgba(63, 46, 41, .2);
+  min-height: 100vh;
+  background: var(--products-paper);
+  color: var(--products-ink);
+  font-family: Garamond, Georgia, serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.products-page a,
+.product-detail-page a { color: inherit; text-decoration: none; }
+.products-header {
+  min-height: 82px;
+  padding: 18px clamp(22px, 6vw, 96px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  border-bottom: 1px solid var(--products-line);
+}
+.products-header__wordmark { font: 400 25px/1 Italiana, Georgia, serif; letter-spacing: .2em; }
+.products-header nav { display: flex; align-items: center; gap: clamp(20px, 3vw, 44px); }
+.products-header nav a {
+  color: var(--products-ink);
+  font: 500 10px/1.5 Arial, sans-serif;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  transition: color .2s ease;
+}
+.products-header nav a:hover { color: var(--products-accent); }
+
+.products-hero { max-width: 1000px; margin: 0 auto; padding: clamp(78px, 11vw, 145px) 24px clamp(62px, 8vw, 100px); text-align: center; }
+.products-eyebrow { margin: 0 0 20px; color: #805a50; font: 500 10px/1.5 Arial, sans-serif; letter-spacing: .19em; text-transform: uppercase; }
+.products-hero h1 { margin: 0; font: 400 clamp(44px, 8vw, 88px)/1.03 "Goodnight London Sans", Italiana, Georgia, serif; letter-spacing: .04em; }
+.products-hero > p:last-child { max-width: 690px; margin: 24px auto 0; color: var(--products-muted); font: 400 clamp(18px, 1.8vw, 21px)/1.7 Garamond, Georgia, serif; }
+
+.products-grid { max-width: 1540px; margin: 0 auto; padding: 0 clamp(22px, 6vw, 96px) 96px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: clamp(20px, 3vw, 46px); row-gap: 66px; }
+.products-card { min-width: 0; }
+.products-card__image { display: block; aspect-ratio: 4 / 5; overflow: hidden; background: #e9dfd9; }
+.products-card__image img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .65s cubic-bezier(.2,.7,.25,1); }
+.products-card__image:hover img { transform: scale(1.025); }
+.products-card__meta { padding-top: 18px; }
+.products-card__meta > p:first-child { margin: 0 0 10px; color: var(--products-muted); font: 500 10px/1.5 Arial, sans-serif; letter-spacing: .13em; text-transform: uppercase; }
+.products-card h2 { margin: 0; font: 400 clamp(25px, 2.8vw, 36px)/1.15 "Goodnight London Sans", Italiana, Georgia, serif; letter-spacing: .045em; text-transform: uppercase; }
+.products-card__description { display: -webkit-box; min-height: 3.4em; margin: 12px 0 20px; overflow: hidden; color: var(--products-muted); font: 400 17px/1.7 Garamond, Georgia, serif; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.products-card__link { display: inline-flex; min-height: 43px; align-items: center; padding: 0 16px; border: 1px solid rgba(87, 53, 48, .45); color: var(--products-accent) !important; font: 500 10px/1 Arial, sans-serif; letter-spacing: .13em; text-transform: uppercase; transition: background .2s ease, color .2s ease; }
+.products-card__link:hover { background: var(--products-accent); color: var(--products-paper) !important; }
+.product-detail__breadcrumb { max-width: 1580px; margin: 0 auto; padding: 26px clamp(22px, 6vw, 96px) 0; display: flex; align-items: center; gap: 12px; color: var(--products-muted); font: 500 10px/1.5 Arial, sans-serif; letter-spacing: .12em; text-transform: uppercase; }
+.product-detail__breadcrumb a { text-decoration: underline !important; text-underline-offset: 4px; }
+.product-detail__hero { max-width: 1580px; margin: 0 auto; padding: 38px clamp(22px, 6vw, 96px) clamp(72px, 9vw, 118px); display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(340px, .92fr); align-items: center; gap: clamp(40px, 6vw, 96px); }
+.product-gallery { min-width: 0; }
+.product-gallery__main { position: relative; margin: 0; aspect-ratio: 4 / 5; overflow: hidden; background: #e8ded8; }
+.product-gallery__main img, .product-gallery__empty { width: 100%; height: 100%; display: block; object-fit: cover; }
+.product-gallery__empty { display: grid; place-items: center; color: var(--products-muted); font: 400 16px Italiana, Georgia, serif; letter-spacing: .2em; }
+.product-detail__summary { min-width: 0; padding: 12px 0; }
+.product-detail__summary > .products-eyebrow { margin-bottom: 16px; }
+.product-detail__summary h1 { margin: 0; font: 400 clamp(48px, 6vw, 82px)/1.02 "Goodnight London Sans", Italiana, Georgia, serif; letter-spacing: .025em; text-transform: uppercase; overflow-wrap: anywhere; }
+.product-detail__core { max-width: 640px; margin: 21px 0 22px; color: #714c49; font: 400 clamp(25px, 3vw, 36px)/1.3 "Goodnight London Script", cursive; }
+.product-detail__description { max-width: 650px; margin: 0; color: var(--products-muted); font: 400 clamp(18px, 1.65vw, 21px)/1.75 Garamond, Georgia, serif; }
+.product-detail__story, .product-detail__facts, .product-detail__gallery-section { width: min(100% - 44px, 1250px); margin: 0 auto; padding-bottom: clamp(70px, 9vw, 112px); }
+.product-detail__story { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(34px, 7vw, 100px); }
+.product-detail__facts h2, .product-detail__story h2, .product-detail__gallery-section h2, .product-detail__related h2 { margin: 0 0 25px; font: 400 clamp(28px, 3.2vw, 42px)/1.18 "Goodnight London Sans", Italiana, Georgia, serif; letter-spacing: .025em; }
+.product-detail__story p:not(.products-eyebrow), .product-detail__story li { color: var(--products-muted); font: 400 clamp(18px, 1.55vw, 20px)/1.78 Garamond, Georgia, serif; }
+.product-detail__story p:not(.products-eyebrow) { margin: 0; }
+.product-story-quote { color: var(--products-ink) !important; font: 400 clamp(24px, 3vw, 36px)/1.45 "Goodnight London Sans", Italiana, Georgia, serif !important; }
+.product-detail__story ul { display: grid; gap: 11px; margin: 0; padding-left: 21px; }
+.product-detail__facts dl { margin: 0; border-top: 1px solid var(--products-line); }
+.product-detail__facts dl > div { display: grid; grid-template-columns: minmax(170px, .35fr) 1fr; gap: 26px; padding: 20px 0; border-bottom: 1px solid var(--products-line); }
+.product-detail__facts dt { color: var(--products-muted); font: 500 10px/1.6 Arial, sans-serif; letter-spacing: .13em; text-transform: uppercase; }
+.product-detail__facts dd { margin: 0; font: 400 19px/1.65 Garamond, Georgia, serif; }
+.product-story-information > .products-eyebrow { margin-bottom: 14px; }
+.product-story-size-row dd { min-width: 0; }
+.product-story-explore { padding-top: 4px; padding-bottom: clamp(75px, 10vw, 125px); text-align: center; }
+.product-detail__gallery-section .products-eyebrow, .product-detail__related .products-eyebrow { margin-bottom: 15px; }
+.product-detail__gallery-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+.product-detail__gallery-grid figure { margin: 0; }
+.product-detail__gallery-grid img { width: 100%; aspect-ratio: 4 / 5; display: block; object-fit: cover; background: #e8ded8; }
+.product-detail__gallery-grid figcaption { padding-top: 10px; color: var(--products-muted); font: 500 10px/1.5 Arial, sans-serif; letter-spacing: .1em; text-transform: uppercase; }
+.product-detail__related-grid { max-width: 1300px; margin: 34px auto 43px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; text-align: left; }
+.product-detail__related-card { min-width: 0; }
+.product-detail__related-card img { width: 100%; aspect-ratio: 4 / 5; display: block; object-fit: cover; background: #e8ded8; }
+.product-detail__related-card > strong { display: block; margin-top: 13px; font: 400 clamp(18px, 2vw, 24px)/1.2 "Goodnight London Sans", Italiana, Georgia, serif; letter-spacing: .05em; text-transform: uppercase; }
+
+@media (max-width: 900px) {
+  .products-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .product-detail__hero { grid-template-columns: minmax(0, 1fr) minmax(290px, .9fr); gap: 34px; }
+  .product-detail__related-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+  .products-header { min-height: 72px; padding: 16px 20px; }
+  .products-header__wordmark { font-size: 21px; }
+  .products-header nav { gap: 13px; }
+  .products-header nav a { font-size: 8px; letter-spacing: .09em; }
+  .products-hero { padding: 72px 22px 55px; }
+  .products-eyebrow { margin-bottom: 16px; font-size: 9px; }
+  .products-hero h1 { font-size: clamp(40px, 12vw, 60px); }
+  .products-hero > p:last-child { margin-top: 18px; font-size: 18px; line-height: 1.65; }
+  .products-grid { grid-template-columns: minmax(0, 1fr); row-gap: 40px; padding: 0 20px 62px; }
+  .products-card__meta { padding-top: 14px; }
+  .products-card h2 { font-size: 30px; }
+  .products-card__description { min-height: 0; font-size: 17px; }
+  .product-detail__breadcrumb { padding: 19px 20px 0; }
+  .product-detail__hero { grid-template-columns: minmax(0, 1fr); gap: 27px; padding: 25px 20px 66px; }
+  .product-detail__summary { padding: 0; }
+  .product-detail__summary h1 { font-size: clamp(43px, 13vw, 58px); }
+  .product-detail__core { margin: 16px 0; font-size: 27px; }
+  .product-detail__description { font-size: 18px; line-height: 1.72; }
+  .product-detail__story, .product-detail__facts, .product-detail__gallery-section { width: calc(100% - 40px); padding-bottom: 68px; }
+  .product-detail__story { grid-template-columns: minmax(0, 1fr); gap: 39px; }
+  .product-detail__facts dl > div { grid-template-columns: 1fr; gap: 7px; padding: 16px 0; }
+  .product-detail__facts dd { font-size: 18px; }
+  .product-detail__gallery-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 11px; }
+  .product-detail__related { padding: 0 20px 72px; }
+  .product-detail__related-grid { gap: 14px; margin: 26px auto 34px; }
+  .product-detail__related-card > strong { font-size: 17px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .products-header nav a, .products-card__image img, .products-card__link { transition: none; }
+}

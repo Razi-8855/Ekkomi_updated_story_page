@@ -12,8 +12,8 @@ export const metadata: Metadata = {
   title: { absolute: title },
   description,
   alternates: { canonical: "https://www.ekkomi.co.uk/journal" },
-  openGraph: { title, description, url: "https://www.ekkomi.co.uk/journal", type: "website", siteName: "EKKOMI", locale: "en_GB" },
-  twitter: { card: "summary_large_image", title, description },
+  openGraph: { title, description, url: "https://www.ekkomi.co.uk/journal", type: "website", siteName: "EKKOMI", locale: "en_GB", images: [{ url: journalArticles[0].image, alt: journalArticles[0].imageAlt }] },
+  twitter: { card: "summary_large_image", title, description, images: [journalArticles[0].image] },
 };
 
 export default function JournalPage() {

@@ -455,9 +455,10 @@ const collectionFooter = `<footer class="collection-footer" id="contact" role="c
     </nav>
     <nav class="collection-footer__column" aria-label="About us">
       <h3 class="collection-footer__heading">About Us</h3>
-      <a class="collection-footer__link" href="https://www.ekkomi.co.uk/">Our Story</a>
-      <a class="collection-footer__link" href="https://www.ekkomi.co.uk/collection">Our Crafts</a>
-      <a class="collection-footer__link" href="https://www.ekkomi.co.uk/journal">Our Journal</a>
+      <a class="collection-footer__link" href="https://www.ekkomi.co.uk/">Story</a>
+      <a class="collection-footer__link" href="https://www.ekkomi.co.uk/collection">Collection</a>
+      <a class="collection-footer__link" href="/products">Products</a>
+      <a class="collection-footer__link" href="/journal">Journal</a>
     </nav>
     <nav class="collection-footer__column" aria-label="Connect">
       <h3 class="collection-footer__heading">Connect</h3>
@@ -468,6 +469,10 @@ const collectionFooter = `<footer class="collection-footer" id="contact" role="c
       <a class="collection-footer__link collection-footer__social-link" href="mailto:info@ekkomi.co.uk">
         <svg class="collection-footer__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="14" rx="1.5" /><path d="m4 7 8 6 8-6" /></svg>
         <span>Email</span>
+      </a>
+      <a class="collection-footer__link collection-footer__social-link" href="https://www.facebook.com/ekkomi" target="_blank" rel="noopener noreferrer">
+        <svg class="collection-footer__icon collection-footer__icon--facebook" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14.1 21v-8h2.7l.4-3h-3.1V8.1c0-.9.3-1.5 1.6-1.5h1.7V3.9c-.8-.1-1.7-.2-2.6-.2-2.6 0-4.4 1.6-4.4 4.6V10H8v3h2.4v8" /></svg>
+        <span>Facebook</span>
       </a>
     </nav>
   </div>
