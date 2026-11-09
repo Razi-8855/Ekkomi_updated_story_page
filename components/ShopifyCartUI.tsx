@@ -151,7 +151,11 @@ export default function ShopifyCartUI() {
 
         {cart.lines.length > 0 && <div className="ekkomi-cart-footer">
           <div className="ekkomi-cart-subtotal"><span>SUBTOTAL</span><strong>{formatMoney(cart.subtotal.amount, cart.subtotal.currencyCode)}</strong></div>
-          <p>Taxes and delivery are calculated at checkout.</p>
+          <p className="ekkomi-cart-tax-note">Taxes and delivery are calculated at checkout.</p>
+          <div className="ekkomi-cart-delivery" aria-label="Delivery information">
+            <span className="ekkomi-cart-delivery-title">DELIVERY INFORMATION</span>
+            <p className="ekkomi-cart-delivery-text">Estimated delivery: 7–10 days across the UK.</p>
+          </div>
           <button type="button" className="ekkomi-cart-checkout" onClick={() => void checkout()} disabled={busy}>PROCEED TO CHECKOUT</button>
           <button type="button" className="ekkomi-cart-continue" onClick={() => setOpen(false)}>CONTINUE SHOPPING</button>
         </div>}

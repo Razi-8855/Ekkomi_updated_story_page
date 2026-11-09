@@ -287,23 +287,44 @@ function switchDepartment(dept, { syncJacket = true, scroll = false } = {}) {
 
 
 /* -------------------------------------------------------------------
-   SIZE GUIDE MODAL CONTROLLER
+   SIZE GUIDE MODAL CONTROLLER (IOS SAFARI & CROSS-DEVICE COMPATIBLE)
    ------------------------------------------------------------------- */
 let sizeGuidePrevFocus = null;
+let sizeGuideScrollY = 0;
 
 function openSizeGuide() {
   const modal = document.getElementById('sizeGuideModal');
   if (!modal) return;
   sizeGuidePrevFocus = document.activeElement;
-  try {
-    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-    if (scrollbarWidth > 0) {
-      document.body.style.paddingRight = `${scrollbarWidth}px`;
-    }
-  } catch (e) {}
+
+  // Capture current scroll position and lock background body on iOS Safari & Android
+  sizeGuideScrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
+  const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+
+  document.body.style.position = 'fixed';
+  document.body.style.top = `-${sizeGuideScrollY}px`;
+  document.body.style.left = '0';
+  document.body.style.right = '0';
+  document.body.style.width = '100%';
+  if (scrollbarWidth > 0) {
+    document.body.style.paddingRight = `${scrollbarWidth}px`;
+  }
   document.body.classList.add('size-guide-open');
+
   modal.classList.add('is-active');
   modal.setAttribute('aria-hidden', 'false');
+
+  // Reset scroll positions on open so columns and headers start in view
+  const tableWrap = modal.querySelector('.size-guide-table-wrap');
+  if (tableWrap) {
+    tableWrap.scrollLeft = 0;
+    tableWrap.scrollTop = 0;
+  }
+  const dialog = modal.querySelector('.size-guide-modal-dialog');
+  if (dialog) {
+    dialog.scrollTop = 0;
+  }
+
   const closeBtn = document.getElementById('sizeGuideCloseBtn');
   if (closeBtn) {
     window.setTimeout(() => closeBtn.focus(), 60);
@@ -313,10 +334,21 @@ function openSizeGuide() {
 function closeSizeGuide() {
   const modal = document.getElementById('sizeGuideModal');
   if (!modal) return;
+
   modal.classList.remove('is-active');
   modal.setAttribute('aria-hidden', 'true');
-  document.body.classList.remove('size-guide-open');
+
+  // Restore background scroll position cleanly
+  document.body.style.position = '';
+  document.body.style.top = '';
+  document.body.style.left = '';
+  document.body.style.right = '';
+  document.body.style.width = '';
   document.body.style.paddingRight = '';
+  document.body.classList.remove('size-guide-open');
+
+  window.scrollTo(0, sizeGuideScrollY);
+
   if (sizeGuidePrevFocus && typeof sizeGuidePrevFocus.focus === 'function') {
     try { sizeGuidePrevFocus.focus(); } catch (e) {}
   }
@@ -341,6 +373,13 @@ function initSizeGuide() {
         closeSizeGuide();
       }
     });
+    // Ensure smooth scrolling inside modal without rubber-banding background
+    modal.addEventListener('touchmove', (e) => {
+      const scrollable = e.target.closest('.size-guide-table-wrap');
+      if (!scrollable) {
+        e.preventDefault();
+      }
+    }, { passive: false });
   }
 
   if (!document._sizeGuideKeyBound) {
