@@ -2965,6 +2965,9 @@ body.waitlist-open {
   max-width: 440px;
   max-height: min(90dvh, 90vh, 620px);
   overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
   scrollbar-width: thin;
   scrollbar-color: rgba(64, 48, 44, 0.22) transparent;
   padding: clamp(1.35rem, 3vw, 2rem);
@@ -4484,6 +4487,17 @@ body.waitlist-open .floating-waitlist-btn {
   border-color: #232b38;
   box-shadow: 0 6px 20px rgba(20, 24, 32, 0.25);
   transform: translateY(-1px);
+}
+
+#collection-experience .btn-add-to-bag.is-waitlist-cta {
+  background: #773A3C;
+  border-color: #773A3C;
+}
+
+#collection-experience .btn-add-to-bag.is-waitlist-cta:hover:not(:disabled) {
+  background: #643033;
+  border-color: #643033;
+  box-shadow: 0 6px 20px rgba(119, 58, 60, 0.24);
 }
 
 /* Priority Waitlist Link in Showcase */

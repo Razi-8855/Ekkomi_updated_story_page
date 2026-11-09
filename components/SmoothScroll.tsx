@@ -9,6 +9,7 @@ export default function SmoothScroll() {
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
     let lenis: Lenis | null = null;
+    let isPageScrollLocked = false;
     const navigateToStoryIntro = (event: Event) => {
       const progress = (event as CustomEvent<{ progress: number }>).detail.progress;
       const trigger = ScrollTrigger.getById("ekkomi-story");
@@ -21,9 +22,23 @@ export default function SmoothScroll() {
       if (lenis) lenis.scrollTo(destination, { duration: 1.1, force: true, programmatic: true });
       else window.scrollTo({ top: destination, behavior: "auto" });
     };
+    const stopPageScroll = () => {
+      isPageScrollLocked = true;
+      lenis?.stop();
+    };
+    const startPageScroll = () => {
+      isPageScrollLocked = false;
+      lenis?.start();
+    };
     window.addEventListener("ekkomi:story-intro", navigateToStoryIntro);
+    window.addEventListener("ekkomi:modal-scroll-lock", stopPageScroll);
+    window.addEventListener("ekkomi:modal-scroll-unlock", startPageScroll);
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      return () => window.removeEventListener("ekkomi:story-intro", navigateToStoryIntro);
+      return () => {
+        window.removeEventListener("ekkomi:story-intro", navigateToStoryIntro);
+        window.removeEventListener("ekkomi:modal-scroll-lock", stopPageScroll);
+        window.removeEventListener("ekkomi:modal-scroll-unlock", startPageScroll);
+      };
     }
 
     lenis = new Lenis({
@@ -32,6 +47,7 @@ export default function SmoothScroll() {
       syncTouch: true,
       syncTouchLerp: 0.12,
     });
+    if (isPageScrollLocked) lenis.stop();
     const activeLenis = lenis;
     const tick = (time: number) => activeLenis.raf(time * 1000);
     lenis.on("scroll", ScrollTrigger.update);
@@ -58,6 +74,8 @@ export default function SmoothScroll() {
     visualViewport?.addEventListener("resize", refreshAfterViewportSettles);
     return () => {
       window.removeEventListener("ekkomi:story-intro", navigateToStoryIntro);
+      window.removeEventListener("ekkomi:modal-scroll-lock", stopPageScroll);
+      window.removeEventListener("ekkomi:modal-scroll-unlock", startPageScroll);
       window.removeEventListener("load", refresh);
       visualViewport?.removeEventListener("resize", refreshAfterViewportSettles);
       window.clearTimeout(refreshTimer);

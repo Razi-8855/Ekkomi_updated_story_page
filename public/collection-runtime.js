@@ -1153,8 +1153,14 @@ function renderShowcase(jacket) {
         if (qtyDisplay) qtyDisplay.textContent = String(currentSelectedQuantity);
       }
       const hasStock = inventoryRefreshVerified && productHasAvailableStandardSize(jacket);
+      const waitlistOnly = !isCustom && inventoryRefreshVerified && productIsConfirmedSoldOut(jacket);
       const canProceed = isCustom || (hasStock && variantAvailable && currentSelectedQuantity <= maxQuantity);
-      if (addBagBtn) addBagBtn.disabled = !canProceed;
+      if (addBagBtn) {
+        addBagBtn.textContent = waitlistOnly ? 'JOIN THE WAITLIST' : 'ADD TO BAG';
+        addBagBtn.setAttribute('aria-label', waitlistOnly ? `Join the waitlist for ${jacket.impulse}` : 'Add to bag');
+        addBagBtn.classList.toggle('is-waitlist-cta', waitlistOnly);
+        addBagBtn.disabled = waitlistOnly ? false : !canProceed;
+      }
       if (plusBtn) plusBtn.disabled = isCustom ? currentSelectedQuantity >= MAX_ORDER_QUANTITY : !variantAvailable || currentSelectedQuantity >= maxQuantity;
       if (minusBtn) minusBtn.disabled = currentSelectedQuantity <= 1;
 
@@ -1445,6 +1451,17 @@ function renderShowcase(jacket) {
 
     // Add to Bag. Standard variants use Shopify Cart API; CUSTOM remains a stylist WhatsApp enquiry.
     let addToBagPending = false;
+    const openWaitlistForProduct = (size = null) => {
+      window.EkkomiWaitlist?.open({
+        collection: jacket.gender === 'women' ? 'women' : 'men',
+        jacketKey: jacket.key,
+        jacketName: jacket.impulse,
+        jacketHex: jacket.hex,
+        jacketColour: jacket.colour,
+        size,
+        outOfStock: true
+      });
+    };
     const handleAddToBag = async () => {
       if (addToBagPending) return;
       if (currentSelectedSize === 'Custom') {
@@ -1457,6 +1474,11 @@ function renderShowcase(jacket) {
         return;
       }
 
+      if (inventoryRefreshVerified && productIsConfirmedSoldOut(jacket)) {
+        openWaitlistForProduct();
+        return;
+      }
+
       const requestedQuantity = currentSelectedQuantity;
       const inventoryVerified = await refreshInventory();
       if (!inventoryVerified) {
@@ -1465,6 +1487,14 @@ function renderShowcase(jacket) {
       }
 
       const selectedVariant = getSelectedVariant(jacket);
+      if (productIsConfirmedSoldOut(jacket)) {
+        openWaitlistForProduct();
+        return;
+      }
+      if (isVariantSoldOut(selectedVariant)) {
+        openWaitlistForProduct(currentSelectedSize);
+        return;
+      }
       const maximum = getVariantQuantityLimit(selectedVariant);
       if (!isVariantAvailable(selectedVariant)) {
         setInventoryMessage('This size is sold out. Choose another size.');
@@ -2382,6 +2412,7 @@ if (document.readyState === 'loading') {
     state.isOpen = true;
     state.outOfStock = !!preselects.outOfStock;
     document.body.classList.add('waitlist-open');
+    window.dispatchEvent(new Event('ekkomi:modal-scroll-lock'));
 
     // Preselect collection if passed or keep existing
     if (preselects.collection && (preselects.collection === 'men' || preselects.collection === 'women')) {
@@ -2431,6 +2462,7 @@ if (document.readyState === 'loading') {
     state.isOpen = false;
     document.body.classList.remove('waitlist-open');
     document.body.style.paddingRight = '';
+    window.dispatchEvent(new Event('ekkomi:modal-scroll-unlock'));
     backdropEl.classList.remove('is-active');
     backdropEl.setAttribute('aria-hidden', 'true');
 
