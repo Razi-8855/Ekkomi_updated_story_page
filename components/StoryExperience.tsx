@@ -8,19 +8,25 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 const scenes = [
   {
     desktop: "/desktop-videos/scene1-desktop.mp4",
+    desktopReverse: "/desktop-videos/scene1-desktop-reverse.mp4",
     mobile: "/mobile-videos/scene1-mobile.mp4",
+    mobileReverse: "/mobile-videos/scene1-mobile-reverse.mp4",
     desktopPoster: "/desktop-videos/scene1-desktop-poster.jpg",
     mobilePoster: "/mobile-videos/scene1-mobile-poster.jpg",
     caption: ".story-caption--intro",
   },
   {
     desktop: "/desktop-videos/scene2-desktop.mp4",
+    desktopReverse: "/desktop-videos/scene2-desktop-reverse.mp4",
     mobile: "/mobile-videos/scene2-mobile.mp4",
+    mobileReverse: "/mobile-videos/scene2-mobile-reverse.mp4",
     caption: ".story-caption--detail",
   },
   {
     desktop: "/desktop-videos/scene3-desktop.mp4",
+    desktopReverse: "/desktop-videos/scene3-desktop-reverse.mp4",
     mobile: "/mobile-videos/scene3-mobile.mp4",
+    mobileReverse: "/mobile-videos/scene3-mobile-reverse.mp4",
     caption: ".story-caption--full-look",
   },
 ] as const;
@@ -46,30 +52,26 @@ function videoSceneForStage(stage: StoryStage) {
   return null;
 }
 
-function getVideoPath(sceneIndex: number, isMobile: boolean) {
+function getVideoPath(sceneIndex: number, isMobile: boolean, reverse = false) {
   const scene = scenes[sceneIndex];
+  if (reverse) return isMobile ? scene.mobileReverse : scene.desktopReverse;
   return isMobile ? scene.mobile : scene.desktop;
-}
-
-function getPosterPath(isMobile: boolean) {
-  return isMobile ? scenes[0].mobilePoster : scenes[0].desktopPoster;
 }
 
 export default function StoryExperience() {
   const shell = useRef<HTMLElement>(null);
   const stage = useRef<HTMLDivElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const freezeFrame = useRef<HTMLCanvasElement>(null);
+  const videoRefs = useRef<Array<HTMLVideoElement | null>>([]);
+  const reverseVideoRef = useRef<HTMLVideoElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [storyStage, setStoryStageState] = useState<StoryStage>(0);
-  const [videoLoading, setVideoLoading] = useState(false);
   const [videoError, setVideoError] = useState("");
 
   const storyStageRef = useRef<StoryStage>(0);
   const mobileAssetRef = useRef(false);
-  const currentVideoSceneRef = useRef(0);
   const playingSceneRef = useRef<number | null>(null);
   const playingRef = useRef(false);
+  const reverseModeRef = useRef(false);
   const transitioningRef = useRef(false);
   const finishedRef = useRef(false);
   const playbackTokenRef = useRef(0);
@@ -77,6 +79,7 @@ export default function StoryExperience() {
   const currentCaptionRef = useRef<string | null>(null);
   const expectedScrollStepRef = useRef(0);
   const programmaticScrollUntilRef = useRef(0);
+  const retryActionRef = useRef<(() => void) | null>(null);
 
   const updateStage = useCallback((nextStage: StoryStage) => {
     storyStageRef.current = nextStage;
@@ -86,10 +89,9 @@ export default function StoryExperience() {
   useEffect(() => {
     const host = shell.current;
     const screen = stage.current;
-    const video = videoRef.current;
-    const frame = freezeFrame.current;
-    const frameContext = frame?.getContext("2d", { alpha: false });
-    if (!host || !screen || !video || !frame || !frameContext) return;
+    const videos = videoRefs.current;
+    const reverseVideo = reverseVideoRef.current;
+    if (!host || !screen || videos.length !== scenes.length || videos.some((video) => !video) || !reverseVideo) return;
 
     gsap.registerPlugin(ScrollTrigger);
 
@@ -101,7 +103,6 @@ export default function StoryExperience() {
     host.classList.add("story-sequence-active");
 
     let active = true;
-    let videoLoadTimer: number | null = null;
     let activeLoadCleanup: (() => void) | null = null;
 
     const clearTransitionTimer = () => {
@@ -111,50 +112,39 @@ export default function StoryExperience() {
       }
     };
 
-    const setSource = (sceneIndex: number, isMobile = mobileAssetRef.current) => {
-      const nextSource = getVideoPath(sceneIndex, isMobile);
-      currentVideoSceneRef.current = sceneIndex;
-      if (video.dataset.source === nextSource) return;
-      activeLoadCleanup?.();
-      activeLoadCleanup = null;
-      if (videoLoadTimer !== null) window.clearTimeout(videoLoadTimer);
-      video.pause();
-      video.preload = "metadata";
-      video.dataset.source = nextSource;
-      video.poster = getPosterPath(isMobile);
-      video.src = nextSource;
-      video.load();
-    };
-
-    const waitUntilPlayable = (sceneIndex: number, token: number, retry = false) => new Promise<boolean>((resolve) => {
-      if (video.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA && currentVideoSceneRef.current === sceneIndex) {
+    const getVideo = (index: number) => videos[index]!;
+    const waitUntilPlayable = (video: HTMLVideoElement, token: number) => new Promise<boolean>((resolve) => {
+      if (video.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA) {
         resolve(true);
         return;
       }
-      if (video.error && !retry) {
+      if (video.error) {
         resolve(false);
         return;
       }
 
       let settled = false;
+      let timer = 0;
+      const cleanup = () => {
+        window.clearTimeout(timer);
+        video.removeEventListener("canplay", onCanPlay);
+        video.removeEventListener("error", onError);
+      };
       const settle = (ready: boolean) => {
         if (settled) return;
         settled = true;
-        activeLoadCleanup?.();
-        activeLoadCleanup = null;
-        if (videoLoadTimer !== null) window.clearTimeout(videoLoadTimer);
-        videoLoadTimer = null;
+        cleanup();
+        if (activeLoadCleanup === cancel) activeLoadCleanup = null;
         resolve(ready && active && token === playbackTokenRef.current);
       };
       const onCanPlay = () => settle(true);
       const onError = () => settle(false);
-      activeLoadCleanup = () => {
-        video.removeEventListener("canplay", onCanPlay);
-        video.removeEventListener("error", onError);
-      };
+      const cancel = () => settle(false);
+      activeLoadCleanup?.();
+      activeLoadCleanup = cancel;
+      timer = window.setTimeout(() => settle(false), 20000);
       video.addEventListener("canplay", onCanPlay, { once: true });
       video.addEventListener("error", onError, { once: true });
-      videoLoadTimer = window.setTimeout(() => settle(false), 20000);
     });
 
     const scrollToStep = (step: number, duration = 0.48) => {
@@ -218,72 +208,61 @@ export default function StoryExperience() {
       setTransitioning(prefersReducedMotion ? 0 : wait);
     };
 
-    const revealNextTagline = (completedScene: number, hasCompletedFrame = true) => {
+    const revealNextTagline = (completedScene: number) => {
       playingRef.current = false;
       playingSceneRef.current = null;
-      setVideoLoading(false);
+      reverseModeRef.current = false;
       setVideoError("");
-      video.classList.remove("is-visible");
-      if (hasCompletedFrame || completedScene > 0) frame.classList.add("is-visible");
-      else frame.classList.remove("is-visible");
+      getVideo(completedScene).pause();
 
       if (completedScene === 0) {
-        setSource(1);
         changeStage(3, 3, scenes[1].caption);
       } else if (completedScene === 1) {
-        setSource(2);
         changeStage(5, 5, scenes[2].caption);
       } else {
         changeStage(7, 7, FINAL_CAPTION);
       }
     };
 
-    const captureFinalFrame = () => {
-      if (!video.videoWidth || !video.videoHeight) return false;
-      frame.width = video.videoWidth;
-      frame.height = video.videoHeight;
-      frameContext.drawImage(video, 0, 0, frame.width, frame.height);
-      return true;
-    };
-
     const handleVideoEnded = () => {
       const completedScene = playingSceneRef.current;
       if (completedScene === null) return;
-      video.pause();
-      captureFinalFrame();
       revealNextTagline(completedScene);
     };
 
-    const completeAfterFallback = () => {
-      const failedScene = playingSceneRef.current;
-      if (failedScene === null) return;
-      const hasFrame = captureFinalFrame();
-      revealNextTagline(failedScene, hasFrame);
+    const handleReverseEnded = () => {
+      const reversedScene = playingSceneRef.current;
+      if (reversedScene === null || !reverseModeRef.current) return;
+      reverseVideo.pause();
+      reverseVideo.classList.remove("is-visible");
+      if (reversedScene > 0) getVideo(reversedScene).classList.remove("is-visible");
+      else getVideo(0).currentTime = 0;
+      playingRef.current = false;
+      reverseModeRef.current = false;
+      playingSceneRef.current = null;
+      const precedingStage = (reversedScene * 2 + 1) as StoryStage;
+      changeStage(precedingStage, precedingStage, captionForStage(precedingStage));
     };
 
-    const startPlayback = async (sceneIndex: number, retry = false) => {
+    const startPlayback = async (sceneIndex: number) => {
       const playStage = (sceneIndex * 2 + 2) as StoryStage;
       updateStage(playStage);
       transitionCaption(null);
       playingSceneRef.current = sceneIndex;
+      reverseModeRef.current = false;
       playingRef.current = true;
       setVideoError("");
-      setVideoLoading(true);
       setTransitioning(20000);
       scrollToStep(playStage);
-      setSource(sceneIndex);
+      const video = getVideo(sceneIndex);
       const token = ++playbackTokenRef.current;
-      video.preload = "auto";
-      const shouldReload = video.readyState < HTMLMediaElement.HAVE_FUTURE_DATA || !!video.error;
-      const playablePromise = waitUntilPlayable(sceneIndex, token, retry || !!video.error);
-      if (shouldReload) video.load();
-
+      const playablePromise = waitUntilPlayable(video, token);
       const canPlay = await playablePromise;
       if (!active || token !== playbackTokenRef.current) return;
       if (!canPlay) {
         playingRef.current = false;
-        setVideoLoading(false);
         setVideoError("This film could not be loaded. Please retry, or continue to the next scene.");
+        retryActionRef.current = () => { video.load(); void startPlayback(sceneIndex); };
         transitioningRef.current = false;
         clearTransitionTimer();
         return;
@@ -293,25 +272,77 @@ export default function StoryExperience() {
         video.currentTime = 0;
         await video.play();
         if (!active || token !== playbackTokenRef.current) return;
-        setVideoLoading(false);
         video.classList.add("is-visible");
         host.querySelector(".story-poster")?.classList.add("is-hidden");
-        frame.classList.remove("is-visible");
         clearTransitionTimer();
         transitioningRef.current = false;
       } catch {
         playingRef.current = false;
-        setVideoLoading(false);
         setVideoError("Playback was blocked by this browser. Retry the film or continue to the next scene.");
+        retryActionRef.current = () => void startPlayback(sceneIndex);
         transitioningRef.current = false;
         clearTransitionTimer();
       }
     };
 
     const retryPlayback = () => {
-      const sceneIndex = playingSceneRef.current;
+      retryActionRef.current?.();
+    };
+
+    const startReversePlayback = async () => {
+      let sceneIndex = videoSceneForStage(storyStageRef.current);
+      if (sceneIndex === null) {
+        if (storyStageRef.current === 7) sceneIndex = 2;
+        else if (storyStageRef.current === 5) sceneIndex = 1;
+        else if (storyStageRef.current === 3) sceneIndex = 0;
+      }
       if (sceneIndex === null) return;
-      void startPlayback(sceneIndex, true);
+      transitionCaption(null);
+      playingSceneRef.current = sceneIndex;
+      reverseModeRef.current = true;
+      playingRef.current = true;
+      setVideoError("");
+      setTransitioning(20000);
+
+      const reverseSource = getVideoPath(sceneIndex, mobileAssetRef.current, true);
+      const forwardVideo = getVideo(sceneIndex);
+      forwardVideo.pause();
+      if (reverseVideo.dataset.source !== reverseSource) {
+        activeLoadCleanup?.();
+        activeLoadCleanup = null;
+        reverseVideo.pause();
+        reverseVideo.dataset.source = reverseSource;
+        reverseVideo.preload = "auto";
+        reverseVideo.src = reverseSource;
+        reverseVideo.load();
+      }
+      const token = ++playbackTokenRef.current;
+      const canPlay = await waitUntilPlayable(reverseVideo, token);
+      if (!active || token !== playbackTokenRef.current) return;
+      if (!canPlay) {
+        playingRef.current = false;
+        setVideoError("This film could not be loaded in reverse. Please retry, or continue to the previous scene.");
+        retryActionRef.current = () => { reverseVideo.load(); void startReversePlayback(); };
+        transitioningRef.current = false;
+        clearTransitionTimer();
+        return;
+      }
+      try {
+        const forwardDuration = Number.isFinite(forwardVideo.duration) ? forwardVideo.duration : reverseVideo.duration;
+        const reverseDuration = Number.isFinite(reverseVideo.duration) ? reverseVideo.duration : forwardDuration;
+        reverseVideo.currentTime = Math.max(0, reverseDuration * (1 - forwardVideo.currentTime / Math.max(forwardDuration, 0.01)));
+        await reverseVideo.play();
+        if (!active || token !== playbackTokenRef.current) return;
+        reverseVideo.classList.add("is-visible");
+        clearTransitionTimer();
+        transitioningRef.current = false;
+      } catch {
+        playingRef.current = false;
+        setVideoError("Reverse playback was blocked by this browser. Retry the film or continue to the previous scene.");
+        retryActionRef.current = () => void startReversePlayback();
+        transitioningRef.current = false;
+        clearTransitionTimer();
+      }
     };
 
     const resetToHero = () => {
@@ -320,14 +351,15 @@ export default function StoryExperience() {
       playingSceneRef.current = null;
       playingRef.current = false;
       finishedRef.current = false;
-      setVideoLoading(false);
       setVideoError("");
-      video.pause();
-      video.classList.remove("is-visible");
-      frame.classList.remove("is-visible");
-      frameContext.clearRect(0, 0, frame.width, frame.height);
+      videos.forEach((video) => {
+        video!.pause();
+        video!.currentTime = 0;
+        video!.classList.remove("is-visible");
+      });
+      reverseVideo.pause();
+      reverseVideo.classList.remove("is-visible");
       host.querySelector(".story-poster")?.classList.remove("is-hidden");
-      setSource(0);
       transitionCaption(null);
       const heroOverlay = host.querySelector<HTMLElement>(".hero-overlay");
       const heroShade = host.querySelector<HTMLElement>(".hero-shade");
@@ -365,11 +397,15 @@ export default function StoryExperience() {
       }
       event.preventDefault();
       event.stopImmediatePropagation();
-      if (playingRef.current || transitioningRef.current) return;
       if (event.deltaY < 0) {
-        if (storyStageRef.current > 0) resetToHero();
+        if (playingRef.current && !reverseModeRef.current) void startReversePlayback();
+        else if (!playingRef.current && !transitioningRef.current && storyStageRef.current > 0) {
+          if (storyStageRef.current === 1) resetToHero();
+          else void startReversePlayback();
+        }
         return;
       }
+      if (playingRef.current || transitioningRef.current) return;
       advanceStory();
     };
 
@@ -395,9 +431,13 @@ export default function StoryExperience() {
       touchStartY = null;
       if (Math.abs(deltaY) < 34) return;
       if (!trigger || finishedRef.current || window.scrollY < trigger.start - 2 || window.scrollY > trigger.end + 2) return;
-      if (playingRef.current || transitioningRef.current) return;
-      if (deltaY > 0) advanceStory();
-      else if (storyStageRef.current > 0) resetToHero();
+      if (deltaY > 0) {
+        if (!playingRef.current && !transitioningRef.current) advanceStory();
+      } else if (playingRef.current && !reverseModeRef.current) void startReversePlayback();
+      else if (!playingRef.current && !transitioningRef.current && storyStageRef.current > 0) {
+        if (storyStageRef.current === 1) resetToHero();
+        else void startReversePlayback();
+      }
       else host.classList.remove("story-sequence-active");
     };
 
@@ -415,9 +455,13 @@ export default function StoryExperience() {
       }
       event.preventDefault();
       event.stopImmediatePropagation();
-      if (playingRef.current || transitioningRef.current) return;
-      if (forward) advanceStory();
-      else if (storyStageRef.current > 0) resetToHero();
+      if (forward) {
+        if (!playingRef.current && !transitioningRef.current) advanceStory();
+      } else if (playingRef.current && !reverseModeRef.current) void startReversePlayback();
+      else if (!playingRef.current && !transitioningRef.current && storyStageRef.current > 0) {
+        if (storyStageRef.current === 1) resetToHero();
+        else void startReversePlayback();
+      }
     };
 
     const handleStoryIntro = () => {
@@ -440,13 +484,13 @@ export default function StoryExperience() {
 
     const skipStorySequence = () => {
       playbackTokenRef.current += 1;
-      video.pause();
+      videos.forEach((video) => video!.pause());
+      reverseVideo.pause();
       playingRef.current = false;
       playingSceneRef.current = null;
       finishedRef.current = true;
       transitioningRef.current = false;
       clearTransitionTimer();
-      setVideoLoading(false);
       setVideoError("");
       host.classList.remove("story-sequence-active");
       updateStage(8);
@@ -467,22 +511,54 @@ export default function StoryExperience() {
       onLeaveBack: () => host.classList.remove("story-sequence-active"),
     });
 
-    setSource(0);
-    video.addEventListener("ended", handleVideoEnded);
+    videos.forEach((video, index) => {
+      const element = video!;
+      element.preload = "auto";
+      element.dataset.source = getVideoPath(index, mobileAssetRef.current);
+      element.src = element.dataset.source;
+      element.load();
+      element.addEventListener("ended", handleVideoEnded);
+    });
+    reverseVideo.addEventListener("ended", handleReverseEnded);
     window.addEventListener("wheel", handleWheel, { passive: false, capture: true });
     window.addEventListener("touchstart", handleTouchStart, { passive: true, capture: true });
     window.addEventListener("touchend", handleTouchEnd, { passive: true, capture: true });
     window.addEventListener("keydown", handleKeyDown, true);
     window.addEventListener("ekkomi:story-intro", handleStoryIntro);
     window.addEventListener("ekkomi:story-skip", skipStorySequence);
-    window.addEventListener("ekkomi:story-video-continue", completeAfterFallback);
+    const continueAfterError = () => {
+      const sceneIndex = playingSceneRef.current;
+      if (sceneIndex === null) return;
+      if (reverseModeRef.current) {
+        reverseVideo.pause();
+        reverseVideo.classList.remove("is-visible");
+        if (sceneIndex > 0) getVideo(sceneIndex).classList.remove("is-visible");
+        playingRef.current = false;
+        reverseModeRef.current = false;
+        playingSceneRef.current = null;
+        const previousStage = (sceneIndex * 2 + 1) as StoryStage;
+        changeStage(previousStage, previousStage, captionForStage(previousStage));
+      } else revealNextTagline(sceneIndex);
+    };
+    window.addEventListener("ekkomi:story-video-continue", continueAfterError);
     window.addEventListener("ekkomi:story-video-retry", retryPlayback);
 
     const handleViewportChange = () => {
       const nextIsMobile = mobileQuery.matches;
       if (nextIsMobile === mobileAssetRef.current) return;
       mobileAssetRef.current = nextIsMobile;
-      if (!playingRef.current) setSource(currentVideoSceneRef.current, nextIsMobile);
+      if (!playingRef.current) {
+        videos.forEach((video, index) => {
+          const element = video!;
+          if (element.classList.contains("is-visible")) return;
+          const nextSource = getVideoPath(index, nextIsMobile);
+          if (element.dataset.source === nextSource) return;
+          element.pause();
+          element.dataset.source = nextSource;
+          element.src = nextSource;
+          element.load();
+        });
+      }
       ScrollTrigger.refresh();
     };
     window.addEventListener("resize", handleViewportChange);
@@ -494,7 +570,6 @@ export default function StoryExperience() {
       active = false;
       playbackTokenRef.current += 1;
       clearTransitionTimer();
-      if (videoLoadTimer !== null) window.clearTimeout(videoLoadTimer);
       activeLoadCleanup?.();
       resizeObserver.disconnect();
       mobileQuery.removeEventListener("change", handleViewportChange);
@@ -505,12 +580,14 @@ export default function StoryExperience() {
       window.removeEventListener("keydown", handleKeyDown, true);
       window.removeEventListener("ekkomi:story-intro", handleStoryIntro);
       window.removeEventListener("ekkomi:story-skip", skipStorySequence);
-      window.removeEventListener("ekkomi:story-video-continue", completeAfterFallback);
+      window.removeEventListener("ekkomi:story-video-continue", continueAfterError);
       window.removeEventListener("ekkomi:story-video-retry", retryPlayback);
-      video.removeEventListener("ended", handleVideoEnded);
-      video.pause();
-      video.removeAttribute("src");
-      video.load();
+      videos.forEach((video) => {
+        video!.removeEventListener("ended", handleVideoEnded);
+        video!.pause();
+      });
+      reverseVideo.removeEventListener("ended", handleReverseEnded);
+      reverseVideo.pause();
       host.classList.remove("story-sequence-active");
       host.querySelector(".site-header")?.classList.remove("is-scrolled");
       pin.kill();
@@ -535,9 +612,7 @@ export default function StoryExperience() {
     window.dispatchEvent(new CustomEvent("ekkomi:story-video-retry"));
   };
 
-  const handleVideoContinue = () => {
-    window.dispatchEvent(new CustomEvent("ekkomi:story-video-continue"));
-  };
+  const handleVideoContinue = () => window.dispatchEvent(new CustomEvent("ekkomi:story-video-continue"));
 
   return (
     <main>
@@ -556,15 +631,18 @@ export default function StoryExperience() {
               loading="eager"
             />
           </picture>
-          <video
-            ref={videoRef}
-            className="story-video"
-            muted
-            playsInline
-            preload="metadata"
-            aria-hidden="true"
-          />
-          <canvas className="story-freeze-frame" ref={freezeFrame} aria-hidden="true" />
+          {scenes.map((scene, index) => (
+            <video
+              key={scene.desktop}
+              ref={(element) => { videoRefs.current[index] = element; }}
+              className="story-video"
+              muted
+              playsInline
+              preload="auto"
+              aria-hidden="true"
+            />
+          ))}
+          <video ref={reverseVideoRef} className="story-video story-reverse-video" muted playsInline preload="none" aria-hidden="true" />
           <div className="hero-shade" />
           <div className="hero-overlay">
             <header className="site-header">
@@ -618,9 +696,8 @@ export default function StoryExperience() {
             </div>
           </div>
 
-          {(videoLoading || videoError) && (
-            <div className="story-video-status" role={videoError ? "alert" : "status"}>
-              {videoError ? (
+          {videoError && (
+            <div className="story-video-status" role="alert">
                 <>
                   <p>{videoError}</p>
                   <div className="story-video-status__actions">
@@ -628,7 +705,6 @@ export default function StoryExperience() {
                     <button type="button" onClick={handleVideoContinue}>CONTINUE</button>
                   </div>
                 </>
-              ) : <p>Loading the film…</p>}
             </div>
           )}
         </div>
