@@ -10,16 +10,19 @@ export default function SmoothScroll() {
     gsap.registerPlugin(ScrollTrigger);
     let lenis: Lenis | null = null;
     let isPageScrollLocked = false;
-    const navigateToStoryIntro = (event: Event) => {
-      const progress = (event as CustomEvent<{ progress: number }>).detail.progress;
-      const trigger = ScrollTrigger.getById("ekkomi-story");
+    const scrollStoryTo = (event: Event) => {
+      const { step, duration = 0.48 } = (event as CustomEvent<{ step: number; duration?: number }>).detail;
+      const trigger = ScrollTrigger.getById("ekkomi-story-video");
       if (!trigger) {
-        document.querySelector("#story")?.scrollIntoView({ behavior: "smooth" });
+        document.querySelector("#story")?.scrollIntoView({
+          behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+        });
         return;
       }
 
-      const destination = trigger.start + (trigger.end - trigger.start) * progress;
-      if (lenis) lenis.scrollTo(destination, { duration: 1.1, force: true, programmatic: true });
+      const destination = step >= 8 ? trigger.end : trigger.start + Math.max(0, step) * window.innerHeight;
+      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (lenis) lenis.scrollTo(destination, { duration: reducedMotion ? 0 : duration, force: true, programmatic: true });
       else window.scrollTo({ top: destination, behavior: "auto" });
     };
     const stopPageScroll = () => {
@@ -30,12 +33,12 @@ export default function SmoothScroll() {
       isPageScrollLocked = false;
       lenis?.start();
     };
-    window.addEventListener("ekkomi:story-intro", navigateToStoryIntro);
+    window.addEventListener("ekkomi:story-scroll-to", scrollStoryTo);
     window.addEventListener("ekkomi:modal-scroll-lock", stopPageScroll);
     window.addEventListener("ekkomi:modal-scroll-unlock", startPageScroll);
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       return () => {
-        window.removeEventListener("ekkomi:story-intro", navigateToStoryIntro);
+        window.removeEventListener("ekkomi:story-scroll-to", scrollStoryTo);
         window.removeEventListener("ekkomi:modal-scroll-lock", stopPageScroll);
         window.removeEventListener("ekkomi:modal-scroll-unlock", startPageScroll);
       };
@@ -73,7 +76,7 @@ export default function SmoothScroll() {
     window.addEventListener("load", refresh);
     visualViewport?.addEventListener("resize", refreshAfterViewportSettles);
     return () => {
-      window.removeEventListener("ekkomi:story-intro", navigateToStoryIntro);
+      window.removeEventListener("ekkomi:story-scroll-to", scrollStoryTo);
       window.removeEventListener("ekkomi:modal-scroll-lock", stopPageScroll);
       window.removeEventListener("ekkomi:modal-scroll-unlock", startPageScroll);
       window.removeEventListener("load", refresh);

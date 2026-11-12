@@ -1,414 +1,570 @@
 "use client";
 
-import { useEffect, useRef, useState, type MouseEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type MouseEvent } from "react";
 import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-type Scene = { directory: string; count: number; focalX: number; caption: string };
-type FrameEntry = {
-  image?: HTMLImageElement;
-  status: "queued" | "loading" | "ready" | "failed";
-  priority: number;
-};
-type FrameRequest = { sceneIndex: number; frameIndex: number; priority: number };
-
-const sceneDefinitions = [
-  { desktop: "/video-sequences/scene1", desktopCount: 192, mobile: "/video-sequences_mobile-view/scene1-mobile", mobileCount: 98, caption: ".story-caption--intro", focalX: 0.58 },
-  { desktop: "/video-sequences/scene2", desktopCount: 192, mobile: "/video-sequences_mobile-view/scene2-mobile", mobileCount: 192, caption: ".story-caption--detail", focalX: 0.5 },
-  { desktop: "/video-sequences/scene3", desktopCount: 190, mobile: "/video-sequences_mobile-view/scene3-mobile", mobileCount: 190, caption: ".story-caption--full-look", focalX: 0.5 },
+const scenes = [
+  {
+    desktop: "/desktop-videos/scene1-desktop.mp4",
+    mobile: "/mobile-videos/scene1-mobile.mp4",
+    desktopPoster: "/desktop-videos/scene1-desktop-poster.jpg",
+    mobilePoster: "/mobile-videos/scene1-mobile-poster.jpg",
+    caption: ".story-caption--intro",
+  },
+  {
+    desktop: "/desktop-videos/scene2-desktop.mp4",
+    mobile: "/mobile-videos/scene2-mobile.mp4",
+    caption: ".story-caption--detail",
+  },
+  {
+    desktop: "/desktop-videos/scene3-desktop.mp4",
+    mobile: "/mobile-videos/scene3-mobile.mp4",
+    caption: ".story-caption--full-look",
+  },
 ] as const;
 
-const timelineFramesPerScene = 192;
-const baseSceneDuration = 2;
-const introDuration = 1;
-const captionFade = 0.12;
-const captionHold = 1;
-const finalHold = 0.25;
-const sceneStarts = sceneDefinitions.map((_, index) => index * timelineFramesPerScene);
-const sceneDurations = sceneDefinitions.map(() => baseSceneDuration);
-const totalScrollUnits = introDuration +
-  sceneDefinitions.reduce((total) => total + captionFade * 2 + captionHold + baseSceneDuration, 0) +
-  (sceneDefinitions.length - 1) * 0.01 + 0.15 + finalHold;
+const FINAL_CAPTION = ".story-caption--final";
+const STORY_TRIGGER_ID = "ekkomi-story-video";
+const LAST_PIN_STEP = 8;
 
-function getSceneSet(isMobile: boolean): Scene[] {
-  return sceneDefinitions.map((scene) => ({
-    directory: isMobile ? scene.mobile : scene.desktop,
-    count: isMobile ? scene.mobileCount : scene.desktopCount,
-    focalX: isMobile ? scene.focalX : 0.5,
-    caption: scene.caption,
-  }));
+type StoryStage = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
+
+function captionForStage(stage: StoryStage) {
+  if (stage === 1) return scenes[0].caption;
+  if (stage === 3) return scenes[1].caption;
+  if (stage === 5) return scenes[2].caption;
+  if (stage === 7) return FINAL_CAPTION;
+  return null;
 }
 
-function getSceneIndex(frame: number) {
-  return Math.min(sceneDefinitions.length - 1, Math.max(0, Math.floor(frame / timelineFramesPerScene)));
+function videoSceneForStage(stage: StoryStage) {
+  if (stage === 2) return 0;
+  if (stage === 4) return 1;
+  if (stage === 6) return 2;
+  return null;
+}
+
+function getVideoPath(sceneIndex: number, isMobile: boolean) {
+  const scene = scenes[sceneIndex];
+  return isMobile ? scene.mobile : scene.desktop;
+}
+
+function getPosterPath(isMobile: boolean) {
+  return isMobile ? scenes[0].mobilePoster : scenes[0].desktopPoster;
 }
 
 export default function StoryExperience() {
   const shell = useRef<HTMLElement>(null);
   const stage = useRef<HTMLDivElement>(null);
-  const canvas = useRef<HTMLCanvasElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const freezeFrame = useRef<HTMLCanvasElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [storyStage, setStoryStageState] = useState<StoryStage>(0);
+  const [videoLoading, setVideoLoading] = useState(false);
+  const [videoError, setVideoError] = useState("");
+
+  const storyStageRef = useRef<StoryStage>(0);
+  const mobileAssetRef = useRef(false);
+  const currentVideoSceneRef = useRef(0);
+  const playingSceneRef = useRef<number | null>(null);
+  const playingRef = useRef(false);
+  const transitioningRef = useRef(false);
+  const finishedRef = useRef(false);
+  const playbackTokenRef = useRef(0);
+  const transitionTimerRef = useRef<number | null>(null);
+  const currentCaptionRef = useRef<string | null>(null);
+  const expectedScrollStepRef = useRef(0);
+  const programmaticScrollUntilRef = useRef(0);
+
+  const updateStage = useCallback((nextStage: StoryStage) => {
+    storyStageRef.current = nextStage;
+    setStoryStageState(nextStage);
+  }, []);
 
   useEffect(() => {
     const host = shell.current;
     const screen = stage.current;
-    const target = canvas.current;
-    const context = target?.getContext("2d", { alpha: false });
-    if (!host || !screen || !target || !context) return;
+    const video = videoRef.current;
+    const frame = freezeFrame.current;
+    const frameContext = frame?.getContext("2d", { alpha: false });
+    if (!host || !screen || !video || !frame || !frameContext) return;
 
     gsap.registerPlugin(ScrollTrigger);
-    const mobileQuery = window.matchMedia("(max-width: 767px), (max-width: 1023px) and (orientation: portrait), (pointer: coarse)");
-    let isMobile = mobileQuery.matches;
-    let activeScenes = getSceneSet(isMobile);
-    let loaded = activeScenes.map(() => new Map<number, FrameEntry>());
-    const playhead = { frame: 0 };
+
+    const mobileQuery = window.matchMedia(
+      "(max-width: 767px), (max-width: 1023px) and (orientation: portrait), (pointer: coarse)",
+    );
+    mobileAssetRef.current = mobileQuery.matches;
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    host.classList.add("story-sequence-active");
+
     let active = true;
-    let pendingQueue: FrameRequest[] = [];
-    let activeLoads = 0;
-    let renderFrameId = 0;
-    let lastDrawnScene = -1;
-    let lastDrawnFrame = -1;
-    let lastCanvasWidth = 0;
-    let lastCanvasHeight = 0;
-    let seedRepresentativeFrames = true;
-    let maxConcurrentLoads = isMobile ? 2 : 3;
-    let maxCachedFrames = isMobile ? 14 : 18;
+    let videoLoadTimer: number | null = null;
+    let activeLoadCleanup: (() => void) | null = null;
 
-    const releaseScene = (sceneIndex: number) => {
-      loaded[sceneIndex]?.forEach((entry) => {
-        if (!entry.image) return;
-        entry.image.onload = null;
-        entry.image.onerror = null;
-        entry.image.src = "";
-      });
-      loaded[sceneIndex]?.clear();
-    };
-
-    const virtualFrameFor = (sceneIndex: number, frameIndex: number) => {
-      const count = activeScenes[sceneIndex]?.count ?? 1;
-      return sceneStarts[sceneIndex] + (count <= 1 ? 0 : frameIndex / (count - 1)) * (timelineFramesPerScene - 1);
-    };
-
-    const trimDecodedFrames = () => {
-      const currentScene = getSceneIndex(playhead.frame);
-      const scene = activeScenes[currentScene];
-      if (!scene) return;
-      const virtualFrame = Math.min(timelineFramesPerScene - 1, Math.max(0, playhead.frame - sceneStarts[currentScene]));
-      const currentFrame = Math.min(scene.count - 1, Math.round(virtualFrame / (timelineFramesPerScene - 1) * (scene.count - 1)));
-      const entries: Array<{ sceneIndex: number; frameIndex: number; distance: number }> = [];
-      loaded.forEach((frames, sceneIndex) => frames.forEach((entry, frameIndex) => {
-        if (entry.status === "ready") {
-          entries.push({ sceneIndex, frameIndex, distance: Math.abs(virtualFrameFor(sceneIndex, frameIndex) - playhead.frame) });
-        }
-      }));
-      if (entries.length <= maxCachedFrames) return;
-      entries.sort((a, b) => b.distance - a.distance);
-      let remaining = entries.length - maxCachedFrames;
-      for (const entry of entries) {
-        if (!remaining) break;
-        if (entry.sceneIndex === currentScene && entry.frameIndex === currentFrame) continue;
-        const frame = loaded[entry.sceneIndex].get(entry.frameIndex);
-        if (frame?.image) {
-          frame.image.onload = null;
-          frame.image.onerror = null;
-          frame.image.src = "";
-        }
-        loaded[entry.sceneIndex].delete(entry.frameIndex);
-        remaining -= 1;
+    const clearTransitionTimer = () => {
+      if (transitionTimerRef.current !== null) {
+        window.clearTimeout(transitionTimerRef.current);
+        transitionTimerRef.current = null;
       }
     };
 
-    const pumpQueue = () => {
-      while (active && activeLoads < maxConcurrentLoads && pendingQueue.length) {
-        const request = pendingQueue.shift()!;
-        const scene = activeScenes[request.sceneIndex];
-        const entry = loaded[request.sceneIndex]?.get(request.frameIndex);
-        if (!scene || !entry || entry.status !== "queued") continue;
-
-        entry.status = "loading";
-        activeLoads += 1;
-        const image = new Image();
-        image.decoding = "async";
-        if ("fetchPriority" in image) image.fetchPriority = request.priority === 0 ? "high" : "auto";
-        entry.image = image;
-
-        void (async () => {
-          try {
-            const loadedEvent = new Promise<void>((resolve, reject) => {
-              image.onload = () => resolve();
-              image.onerror = () => reject(new Error("Frame request failed."));
-            });
-            image.src = `${scene.directory}/frame_${String(request.frameIndex + 1).padStart(4, "0")}.webp`;
-            if (typeof image.decode === "function") {
-              try {
-                await image.decode();
-              } catch {
-                await loadedEvent;
-              }
-            } else {
-              await loadedEvent;
-            }
-            if (!active || loaded[request.sceneIndex]?.get(request.frameIndex) !== entry) return;
-            if (!image.naturalWidth) throw new Error("Decoded frame has no image dimensions.");
-            entry.status = "ready";
-            trimDecodedFrames();
-            render();
-          } catch {
-            if (loaded[request.sceneIndex]?.get(request.frameIndex) === entry) {
-              entry.status = "failed";
-              if (entry.image) {
-                entry.image.onload = null;
-                entry.image.onerror = null;
-              }
-            }
-            // A failed frame is skipped; render() uses the closest decoded frame.
-            render();
-          } finally {
-            activeLoads -= 1;
-            pumpQueue();
-          }
-        })();
-      }
+    const setSource = (sceneIndex: number, isMobile = mobileAssetRef.current) => {
+      const nextSource = getVideoPath(sceneIndex, isMobile);
+      currentVideoSceneRef.current = sceneIndex;
+      if (video.dataset.source === nextSource) return;
+      activeLoadCleanup?.();
+      activeLoadCleanup = null;
+      if (videoLoadTimer !== null) window.clearTimeout(videoLoadTimer);
+      video.pause();
+      video.preload = "metadata";
+      video.dataset.source = nextSource;
+      video.poster = getPosterPath(isMobile);
+      video.src = nextSource;
+      video.load();
     };
 
-    const scheduleLoads = (sceneIndex: number, frameIndex: number) => {
-      const scene = activeScenes[sceneIndex];
-      if (!scene) return;
-      const wanted: FrameRequest[] = [];
-      const add = (targetScene: number, targetFrame: number, priority: number) => {
-        const targetSceneDefinition = activeScenes[targetScene];
-        if (!targetSceneDefinition || targetFrame < 0 || targetFrame >= targetSceneDefinition.count) return;
-        wanted.push({ sceneIndex: targetScene, frameIndex: targetFrame, priority });
+    const waitUntilPlayable = (sceneIndex: number, token: number, retry = false) => new Promise<boolean>((resolve) => {
+      if (video.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA && currentVideoSceneRef.current === sceneIndex) {
+        resolve(true);
+        return;
+      }
+      if (video.error && !retry) {
+        resolve(false);
+        return;
+      }
+
+      let settled = false;
+      const settle = (ready: boolean) => {
+        if (settled) return;
+        settled = true;
+        activeLoadCleanup?.();
+        activeLoadCleanup = null;
+        if (videoLoadTimer !== null) window.clearTimeout(videoLoadTimer);
+        videoLoadTimer = null;
+        resolve(ready && active && token === playbackTokenRef.current);
       };
+      const onCanPlay = () => settle(true);
+      const onError = () => settle(false);
+      activeLoadCleanup = () => {
+        video.removeEventListener("canplay", onCanPlay);
+        video.removeEventListener("error", onError);
+      };
+      video.addEventListener("canplay", onCanPlay, { once: true });
+      video.addEventListener("error", onError, { once: true });
+      videoLoadTimer = window.setTimeout(() => settle(false), 20000);
+    });
 
-      add(sceneIndex, frameIndex, 0);
-      for (let offset = -2; offset <= (isMobile ? 6 : 8); offset += 1) {
-        if (offset !== 0) add(sceneIndex, frameIndex + offset, Math.abs(offset) + 1);
-      }
-
-      const virtualFrame = Math.max(0, playhead.frame - sceneStarts[sceneIndex]);
-      const sceneProgress = virtualFrame / (timelineFramesPerScene - 1);
-      if (sceneIndex < activeScenes.length - 1 && sceneProgress > 0.72) {
-        for (let index = 0; index < (isMobile ? 3 : 5); index += 1) add(sceneIndex + 1, index, 20 + index);
-      }
-
-      if (seedRepresentativeFrames) {
-        activeScenes.forEach((sampledScene, sampledSceneIndex) => {
-          [0.25, 0.5, 0.75, 1].forEach((fraction, sampleIndex) => {
-            add(sampledSceneIndex, Math.round((sampledScene.count - 1) * fraction), 80 + sampleIndex);
-          });
-        });
-        seedRepresentativeFrames = false;
-      }
-
-      const keys = new Set(wanted.map(({ sceneIndex: si, frameIndex: fi }) => `${si}:${fi}`));
-      const priorities = new Map(wanted.map(({ sceneIndex: si, frameIndex: fi, priority }) => [`${si}:${fi}`, priority]));
-      pendingQueue = pendingQueue
-        .filter((request) => keys.has(`${request.sceneIndex}:${request.frameIndex}`) || request.priority >= 80)
-        .map((request) => ({
-          ...request,
-          priority: Math.min(request.priority, priorities.get(`${request.sceneIndex}:${request.frameIndex}`) ?? request.priority),
-        }));
-      loaded.forEach((frames, si) => frames.forEach((entry, fi) => {
-        if (entry.status === "queued" && entry.priority < 80 && !keys.has(`${si}:${fi}`)) frames.delete(fi);
+    const scrollToStep = (step: number, duration = 0.48) => {
+      expectedScrollStepRef.current = step;
+      programmaticScrollUntilRef.current = performance.now() + duration * 1000 + 180;
+      window.dispatchEvent(new CustomEvent("ekkomi:story-scroll-to", {
+        detail: { step, duration },
       }));
-
-      wanted.sort((a, b) => a.priority - b.priority);
-      wanted.forEach((request) => {
-        const existing = loaded[request.sceneIndex].get(request.frameIndex);
-        if (existing) {
-          if (existing.status === "queued") existing.priority = Math.min(existing.priority, request.priority);
-          return;
-        }
-        loaded[request.sceneIndex].set(request.frameIndex, { status: "queued", priority: request.priority });
-        pendingQueue.push(request);
-      });
-      pendingQueue.sort((a, b) => a.priority - b.priority);
-      pumpQueue();
     };
 
-    const drawCurrentFrame = () => {
-      renderFrameId = 0;
-      if (!active) return;
-      const sceneIndex = getSceneIndex(playhead.frame);
-      const scene = activeScenes[sceneIndex];
-      const virtualFrame = Math.min(timelineFramesPerScene - 1, Math.max(0, playhead.frame - sceneStarts[sceneIndex]));
-      const sceneFrame = Math.min(scene.count - 1, Math.round(virtualFrame / (timelineFramesPerScene - 1) * (scene.count - 1)));
-      scheduleLoads(sceneIndex, sceneFrame);
+    const setTransitioning = (durationMs: number, onComplete?: () => void) => {
+      clearTransitionTimer();
+      transitioningRef.current = true;
+      transitionTimerRef.current = window.setTimeout(() => {
+        transitioningRef.current = false;
+        transitionTimerRef.current = null;
+        onComplete?.();
+      }, durationMs);
+    };
 
-      const images = loaded[sceneIndex];
-      let entry = images.get(sceneFrame);
-      if (entry?.status !== "ready" || !entry.image?.naturalWidth) {
-        let closestDistance = Infinity;
-        images.forEach((candidate, index) => {
-          if (candidate.status === "ready" && candidate.image?.naturalWidth && Math.abs(index - sceneFrame) < closestDistance) {
-            entry = candidate;
-            closestDistance = Math.abs(index - sceneFrame);
-          }
+    const transitionCaption = (nextSelector: string | null) => {
+      const previousSelector = currentCaptionRef.current;
+      const timeline = gsap.timeline();
+      if (previousSelector && previousSelector !== nextSelector) {
+        timeline.to(host.querySelector(previousSelector), {
+          autoAlpha: 0,
+          y: prefersReducedMotion ? 0 : 12,
+          duration: prefersReducedMotion ? 0 : 0.3,
+          ease: "power2.out",
         });
       }
-      const image = entry?.status === "ready" ? entry.image : undefined;
-      if (!image?.naturalWidth) return;
-
-      const ratio = Math.min(window.devicePixelRatio || 1, isMobile ? 1.35 : 1.6);
-      const width = screen.clientWidth;
-      const height = screen.clientHeight;
-      const canvasWidth = Math.round(width * ratio);
-      const canvasHeight = Math.round(height * ratio);
-      if (target.width !== canvasWidth || target.height !== canvasHeight) {
-        target.width = canvasWidth;
-        target.height = canvasHeight;
+      if (nextSelector) {
+        const nextCaption = host.querySelector(nextSelector);
+        timeline.fromTo(nextCaption,
+          { autoAlpha: 0, y: prefersReducedMotion ? 0 : 18 },
+          { autoAlpha: 1, y: 0, duration: prefersReducedMotion ? 0 : 0.65, ease: "power2.out" },
+          previousSelector && previousSelector !== nextSelector ? ">-0.08" : 0,
+        );
       }
-      const actualFrame = entry === images.get(sceneFrame)
-        ? sceneFrame
-        : [...images.entries()].find(([, candidate]) => candidate === entry)?.[0] ?? sceneFrame;
-      if (lastDrawnScene === sceneIndex && lastDrawnFrame === actualFrame && lastCanvasWidth === canvasWidth && lastCanvasHeight === canvasHeight) return;
-      lastDrawnScene = sceneIndex;
-      lastDrawnFrame = actualFrame;
-      lastCanvasWidth = canvasWidth;
-      lastCanvasHeight = canvasHeight;
-      context.setTransform(ratio, 0, 0, ratio, 0, 0);
-      context.fillStyle = "#171715";
-      context.fillRect(0, 0, width, height);
-
-      const viewportRatio = width / height;
-      const imageRatio = image.naturalWidth / image.naturalHeight;
-      const contain = isMobile && viewportRatio > imageRatio * 1.08;
-      const scale = contain
-        ? Math.min(width / image.naturalWidth, height / image.naturalHeight)
-        : Math.max(width / image.naturalWidth, height / image.naturalHeight);
-      const drawWidth = image.naturalWidth * scale;
-      const drawHeight = image.naturalHeight * scale;
-      const x = (width - drawWidth) * (contain ? 0.5 : scene.focalX);
-      context.drawImage(image, x, (height - drawHeight) / 2, drawWidth, drawHeight);
+      currentCaptionRef.current = nextSelector;
+      return timeline;
     };
 
-    const render = () => {
-      if (!active || renderFrameId) return;
-      renderFrameId = window.requestAnimationFrame(drawCurrentFrame);
+    const changeStage = (nextStage: StoryStage, scrollStep: number, caption: string | null) => {
+      updateStage(nextStage);
+      const firstTagline = nextStage === 1;
+      const heroOverlay = host.querySelector<HTMLElement>(".hero-overlay");
+      const heroShade = host.querySelector<HTMLElement>(".hero-shade");
+      if (firstTagline && heroOverlay) {
+        gsap.to(heroOverlay, {
+          y: -screen.clientHeight * 1.1,
+          autoAlpha: 0,
+          duration: prefersReducedMotion ? 0 : 0.65,
+          ease: "power2.inOut",
+        });
+        if (heroShade) gsap.to(heroShade, { autoAlpha: 0, duration: prefersReducedMotion ? 0 : 0.55, ease: "none" });
+      }
+      const captionTimeline = transitionCaption(caption);
+      scrollToStep(scrollStep, prefersReducedMotion ? 0 : 0.48);
+      const wait = Math.max(700, captionTimeline.duration() * 1000 + 100);
+      setTransitioning(prefersReducedMotion ? 0 : wait);
     };
 
-    const resetForViewport = () => {
+    const revealNextTagline = (completedScene: number, hasCompletedFrame = true) => {
+      playingRef.current = false;
+      playingSceneRef.current = null;
+      setVideoLoading(false);
+      setVideoError("");
+      video.classList.remove("is-visible");
+      if (hasCompletedFrame || completedScene > 0) frame.classList.add("is-visible");
+      else frame.classList.remove("is-visible");
+
+      if (completedScene === 0) {
+        setSource(1);
+        changeStage(3, 3, scenes[1].caption);
+      } else if (completedScene === 1) {
+        setSource(2);
+        changeStage(5, 5, scenes[2].caption);
+      } else {
+        changeStage(7, 7, FINAL_CAPTION);
+      }
+    };
+
+    const captureFinalFrame = () => {
+      if (!video.videoWidth || !video.videoHeight) return false;
+      frame.width = video.videoWidth;
+      frame.height = video.videoHeight;
+      frameContext.drawImage(video, 0, 0, frame.width, frame.height);
+      return true;
+    };
+
+    const handleVideoEnded = () => {
+      const completedScene = playingSceneRef.current;
+      if (completedScene === null) return;
+      video.pause();
+      captureFinalFrame();
+      revealNextTagline(completedScene);
+    };
+
+    const completeAfterFallback = () => {
+      const failedScene = playingSceneRef.current;
+      if (failedScene === null) return;
+      const hasFrame = captureFinalFrame();
+      revealNextTagline(failedScene, hasFrame);
+    };
+
+    const startPlayback = async (sceneIndex: number, retry = false) => {
+      const playStage = (sceneIndex * 2 + 2) as StoryStage;
+      updateStage(playStage);
+      transitionCaption(null);
+      playingSceneRef.current = sceneIndex;
+      playingRef.current = true;
+      setVideoError("");
+      setVideoLoading(true);
+      setTransitioning(20000);
+      scrollToStep(playStage);
+      setSource(sceneIndex);
+      const token = ++playbackTokenRef.current;
+      video.preload = "auto";
+      const shouldReload = video.readyState < HTMLMediaElement.HAVE_FUTURE_DATA || !!video.error;
+      const playablePromise = waitUntilPlayable(sceneIndex, token, retry || !!video.error);
+      if (shouldReload) video.load();
+
+      const canPlay = await playablePromise;
+      if (!active || token !== playbackTokenRef.current) return;
+      if (!canPlay) {
+        playingRef.current = false;
+        setVideoLoading(false);
+        setVideoError("This film could not be loaded. Please retry, or continue to the next scene.");
+        transitioningRef.current = false;
+        clearTransitionTimer();
+        return;
+      }
+
+      try {
+        video.currentTime = 0;
+        await video.play();
+        if (!active || token !== playbackTokenRef.current) return;
+        setVideoLoading(false);
+        video.classList.add("is-visible");
+        host.querySelector(".story-poster")?.classList.add("is-hidden");
+        frame.classList.remove("is-visible");
+        clearTransitionTimer();
+        transitioningRef.current = false;
+      } catch {
+        playingRef.current = false;
+        setVideoLoading(false);
+        setVideoError("Playback was blocked by this browser. Retry the film or continue to the next scene.");
+        transitioningRef.current = false;
+        clearTransitionTimer();
+      }
+    };
+
+    const retryPlayback = () => {
+      const sceneIndex = playingSceneRef.current;
+      if (sceneIndex === null) return;
+      void startPlayback(sceneIndex, true);
+    };
+
+    const resetToHero = () => {
+      if (playingRef.current || transitioningRef.current) return;
+      playbackTokenRef.current += 1;
+      playingSceneRef.current = null;
+      playingRef.current = false;
+      finishedRef.current = false;
+      setVideoLoading(false);
+      setVideoError("");
+      video.pause();
+      video.classList.remove("is-visible");
+      frame.classList.remove("is-visible");
+      frameContext.clearRect(0, 0, frame.width, frame.height);
+      host.querySelector(".story-poster")?.classList.remove("is-hidden");
+      setSource(0);
+      transitionCaption(null);
+      const heroOverlay = host.querySelector<HTMLElement>(".hero-overlay");
+      const heroShade = host.querySelector<HTMLElement>(".hero-shade");
+      if (heroOverlay) gsap.to(heroOverlay, { y: 0, autoAlpha: 1, duration: prefersReducedMotion ? 0 : 0.55, ease: "power2.out" });
+      if (heroShade) gsap.to(heroShade, { autoAlpha: 1, duration: prefersReducedMotion ? 0 : 0.5, ease: "none" });
+      updateStage(0);
+      scrollToStep(0, prefersReducedMotion ? 0 : 0.48);
+      setTransitioning(prefersReducedMotion ? 0 : 700);
+    };
+
+    const finishStory = () => {
+      finishedRef.current = true;
+      host.classList.remove("story-sequence-active");
+      updateStage(8);
+      scrollToStep(LAST_PIN_STEP, 0.58);
+    };
+
+    const advanceStory = () => {
+      if (transitioningRef.current || playingRef.current || finishedRef.current) return;
+      const currentStage = storyStageRef.current;
+      if (currentStage === 0) changeStage(1, 1, scenes[0].caption);
+      else if (currentStage === 1) void startPlayback(0);
+      else if (currentStage === 3) void startPlayback(1);
+      else if (currentStage === 5) void startPlayback(2);
+      else if (currentStage === 7) finishStory();
+    };
+
+    const handleWheel = (event: WheelEvent) => {
+      const trigger = ScrollTrigger.getById(STORY_TRIGGER_ID);
+      if (!trigger || finishedRef.current || window.scrollY < trigger.start - 2 || window.scrollY > trigger.end + 2) return;
+      if (Math.abs(event.deltaX) > Math.abs(event.deltaY) || event.deltaY === 0) return;
+      if (event.deltaY < 0 && storyStageRef.current === 0 && !playingRef.current && !transitioningRef.current) {
+        host.classList.remove("story-sequence-active");
+        return;
+      }
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      if (playingRef.current || transitioningRef.current) return;
+      if (event.deltaY < 0) {
+        if (storyStageRef.current > 0) resetToHero();
+        return;
+      }
+      advanceStory();
+    };
+
+    let touchStartY: number | null = null;
+    const handleTouchStart = (event: TouchEvent) => {
+      const trigger = ScrollTrigger.getById(STORY_TRIGGER_ID);
+      if (trigger && !finishedRef.current && window.scrollY >= trigger.start - 2 && window.scrollY <= trigger.end + 2) {
+        event.stopImmediatePropagation();
+      }
+      if (event.touches.length !== 1) {
+        touchStartY = null;
+        return;
+      }
+      touchStartY = event.touches[0].clientY;
+    };
+    const handleTouchEnd = (event: TouchEvent) => {
+      const trigger = ScrollTrigger.getById(STORY_TRIGGER_ID);
+      if (trigger && !finishedRef.current && window.scrollY >= trigger.start - 2 && window.scrollY <= trigger.end + 2) {
+        event.stopImmediatePropagation();
+      }
+      if (touchStartY === null || !event.changedTouches.length) return;
+      const deltaY = touchStartY - event.changedTouches[0].clientY;
+      touchStartY = null;
+      if (Math.abs(deltaY) < 34) return;
+      if (!trigger || finishedRef.current || window.scrollY < trigger.start - 2 || window.scrollY > trigger.end + 2) return;
+      if (playingRef.current || transitioningRef.current) return;
+      if (deltaY > 0) advanceStory();
+      else if (storyStageRef.current > 0) resetToHero();
+      else host.classList.remove("story-sequence-active");
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null;
+      if (target?.closest("a, button, input, textarea, select, [contenteditable='true']")) return;
+      const forward = ["ArrowDown", "PageDown", " "].includes(event.key);
+      const backward = ["ArrowUp", "PageUp"].includes(event.key);
+      if (!forward && !backward) return;
+      const trigger = ScrollTrigger.getById(STORY_TRIGGER_ID);
+      if (!trigger || finishedRef.current || window.scrollY < trigger.start - 2 || window.scrollY > trigger.end + 2) return;
+      if (backward && storyStageRef.current === 0 && !playingRef.current && !transitioningRef.current) {
+        host.classList.remove("story-sequence-active");
+        return;
+      }
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      if (playingRef.current || transitioningRef.current) return;
+      if (forward) advanceStory();
+      else if (storyStageRef.current > 0) resetToHero();
+    };
+
+    const handleStoryIntro = () => {
+      if (storyStageRef.current === 0 && !transitioningRef.current && !playingRef.current) {
+        changeStage(1, 1, scenes[0].caption);
+      } else {
+        scrollToStep(Math.max(1, storyStageRef.current));
+      }
+    };
+
+    const updateHeader = (trigger: ScrollTrigger) => {
+      host.querySelector(".site-header")?.classList.toggle("is-scrolled", trigger.scroll() > trigger.start + 8);
+      if (finishedRef.current || playingRef.current || transitioningRef.current) return;
+      if (performance.now() < programmaticScrollUntilRef.current) return;
+      const expectedScroll = trigger.start + expectedScrollStepRef.current * window.innerHeight;
+      if (Math.abs(trigger.scroll() - expectedScroll) > Math.max(24, window.innerHeight * 0.08)) {
+        scrollToStep(expectedScrollStepRef.current, prefersReducedMotion ? 0 : 0.3);
+      }
+    };
+
+    const skipStorySequence = () => {
+      playbackTokenRef.current += 1;
+      video.pause();
+      playingRef.current = false;
+      playingSceneRef.current = null;
+      finishedRef.current = true;
+      transitioningRef.current = false;
+      clearTransitionTimer();
+      setVideoLoading(false);
+      setVideoError("");
+      host.classList.remove("story-sequence-active");
+      updateStage(8);
+    };
+
+    const pin = ScrollTrigger.create({
+      id: STORY_TRIGGER_ID,
+      trigger: host,
+      pin: screen,
+      start: "top top",
+      end: () => `+=${Math.ceil(window.innerHeight * LAST_PIN_STEP)}`,
+      invalidateOnRefresh: true,
+      anticipatePin: 1,
+      onUpdate: updateHeader,
+      onRefresh: updateHeader,
+      onEnter: () => { if (!finishedRef.current) host.classList.add("story-sequence-active"); },
+      onEnterBack: () => { if (!finishedRef.current) host.classList.add("story-sequence-active"); },
+      onLeaveBack: () => host.classList.remove("story-sequence-active"),
+    });
+
+    setSource(0);
+    video.addEventListener("ended", handleVideoEnded);
+    window.addEventListener("wheel", handleWheel, { passive: false, capture: true });
+    window.addEventListener("touchstart", handleTouchStart, { passive: true, capture: true });
+    window.addEventListener("touchend", handleTouchEnd, { passive: true, capture: true });
+    window.addEventListener("keydown", handleKeyDown, true);
+    window.addEventListener("ekkomi:story-intro", handleStoryIntro);
+    window.addEventListener("ekkomi:story-skip", skipStorySequence);
+    window.addEventListener("ekkomi:story-video-continue", completeAfterFallback);
+    window.addEventListener("ekkomi:story-video-retry", retryPlayback);
+
+    const handleViewportChange = () => {
       const nextIsMobile = mobileQuery.matches;
-      if (nextIsMobile !== isMobile) {
-        loaded.forEach((_, index) => releaseScene(index));
-        pendingQueue = [];
-        isMobile = nextIsMobile;
-        maxConcurrentLoads = isMobile ? 2 : 3;
-        maxCachedFrames = isMobile ? 14 : 18;
-        activeScenes = getSceneSet(isMobile);
-        loaded = activeScenes.map(() => new Map<number, FrameEntry>());
-        seedRepresentativeFrames = true;
-      }
-      lastDrawnScene = -1;
-      render();
+      if (nextIsMobile === mobileAssetRef.current) return;
+      mobileAssetRef.current = nextIsMobile;
+      if (!playingRef.current) setSource(currentVideoSceneRef.current, nextIsMobile);
+      ScrollTrigger.refresh();
     };
-
-    // The first decoded frame is the on-canvas poster; remaining frames load
-    // progressively around the playhead and through a small bounded queue.
-    loaded[0].set(0, { status: "queued", priority: 0 });
-    pendingQueue.push({ sceneIndex: 0, frameIndex: 0, priority: 0 });
-    pumpQueue();
-    render();
-    const syncHeaderState = (trigger: ScrollTrigger) => {
-      host.querySelector(".site-header")?.classList.toggle(
-        "is-scrolled",
-        trigger.scroll() > trigger.start + 8
-      );
-    };
-    const timeline = gsap.timeline({
-      scrollTrigger: {
-        id: "ekkomi-story",
-        trigger: host,
-        pin: screen,
-        start: "top top",
-        end: () => {
-          const sceneTimelineUnits = captionFade * 2 + captionHold + sceneDurations[0];
-          const targetSceneVh = window.matchMedia("(max-width: 767px)").matches
-            ? 1
-            : window.matchMedia("(max-width: 1023px)").matches
-              ? 1.35
-              : 1.75;
-          const scrollScale = targetSceneVh / sceneTimelineUnits;
-          return `+=${Math.round(screen.clientHeight * totalScrollUnits * scrollScale)}`;
-        },
-        scrub: 0.18,
-        invalidateOnRefresh: true,
-        onUpdate: syncHeaderState,
-        onRefresh: syncHeaderState,
-      },
-    });
-
-    timeline.to(".hero-overlay", { y: () => -screen.clientHeight * 1.1, opacity: 0, duration: introDuration, ease: "none" }, 0);
-    timeline.to(".hero-shade", { opacity: 0, duration: introDuration, ease: "none" }, 0);
-    let timelinePosition = introDuration;
-
-    sceneDefinitions.forEach((definition, index) => {
-      timeline.to(definition.caption, { autoAlpha: 1, duration: captionFade, ease: "none" }, timelinePosition);
-      timelinePosition += captionFade + captionHold;
-      timeline.to(definition.caption, { autoAlpha: 0, duration: captionFade, ease: "none" }, timelinePosition);
-      timelinePosition += captionFade;
-
-      const firstFrame = sceneStarts[index];
-      timeline.to(playhead, {
-        frame: firstFrame + timelineFramesPerScene - 1,
-        duration: sceneDurations[index],
-        ease: "none",
-        onUpdate: render,
-      }, timelinePosition);
-      timelinePosition += sceneDurations[index];
-
-      if (index < sceneDefinitions.length - 1) {
-        timeline.to(playhead, {
-          frame: firstFrame + timelineFramesPerScene,
-          duration: 0.01,
-          ease: "none",
-          onUpdate: render,
-        }, timelinePosition);
-        timelinePosition += 0.01;
-      }
-    });
-
-    timeline.to(".story-caption--final", { autoAlpha: 1, duration: 0.15, ease: "none" }, timelinePosition);
-    timeline.to(playhead, {
-      frame: sceneDefinitions.length * timelineFramesPerScene - 1,
-      duration: finalHold,
-      ease: "none",
-      onUpdate: render,
-    }, timelinePosition);
-
-    const resizeObserver = new ResizeObserver(resetForViewport);
+    window.addEventListener("resize", handleViewportChange);
+    mobileQuery.addEventListener("change", handleViewportChange);
+    const resizeObserver = new ResizeObserver(() => ScrollTrigger.refresh());
     resizeObserver.observe(screen);
-    window.addEventListener("resize", resetForViewport);
-    mobileQuery.addEventListener("change", resetForViewport);
+
     return () => {
       active = false;
+      playbackTokenRef.current += 1;
+      clearTransitionTimer();
+      if (videoLoadTimer !== null) window.clearTimeout(videoLoadTimer);
+      activeLoadCleanup?.();
       resizeObserver.disconnect();
-      window.removeEventListener("resize", resetForViewport);
-      mobileQuery.removeEventListener("change", resetForViewport);
+      mobileQuery.removeEventListener("change", handleViewportChange);
+      window.removeEventListener("resize", handleViewportChange);
+      window.removeEventListener("wheel", handleWheel, true);
+      window.removeEventListener("touchstart", handleTouchStart, true);
+      window.removeEventListener("touchend", handleTouchEnd, true);
+      window.removeEventListener("keydown", handleKeyDown, true);
+      window.removeEventListener("ekkomi:story-intro", handleStoryIntro);
+      window.removeEventListener("ekkomi:story-skip", skipStorySequence);
+      window.removeEventListener("ekkomi:story-video-continue", completeAfterFallback);
+      window.removeEventListener("ekkomi:story-video-retry", retryPlayback);
+      video.removeEventListener("ended", handleVideoEnded);
+      video.pause();
+      video.removeAttribute("src");
+      video.load();
+      host.classList.remove("story-sequence-active");
       host.querySelector(".site-header")?.classList.remove("is-scrolled");
-      timeline.scrollTrigger?.kill();
-      timeline.kill();
-      loaded.forEach((_, index) => releaseScene(index));
+      pin.kill();
+      gsap.killTweensOf(host.querySelectorAll(".hero-overlay, .hero-shade, .story-caption"));
     };
-  }, []);
+  }, [updateStage]);
 
   const closeMenu = () => setMenuOpen(false);
+  const navigateToStorySection = () => {
+    closeMenu();
+    window.dispatchEvent(new CustomEvent("ekkomi:story-skip"));
+  };
   const navigateToStoryIntro = (event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
     closeMenu();
     window.history.pushState(null, "", "#story");
-    window.dispatchEvent(new CustomEvent("ekkomi:story-intro", {
-      detail: { progress: (introDuration + captionFade + 0.04) / totalScrollUnits },
-    }));
+    window.dispatchEvent(new CustomEvent("ekkomi:story-intro"));
+  };
+
+  const handleVideoRetry = () => {
+    setVideoError("");
+    window.dispatchEvent(new CustomEvent("ekkomi:story-video-retry"));
+  };
+
+  const handleVideoContinue = () => {
+    window.dispatchEvent(new CustomEvent("ekkomi:story-video-continue"));
   };
 
   return (
     <main>
       <section className="story-scroll" ref={shell} id="story">
-        <div className="story-stage" ref={stage}>
-          <canvas ref={canvas} className="story-canvas" aria-label="Scroll-controlled EKKOMI fashion film" />
+        <div className="story-stage" ref={stage} data-story-stage={storyStage}>
+          <picture className="story-poster">
+            <source
+              media="(max-width: 767px), (max-width: 1023px) and (orientation: portrait), (pointer: coarse)"
+              srcSet="/mobile-videos/scene1-mobile-poster.jpg"
+            />
+            <img
+              src="/desktop-videos/scene1-desktop-poster.jpg"
+              alt=""
+              fetchPriority="high"
+              decoding="async"
+              loading="eager"
+            />
+          </picture>
+          <video
+            ref={videoRef}
+            className="story-video"
+            muted
+            playsInline
+            preload="metadata"
+            aria-hidden="true"
+          />
+          <canvas className="story-freeze-frame" ref={freezeFrame} aria-hidden="true" />
           <div className="hero-shade" />
           <div className="hero-overlay">
             <header className="site-header">
@@ -419,11 +575,8 @@ export default function StoryExperience() {
                   decoding="async"
                   onError={(e) => {
                     const img = e.currentTarget as HTMLImageElement;
-                    if (!img.src.endsWith("/logo-1.png")) {
-                      img.src = "/logo/logo-1.png";
-                    } else if (!img.src.endsWith("/collection-assets/Ekkomi_logo_1.png")) {
-                      img.src = "/collection-assets/Ekkomi_logo_1.png";
-                    }
+                    if (!img.src.endsWith("/logo-1.png")) img.src = "/logo/logo-1.png";
+                    else if (!img.src.endsWith("/collection-assets/Ekkomi_logo_1.png")) img.src = "/collection-assets/Ekkomi_logo_1.png";
                   }}
                 />
               </a>
@@ -437,8 +590,8 @@ export default function StoryExperience() {
               </button>
               <nav className={menuOpen ? "nav-open" : ""} aria-label="Main navigation">
                 <a href="#story" onClick={navigateToStoryIntro}>STORY</a>
-                <a href="#collection" onClick={closeMenu}>COLLECTION</a>
-                <a href="#contact" onClick={closeMenu}>CONTACT</a>
+                <a href="#collection" onClick={navigateToStorySection}>COLLECTION</a>
+                <a href="#contact" onClick={navigateToStorySection}>CONTACT</a>
               </nav>
             </header>
             <div className="hero-copy">
@@ -464,6 +617,20 @@ export default function StoryExperience() {
               <p>Wearable Art × Inherited Craft × Quiet Rebellion</p>
             </div>
           </div>
+
+          {(videoLoading || videoError) && (
+            <div className="story-video-status" role={videoError ? "alert" : "status"}>
+              {videoError ? (
+                <>
+                  <p>{videoError}</p>
+                  <div className="story-video-status__actions">
+                    <button type="button" onClick={handleVideoRetry}>RETRY VIDEO</button>
+                    <button type="button" onClick={handleVideoContinue}>CONTINUE</button>
+                  </div>
+                </>
+              ) : <p>Loading the film…</p>}
+            </div>
+          )}
         </div>
       </section>
       <ClosingSection />
@@ -562,7 +729,3 @@ function ClosingSection() {
     </section>
   );
 }
-
-
-
-
